@@ -1,19 +1,61 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
     <title>나의 첫 웹사이트</title>
     <style>
-        body { background-color: #f0f0f0; text-align: center; font-family: sans-serif; }
-        .card { background: white; width: 300px; margin: 100px auto; padding: 20px; border-radius: 15px; shadow: 5px 5px 10px gray; }
-        button { background-color: #007aff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+        /* 배경과 전체적인 스타일 */
+        body { 
+            background-color: #f8f9fa; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
+            font-family: sans-serif; 
+        }
+
+        /* 중앙 카드 스타일 */
+        .card { 
+            background: white; 
+            width: 320px; 
+            padding: 30px; 
+            border-radius: 20px; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1); 
+            text-align: center; 
+        }
+
+        /* 사진 크기 조절 (여기가 핵심입니다!) */
+        img { 
+            width: 150px;      /* 사진 너비를 150픽셀로 고정 */
+            height: 150px;     /* 높이도 150픽셀로 고정 */
+            object-fit: cover; /* 사진이 찌그러지지 않게 비율 유지 */
+            border-radius: 50%; /* 사진을 동그랗게 만듦 (사각형을 원하면 삭제) */
+            margin-bottom: 20px; 
+            border: 3px solid #007aff; /* 사진 테두리에 파란색 포인트 */
+        }
+
+        h1 { 
+            font-size: 24px; 
+            color: #333; 
+            margin: 10px 0; 
+        }
+
+        p { 
+            color: #666; 
+            font-size: 16px; 
+        }
     </style>
 </head>
 <body>
+
     <div class="card">
-        <img src="sapporo.jpeg" alt="Sapporo Travel">
-        <h1>안녕하세요! 👋</h1>
-        <p> 맥북으로 만든 첫번째 웹사이트 </p>
-        <button onclick="alert('반가워요!')">클릭해보세요</button>
+        <img src="profile.jpeg" alt="프로필 사진"> 
+
+        <h1>반갑습니다! 👋</h1>
+        
+        <p>맥북으로 만든 저의 첫 번째 웹사이트에 오신 것을 환영합니다.</p>
     </div>
+
 </body>
 </html>
