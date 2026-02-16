@@ -6,10 +6,18 @@
         body { background-color: #f0f0f0; text-align: center; font-family: sans-serif; }
         .card { background: white; width: 300px; margin: 100px auto; padding: 20px; border-radius: 15px; shadow: 5px 5px 10px gray; }
         button { background-color: #007aff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+        img {
+    border-radius: 50%; /* 이미지를 동그랗게 */
+    border: 5px solid #007aff; /* 파란색 테두리 */
+    width: 200px; /* 크기 고정 */
+    height: 200px;
+    object-fit: cover; /* 비율 유지하며 꽉 채우기 */
+        }
     </style>
 </head>
 <body>
     <div class="card">
+        <img src="sapporo.jpg" alt="Sapporo Travel">
         <h1>안녕하세요! 👋</h1>
         <p>맥북에서 만든 첫 번째 웹사이트입니다.</p>
         <button onclick="alert('반가워요!')">클릭해보세요</button>
