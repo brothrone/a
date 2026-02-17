@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>사진 모음 갤러리</title>
+    <style>
+        body { background-color: #f0f0f0; text-align: center; font-family: sans-serif; padding: 30px; }
+        h1 { margin-bottom: 30px; color: #333; }
+        
+        /* 사진들을 예쁘게 배치하는 그리드 설정 */
+        .gallery { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+            gap: 15px; 
+            max-width: 1200px; 
+            margin: 0 auto; 
+        }
+
+        /* 사진 스타일 */
+        img { 
+            width: 100%; 
+            height: 250px; 
+            object-fit: cover; /* 사진이 찌그러지지 않게 */
+            border-radius: 12px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        /* 마우스를 올렸을 때 살짝 커지는 효과 */
+        img:hover { transform: scale(1.05); }
+
+        .back-btn { 
+            display: inline-block; 
+            margin-top: 40px; 
+            padding: 12px 25px; 
+            background: #007aff; 
+            color: white; 
+            text-decoration: none; 
+            border-radius: 8px; 
+            font-weight: bold; 
+        }
+    </style>
+</head>
+<body>
+
+    <h1>나의 사진첩 📸</h1>
+
+    <div id="photo-container" class="gallery"></div>
+
+    <a href="index.html" class="back-btn">처음으로 돌아가기</a>
+
+    <script>
+        const container = document.getElementById('photo-container');
+
+        // 자바스크립트 반복문을 사용하여 cts1부터 cts11까지 자동으로 생성
+        for (let i = 1; i <= 11; i++) {
+            const img = document.createElement('img');
+            
+            // photo 폴더 안에 cts1.jpeg, cts2.jpeg... 가 있다고 가정
+            img.src = `photo/cts${i}.jpeg`; 
+            img.alt = `사진 ${i}`;
+            
+            // 사진을 불러오지 못했을 때(엑박) 대비용
+            img.onerror = function() {
+                console.error(`${this.src} 파일을 찾을 수 없습니다.`);
+            };
+
+            container.appendChild(img);
+        }
+    </script>
+
+</body>
+</html>
