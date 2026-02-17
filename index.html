@@ -1,16 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <title>나의 첫 웹사이트</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <style>
         /* 배경과 전체적인 스타일 */
         body { 
             background-color: #f8f9fa; 
             display: flex; 
+            flex-direction: column; /* 푸터를 아래로 보내기 위해 변경 */
             justify-content: center; 
             align-items: center; 
-            height: 100vh; 
+            min-height: 100vh; 
             margin: 0; 
             font-family: sans-serif; 
         }
@@ -23,135 +26,91 @@
             border-radius: 20px; 
             box-shadow: 0 10px 20px rgba(0,0,0,0.1); 
             text-align: center; 
+            margin-top: 50px;
         }
 
-        /* 사진 크기 조절 (여기가 핵심입니다!) */
+        /* 사진 스타일 */
         img { 
-            width: 150px;      /* 사진 너비를 150픽셀로 고정 */
-            height: 150px;     /* 높이도 150픽셀로 고정 */
-            object-fit: cover; /* 사진이 찌그러지지 않게 비율 유지 */
-            border-radius: 50%; /* 사진을 동그랗게 만듦 (사각형을 원하면 삭제) */
+            width: 150px; height: 150px; 
+            object-fit: cover; 
+            border-radius: 50%; 
             margin-bottom: 20px; 
-            border: 3px solid #007aff; /* 사진 테두리에 파란색 포인트 */
+            border: 3px solid #007aff; 
         }
 
-        h1 { 
-            font-size: 24px; 
-            color: #333; 
-            margin: 10px 0; 
-        }
+        h1 { font-size: 24px; color: #333; margin: 10px 0; }
+        p { color: #666; font-size: 16px; }
 
-        p { 
-            color: #666; 
-            font-size: 16px; 
-        }
         /* 푸터 스타일 */
-.footer {
-    background-color: #333; /* 어두운 배경색 */
-    color: #fff;           /* 흰색 글자 */
-    padding: 40px 0;
-    margin-top: 50px;      /* 위 콘텐츠와의 간격 */
-    width: 100%;
-    font-size: 14px;
-}
+        .footer {
+            background-color: #333;
+            color: #fff;
+            padding: 40px 0;
+            margin-top: 50px;
+            width: 100%;
+            text-align: center;
+        }
 
-.footer-content {
-    max-width: 600px;
-    margin: 0 auto;
-    text-align: center;
-}
+        .social-links {
+            margin: 20px 0;
+        }
 
-.footer h3 {
-    font-size: 18px;
-    margin-bottom: 20px;
-    color: #007aff; /* 포인트 컬러 */
-}
+        /* 아이콘 공통 스타일 */
+        .social-icon {
+            color: #fff;
+            font-size: 24px; /* 로고 크기 */
+            margin: 0 15px;
+            text-decoration: none;
+            transition: color 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px; /* 아이콘과 글자 간격 */
+        }
 
-.footer p {
-    margin: 8px 0;
-    line-height: 1.6;
-}
+        /* 마우스 올렸을 때 인스타그램 색상 */
+        .social-icon:hover .fa-instagram { color: #E1306C; }
+        /* 마우스 올렸을 때 깃허브 색상 */
+        .social-icon:hover .fa-github { color: #4078c0; }
 
-.footer a {
-    color: #007aff;
-    text-decoration: none;
-}
-
-.footer a:hover {
-    text-decoration: underline;
-}
-
-.social-links {
-    <div class="social-links">
-    <a href="https://instagram.com/본인아이디" target="_blank" class="social-icon">
-        <i class="fab fa-instagram"></i> Instagram
-    </a>
-    <a href="https://github.com/본인아이디" target="_blank" class="social-icon">
-        <i class="fab fa-github"></i> GitHub
-    </a>
-</div>
-
-    .social-links {
-    margin: 20px 0;
-}
-
-.social-icon {
-    color: #fff;
-    font-size: 20px; /* 로고 크기 */
-    margin: 0 15px;
-    text-decoration: none;
-    transition: color 0.3s;
-}
-
-/* 마우스를 올렸을 때 인스타그램 브랜드 색상으로 변경 */
-.social-icon:hover .fa-instagram {
-    color: #E1306C;
-}
-
-/* 마우스를 올렸을 때 깃허브 색상으로 변경 */
-.social-icon:hover .fa-github {
-    color: #4078c0;
-}
-
-.social-icon i {
-    margin-right: 8px; /* 로고와 글자 사이 간격 */
-}
-}
-
-.copyright {
-    margin-top: 30px;
-    font-size: 12px;
-    color: #999;
-}
+        .copyright {
+            font-size: 12px;
+            color: #999;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
 
     <div class="card">
         <img src="sapporo.jpeg" alt="sapporo"> 
-
         <h1>반갑습니다! 👋</h1>
-        
-        <p>삿포로 여행 사진 모음집 </p>
+        <p>삿포로 여행 사진 모음집</p>
 
         <a href="gallery.html" style="
-    display: inline-block;
-    margin-top: 15px;
-    padding: 10px 20px;
-    background-color: #007aff;
-    color: white;
-    text-decoration: none;
-    border-radius: 8px;
-    font-weight: bold;
-">사진 구경하기</a>
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background-color: #007aff;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+        ">사진 구경하기</a>
     </div>
-<div class="social-links">
-    <a href="https://instagram.com/" target="_blank" class="social-icon">
-        <i class="fab fa-instagram"></i> Instagram
-    </a>
-    <a href="https://github.com/brothrone" target="_blank" class="social-icon">
-        <i class="fab fa-github"></i> GitHub
-    </a>
-</div>
+
+    <footer class="footer">
+        <div class="social-links">
+            <a href="https://instagram.com/본인아이디" target="_blank" class="social-icon">
+                <i class="fab fa-instagram"></i>
+                <span style="font-size: 14px;">Instagram</span>
+            </a>
+            <a href="https://github.com/brothrone" target="_blank" class="social-icon">
+                <i class="fab fa-github"></i>
+                <span style="font-size: 14px;">GitHub</span>
+            </a>
+        </div>
+        <p class="copyright">© 2026 brothrone. All rights reserved.</p>
+    </footer>
+
 </body>
 </html>
