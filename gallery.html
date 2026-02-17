@@ -4,10 +4,9 @@
     <meta charset="UTF-8">
     <title>사진 모음 갤러리</title>
     <style>
-        body { background-color: #f0f0f0; text-align: center; font-family: sans-serif; padding: 30px; }
+        body { background-color: #f0f0f0; text-align: center; font-family: sans-serif; padding: 30px; margin: 0; }
         h1 { margin-bottom: 30px; color: #333; }
         
-        /* 사진들을 예쁘게 배치하는 그리드 설정 */
         .gallery { 
             display: grid; 
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
@@ -16,28 +15,38 @@
             margin: 0 auto; 
         }
 
-        /* 사진 스타일 */
         img { 
-            width: 100%; 
-            height: 250px; 
-            object-fit: cover; /* 사진이 찌그러지지 않게 */
-            border-radius: 12px; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            width: 100%; height: 250px; object-fit: cover; 
+            border-radius: 12px; cursor: pointer;
             transition: transform 0.3s;
         }
 
-        /* 마우스를 올렸을 때 살짝 커지는 효과 */
-        img:hover { transform: scale(1.05); }
+        img:hover { transform: scale(1.03); }
+
+        /* --- 라이트박스 스타일 --- */
+        #lightbox {
+            display: none; /* 기본적으로는 숨김 */
+            position: fixed;
+            z-index: 1000;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.9); /* 배경을 어둡게 */
+            justify-content: center;
+            align-items: center;
+        }
+
+        #lightbox img {
+            max-width: 90%;
+            max-height: 80%;
+            width: auto; height: auto;
+            border-radius: 5px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        }
 
         .back-btn { 
-            display: inline-block; 
-            margin-top: 40px; 
-            padding: 12px 25px; 
-            background: #007aff; 
-            color: white; 
-            text-decoration: none; 
-            border-radius: 8px; 
-            font-weight: bold; 
+            display: inline-block; margin-top: 40px; padding: 12px 25px; 
+            background: #007aff; color: white; text-decoration: none; 
+            border-radius: 8px; font-weight: bold; 
         }
     </style>
 </head>
@@ -47,25 +56,36 @@
 
     <div id="photo-container" class="gallery"></div>
 
+    <div id="lightbox" onclick="closeLightbox()">
+        <img id="lightbox-img" src="" alt="확대된 사진">
+    </div>
+
+    <br>
     <a href="index.html" class="back-btn">처음으로 돌아가기</a>
 
     <script>
         const container = document.getElementById('photo-container');
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
 
-        // 자바스크립트 반복문을 사용하여 cts1부터 cts11까지 자동으로 생성
+        // 사진 11장 생성 및 클릭 이벤트 추가
         for (let i = 1; i <= 11; i++) {
             const img = document.createElement('img');
-            
-            // photo 폴더 안에 cts1.jpeg, cts2.jpeg... 가 있다고 가정
             img.src = `photo/cts${i}.jpeg`; 
             img.alt = `사진 ${i}`;
             
-            // 사진을 불러오지 못했을 때(엑박) 대비용
-            img.onerror = function() {
-                console.error(`${this.src} 파일을 찾을 수 없습니다.`);
+            // 사진을 클릭하면 라이트박스를 띄우는 함수
+            img.onclick = function() {
+                lightboxImg.src = this.src; // 클릭한 사진의 주소를 라이트박스 이미지에 넣기
+                lightbox.style.display = 'flex'; // 라이트박스 보이기
             };
 
             container.appendChild(img);
+        }
+
+        // 라이트박스를 닫는 함수
+        function closeLightbox() {
+            lightbox.style.display = 'none';
         }
     </script>
 
