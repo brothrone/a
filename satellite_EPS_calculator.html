@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>위성 EPS 설계 계산기</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1e2d45;
+    --accent: #00d4ff;
+    --accent2: #7c3aed;
+    --accent3: #10b981;
+    --warn: #f59e0b;
+    --danger: #ef4444;
+    --text: #e2e8f0;
+    --text2: #94a3b8;
+    --text3: #475569;
+    --mono: 'Space Mono', monospace;
+    --sans: 'Noto Sans KR', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* grid bg */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+  /* HEADER */
+  header {
+    padding: 40px 0 32px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 40px;
+  }
+  .header-inner { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .header-badge {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .header-badge::before {
+    content: '';
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  h1 { font-family: var(--mono); font-size: clamp(20px,3vw,28px); font-weight: 700; letter-spacing: -0.5px; }
+  h1 span { color: var(--accent); }
+  .subtitle { font-size: 13px; color: var(--text2); margin-top: 6px; font-weight: 300; }
+  .version { font-family: var(--mono); font-size: 11px; color: var(--text3); }
+
+  /* NAV TABS */
+  .nav-tabs {
+    display: flex; gap: 4px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 4px;
+    margin-bottom: 32px;
+    overflow-x: auto;
+  }
+  .nav-tab {
+    flex: 1;
+    padding: 10px 16px;
+    border: none;
+    background: transparent;
+    color: var(--text2);
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 400;
+    cursor: pointer;
+    border-radius: 7px;
+    transition: all 0.2s;
+    white-space: nowrap;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .nav-tab .icon { font-size: 14px; }
+  .nav-tab:hover { color: var(--text); background: var(--surface2); }
+  .nav-tab.active {
+    background: linear-gradient(135deg, rgba(0,212,255,0.15), rgba(124,58,237,0.15));
+    color: var(--accent);
+    font-weight: 500;
+    border: 1px solid rgba(0,212,255,0.2);
+  }
+
+  /* PANELS */
+  .panel { display: none; animation: fadeIn 0.3s ease; }
+  .panel.active { display: block; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+  /* CARDS */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+  .card-title {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .card-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, var(--border), transparent);
+  }
+
+  /* FORMULA BOX */
+  .formula {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 14px 18px;
+    margin: 14px 0;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--text2);
+  }
+  .formula .eq { color: var(--accent); font-weight: 700; }
+  .formula .var { color: #a78bfa; }
+  .formula .unit { color: var(--text3); font-size: 11px; }
+
+  /* GRID LAYOUT */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  @media(max-width:640px) { .grid2,.grid3 { grid-template-columns: 1fr; } }
+
+  /* INPUT GROUPS */
+  .input-group { display: flex; flex-direction: column; gap: 6px; }
+  .input-group label {
+    font-size: 12px;
+    color: var(--text2);
+    font-weight: 400;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .input-group label .unit-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--accent2);
+    background: rgba(124,58,237,0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid rgba(124,58,237,0.2);
+  }
+  .input-group input {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+    width: 100%;
+  }
+  .input-group input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(0,212,255,0.08);
+  }
+  .input-group input:hover { border-color: rgba(0,212,255,0.3); }
+
+  /* RESULT PANEL */
+  .result-panel {
+    background: linear-gradient(135deg, rgba(0,212,255,0.05), rgba(124,58,237,0.05));
+    border: 1px solid rgba(0,212,255,0.2);
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 20px;
+  }
+  .result-panel-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .result-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+    gap: 16px;
+  }
+  .result-row:last-child { border-bottom: none; }
+  .result-label { font-size: 13px; color: var(--text2); flex: 1; }
+  .result-val {
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    text-align: right;
+  }
+  .result-val.primary { color: var(--accent); font-size: 20px; }
+  .result-val.success { color: var(--accent3); }
+  .result-val.warn { color: var(--warn); }
+  .result-val.danger { color: var(--danger); }
+
+  /* CALC BUTTON */
+  .calc-btn {
+    width: 100%;
+    padding: 14px;
+    margin-top: 20px;
+    background: linear-gradient(135deg, rgba(0,212,255,0.15), rgba(124,58,237,0.15));
+    border: 1px solid rgba(0,212,255,0.3);
+    border-radius: 10px;
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+  .calc-btn:hover {
+    background: linear-gradient(135deg, rgba(0,212,255,0.25), rgba(124,58,237,0.25));
+    box-shadow: 0 0 20px rgba(0,212,255,0.15);
+    transform: translateY(-1px);
+  }
+  .calc-btn:active { transform: translateY(0); }
+
+  /* STEPS */
+  .steps { display: flex; flex-direction: column; gap: 0; }
+  .step {
+    display: flex;
+    gap: 16px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+  .step:last-child { border-bottom: none; }
+  .step-num {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    color: #000;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .step-content { flex: 1; }
+  .step-title { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 6px; }
+  .step-desc { font-size: 13px; color: var(--text2); line-height: 1.7; }
+  .step-desc code {
+    font-family: var(--mono);
+    font-size: 12px;
+    background: var(--bg);
+    color: var(--accent);
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+
+  /* TABLE */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th {
+    text-align: left;
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    color: var(--accent);
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+    background: rgba(0,212,255,0.03);
+  }
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text2);
+    line-height: 1.5;
+  }
+  td:first-child { color: var(--text); font-weight: 400; }
+  td .mono { font-family: var(--mono); color: var(--accent3); font-size: 12px; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+  tr:last-child td { border-bottom: none; }
+
+  /* NOTE */
+  .note {
+    font-size: 12px;
+    color: var(--text3);
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    margin-top: 10px;
+    line-height: 1.6;
+  }
+  .note::before { content: '※'; color: var(--warn); flex-shrink: 0; }
+
+  /* HIGHLIGHT BOX */
+  .highlight-box {
+    background: rgba(16,185,129,0.06);
+    border: 1px solid rgba(16,185,129,0.2);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 16px 0;
+  }
+  .highlight-box.warn-box {
+    background: rgba(245,158,11,0.06);
+    border-color: rgba(245,158,11,0.2);
+  }
+  .highlight-box .hb-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    color: var(--accent3);
+  }
+  .highlight-box.warn-box .hb-title { color: var(--warn); }
+  .highlight-box p { font-size: 13px; color: var(--text2); line-height: 1.7; }
+
+  /* SUMMARY CARDS */
+  .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 20px 0; }
+  .summary-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+  }
+  .summary-card .sc-label { font-size: 11px; color: var(--text3); margin-bottom: 8px; font-family: var(--mono); letter-spacing: 1px; text-transform: uppercase; }
+  .summary-card .sc-value { font-family: var(--mono); font-size: 22px; font-weight: 700; color: var(--accent); }
+  .summary-card .sc-sub { font-size: 11px; color: var(--text3); margin-top: 4px; }
+
+  /* DOD METER */
+  .dod-meter { margin-top: 12px; }
+  .dod-bar-bg {
+    height: 8px;
+    background: var(--bg);
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    margin: 6px 0;
+  }
+  .dod-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s ease, background 0.3s;
+  }
+  .dod-label { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; color: var(--text3); }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* SECTION DIVIDER */
+  .section-divider {
+    display: flex; align-items: center; gap: 12px;
+    margin: 28px 0 20px;
+  }
+  .section-divider span { font-family: var(--mono); font-size: 11px; color: var(--text3); letter-spacing: 1.5px; text-transform: uppercase; white-space: nowrap; }
+  .section-divider::before, .section-divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+
+  /* FOOTER */
+  footer {
+    margin-top: 60px;
+    padding: 24px 0;
+    border-top: 1px solid var(--border);
+    text-align: center;
+  }
+  footer p { font-family: var(--mono); font-size: 11px; color: var(--text3); letter-spacing: 1px; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div class="header-inner">
+      <div>
+        <div class="header-badge">EPS Design Tool</div>
+        <h1>위성 <span>EPS</span> 설계 계산기</h1>
+        <p class="subtitle">Satellite Electrical Power System — Solar Cell &amp; Battery Calculator</p>
+      </div>
+      <div class="version">v1.0 · Introduction to Space System Ch.6</div>
+    </div>
+  </header>
+
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPanel('solar')">
+      <span class="icon">☀</span> Solar Cell 계산
+    </button>
+    <button class="nav-tab" onclick="showPanel('battery')">
+      <span class="icon">⚡</span> Battery 계산
+    </button>
+    <button class="nav-tab" onclick="showPanel('theory-solar')">
+      <span class="icon">📐</span> 이론 — Solar
+    </button>
+    <button class="nav-tab" onclick="showPanel('theory-bat')">
+      <span class="icon">📐</span> 이론 — Battery
+    </button>
+    <button class="nav-tab" onclick="showPanel('reference')">
+      <span class="icon">📊</span> 참고 파라미터
+    </button>
+  </div>
+
+  <!-- ========== SOLAR PANEL ========== -->
+  <div class="panel active" id="panel-solar">
+    <div class="card">
+      <div class="card-title">궤도 조건</div>
+      <div class="grid2">
+        <div class="input-group">
+          <label>궤도 주기 <span class="unit-tag">min</span></label>
+          <input type="number" id="s_period" value="97" step="1" oninput="calcSolar()">
+        </div>
+        <div class="input-group">
+          <label>이클립스 시간 <span class="unit-tag">min</span></label>
+          <input type="number" id="s_eclipse" value="32" step="1" oninput="calcSolar()">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">전력 요구사항</div>
+      <div class="grid2">
+        <div class="input-group">
+          <label>위성 평균 소비전력 <span class="unit-tag">W</span></label>
+          <input type="number" id="s_power" value="21.51" step="0.1" oninput="calcSolar()">
+        </div>
+        <div class="input-group">
+          <label>전력 마진 계수 <span class="unit-tag">×</span></label>
+          <input type="number" id="s_margin" value="1.1" step="0.05" oninput="calcSolar()">
+        </div>
+        <div class="input-group">
+          <label>PCDU 전달 효율 <span class="unit-tag">%</span></label>
+          <input type="number" id="s_pcdu" value="85" step="1" oninput="calcSolar()">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">태양전지 셀 파라미터</div>
+      <div class="grid3">
+        <div class="input-group">
+          <label>조사강도 (worst) <span class="unit-tag">W/m²</span></label>
+          <input type="number" id="s_irr" value="1280" step="10" oninput="calcSolar()">
+        </div>
+        <div class="input-group">
+          <label>셀 면적 <span class="unit-tag">cm²</span></label>
+          <input type="number" id="s_area" value="26.62" step="0.1" oninput="calcSolar()">
+        </div>
+        <div class="input-group">
+          <label>EOL 효율 (온도보정) <span class="unit-tag">%</span></label>
+          <input type="number" id="s_eff" value="25" step="0.5" oninput="calcSolar()">
+        </div>
+      </div>
+      <div class="note">AzurSpace 3G30C 기준: 면적 26.62 cm², BOL 효율 29.5% → 80℃ EOL 약 25% 적용</div>
+    </div>
+
+    <button class="calc-btn" onclick="calcSolar()">▶ 계산하기</button>
+
+    <div class="result-panel" id="solar-result">
+      <div class="result-panel-title">// 계산 결과</div>
+      <div id="solar-result-rows"></div>
+    </div>
+  </div>
+
+  <!-- ========== BATTERY PANEL ========== -->
+  <div class="panel" id="panel-battery">
+    <div class="card">
+      <div class="card-title">이클립스 조건</div>
+      <div class="grid2">
+        <div class="input-group">
+          <label>이클립스 중 소비전력 <span class="unit-tag">W</span></label>
+          <input type="number" id="b_power" value="22.79" step="0.1" oninput="calcBat()">
+        </div>
+        <div class="input-group">
+          <label>이클립스 시간 <span class="unit-tag">min</span></label>
+          <input type="number" id="b_eclipse" value="32" step="1" oninput="calcBat()">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">배터리 설계 조건</div>
+      <div class="grid3">
+        <div class="input-group">
+          <label>최대 허용 DoD <span class="unit-tag">%</span></label>
+          <input type="number" id="b_dod" value="30" step="1" oninput="calcBat()">
+        </div>
+        <div class="input-group">
+          <label>방전 효율 <span class="unit-tag">%</span></label>
+          <input type="number" id="b_discEff" value="90" step="1" oninput="calcBat()">
+        </div>
+        <div class="input-group">
+          <label>마진 계수 <span class="unit-tag">×</span></label>
+          <input type="number" id="b_margin" value="1.2" step="0.05" oninput="calcBat()">
+        </div>
+        <div class="input-group">
+          <label>셀 전압 (Li-ion) <span class="unit-tag">V</span></label>
+          <input type="number" id="b_volt" value="3.6" step="0.1" oninput="calcBat()">
+        </div>
+        <div class="input-group">
+          <label>태양전지 출력 <span class="unit-tag">W</span></label>
+          <input type="number" id="b_sapower" value="40" step="1" oninput="calcBat()">
+        </div>
+        <div class="input-group">
+          <label>daylight 시간 <span class="unit-tag">min</span></label>
+          <input type="number" id="b_daylight" value="65" step="1" oninput="calcBat()">
+        </div>
+      </div>
+      <div class="note">DoD ≤ 30% 권장 — DoD가 낮을수록 배터리 수명이 길어지지만 용량이 커진다</div>
+    </div>
+
+    <button class="calc-btn" onclick="calcBat()">▶ 계산하기</button>
+
+    <div class="result-panel" id="bat-result">
+      <div class="result-panel-title">// 계산 결과</div>
+      <div id="bat-result-rows"></div>
+      <div class="dod-meter" id="dod-meter" style="display:none">
+        <div class="dod-label">
+          <span>DoD 상태</span>
+          <span id="dod-val-label">0%</span>
+        </div>
+        <div class="dod-bar-bg">
+          <div class="dod-bar-fill" id="dod-bar" style="width:0%"></div>
+        </div>
+        <div class="dod-label">
+          <span>0%</span>
+          <span style="color:var(--warn)">30% 기준선</span>
+          <span>100%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== THEORY SOLAR ========== -->
+  <div class="panel" id="panel-theory-solar">
+    <div class="card">
+      <div class="card-title">Solar Cell 개수 계산 — 완전 이론 정리</div>
+
+      <div class="highlight-box">
+        <div class="hb-title">핵심 원리</div>
+        <p>낮(daylight) 시간에만 태양전지판이 발전한다. 그러나 위성은 이클립스 포함 <strong>1궤도 전체</strong>에 필요한 에너지를 낮 시간에 모두 생산해야 한다. 따라서 필요 출력은 평균 소비전력보다 훨씬 크다.</p>
+      </div>
+
+      <div class="formula">
+        <div class="eq">필요 셀 수 = ceil( 태양전지판 필요 출력 ÷ 셀 1개 출력 )</div>
+      </div>
+
+      <div class="section-divider"><span>단계별 계산</span></div>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <div class="step-title">1궤도 필요 에너지 계산 [Wh]</div>
+            <div class="step-desc">
+              평균 소비전력에 마진을 적용한 후 궤도 주기를 곱한다.<br>
+              <code>Wh = P_avg × margin × T_orbit[h]</code><br><br>
+              예) 21.51W × 1.1 × (97/60)h = <strong>38.2 Wh</strong>
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <div class="step-title">낮 시간(daylight) 계산 [h]</div>
+            <div class="step-desc">
+              <code>T_day = T_orbit − T_eclipse</code><br><br>
+              예) 97 − 32 = 65분 → <strong>1.083 h</strong>
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <div class="step-title">태양전지판 필요 출력 [W]</div>
+            <div class="step-desc">
+              낮 시간에만 충전하므로, PCDU 효율까지 나눠줘야 한다.<br>
+              <code>P_SA = (1궤도 Wh) ÷ T_day[h] ÷ η_PCDU</code><br><br>
+              예) 38.2 ÷ 1.083 ÷ 0.85 = <strong>≈ 41.5 W</strong><br>
+              (슬라이드 예시는 약 40W — 마진/효율 가정에 따라 달라짐)
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <div class="step-title">셀 1개 출력 계산 [W] — EOL + worst case</div>
+            <div class="step-desc">
+              <code>P_cell = 조사강도[W/m²] × 셀 면적[m²] × η_EOL</code><br><br>
+              예) 1280 × 0.002662 × 0.25 = <strong>0.852 W/셀</strong><br><br>
+              <strong>※ 온도 보정 이유</strong>: 우주에서 태양전지는 80℃ 이상으로 올라간다. 온도가 높을수록 효율이 낮아지므로 BOL 28.6% → 약 25%로 보정한다.
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-content">
+            <div class="step-title">셀 개수 계산 — 소수점 올림</div>
+            <div class="step-desc">
+              <code>N_cells = ceil( P_SA ÷ P_cell )</code><br><br>
+              예) 40W ÷ 0.852W = 46.9 → <strong>47개</strong><br>
+              슬라이드 답 <strong>42개</strong> — 배치 조건(body cell 포함), 마진 가정 차이
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== THEORY BATTERY ========== -->
+  <div class="panel" id="panel-theory-bat">
+    <div class="card">
+      <div class="card-title">Battery Capacity 계산 — 완전 이론 정리</div>
+
+      <div class="highlight-box warn-box">
+        <div class="hb-title">DoD란?</div>
+        <p><strong>DoD (Depth of Discharge)</strong>: 배터리를 얼마나 방전시키는지의 비율.<br>
+        DoD 30%면 배터리 용량의 30%만 사용한다는 뜻 → 필요 에너지의 <strong>3.33배</strong> 용량이 필요.<br>
+        DoD가 낮을수록 배터리 수명↑, 하지만 무게/부피↑. 위성은 보통 DoD ≤ 30% 설계.</p>
+      </div>
+
+      <div class="formula">
+        <div class="eq">Battery 용량 = 이클립스 소비 에너지 ÷ DoD ÷ η_discharge × margin</div>
+      </div>
+
+      <div class="section-divider"><span>단계별 계산</span></div>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <div class="step-title">이클립스 소비 에너지 계산 [Wh]</div>
+            <div class="step-desc">
+              <code>E_eclipse = P_eclipse[W] × T_eclipse[h]</code><br><br>
+              예) 22.79W × (32/60)h = <strong>12.15 Wh</strong>
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <div class="step-title">DoD 적용 — 필요 최소 용량</div>
+            <div class="step-desc">
+              <code>C_min = E_eclipse ÷ DoD</code><br><br>
+              예) 12.15 ÷ 0.30 = <strong>40.5 Wh</strong><br><br>
+              이 값이 DoD 조건을 딱 맞춘 최소 용량이다.
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <div class="step-title">방전 효율 + 마진 적용 → 최종 설계값</div>
+            <div class="step-desc">
+              <code>C_design = C_min ÷ η_discharge × margin</code><br><br>
+              예) 40.5 ÷ 0.90 × 1.05 = <strong>47.25 Wh</strong><br>
+              → 슬라이드 설계 기준: <strong>≥ 42 Wh</strong> 선택
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <div class="step-title">DoD 역산 검증 (필수!)</div>
+            <div class="step-desc">
+              선택한 배터리로 실제 DoD가 조건을 만족하는지 역산한다.<br>
+              <code>실제 DoD = E_eclipse ÷ C_선택 × 100 [%]</code><br><br>
+              예) 12.15 ÷ 42Wh × 100 = <strong>28.9%</strong> → ≤ 30% 조건 ✓
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-content">
+            <div class="step-title">낮 시간에 완충 가능한지 확인</div>
+            <div class="step-desc">
+              <code>충전 가능 전력 = P_SA − P_load</code><br>
+              <code>완충 시간 = 방전 에너지[Wh] ÷ 충전 가능 전력[W]</code><br><br>
+              예 (슬라이드): 업/다운링크 없을 때 41분, 있을 때 46분 → 낮 시간 65분 내 완충 가능 ✓
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== REFERENCE ========== -->
+  <div class="panel" id="panel-reference">
+
+    <div class="card">
+      <div class="card-title">슬라이드 예시 값 요약</div>
+      <div class="summary-grid">
+        <div class="summary-card">
+          <div class="sc-label">평균 소비전력</div>
+          <div class="sc-value">21.5 W</div>
+          <div class="sc-sub">with 10% margin</div>
+        </div>
+        <div class="summary-card">
+          <div class="sc-label">필요 SA 출력</div>
+          <div class="sc-value">40 W</div>
+          <div class="sc-sub">EOL worst case</div>
+        </div>
+        <div class="summary-card">
+          <div class="sc-label">Solar Cell 수</div>
+          <div class="sc-value" style="color:var(--accent)">42 개</div>
+          <div class="sc-sub">AzurSpace 3G30C</div>
+        </div>
+        <div class="summary-card">
+          <div class="sc-label">Battery 용량</div>
+          <div class="sc-value" style="color:var(--accent3)">≥42 Wh</div>
+          <div class="sc-sub">DoD ≤ 30%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">태양 에너지 파라미터</div>
+      <table>
+        <tr><th>항목</th><th>값</th><th>비고</th></tr>
+        <tr><td>태양 직달 조사강도 (평균)</td><td><span class="mono">1358 W/m²</span></td><td>설계에 직접 사용하지 않음</td></tr>
+        <tr><td>태양 직달 조사강도 (worst)</td><td><span class="mono">1280 W/m²</span></td><td>설계 시 worst case 사용</td></tr>
+        <tr><td>지구 반사광 (albedo)</td><td><span class="mono">~410 W/m²</span></td><td>LEO 30±5% of direct</td></tr>
+        <tr><td>지구 적외선</td><td><span class="mono">~240 W/m²</span></td><td>LEO 237±21 W/m²</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title">AzurSpace 3G30C 태양전지 성능 데이터</div>
+      <table>
+        <tr><th>파라미터</th><th>BOL</th><th>@2.5E+14 (1년 EOL)</th><th>@5E+14</th><th>@1E+15</th></tr>
+        <tr><td>개방 전압 Voc</td><td><span class="mono">2700 mV</span></td><td><span class="mono">2616 mV</span></td><td><span class="mono">2564 mV</span></td><td><span class="mono">2522 mV</span></td></tr>
+        <tr><td>단락 전류 Isc</td><td><span class="mono">520.2 mA</span></td><td><span class="mono">518.5 mA</span></td><td><span class="mono">514.0 mA</span></td><td><span class="mono">501.9 mA</span></td></tr>
+        <tr><td>최대출력 전압 Vmp</td><td><span class="mono">2411 mV</span></td><td><span class="mono">2345 mV</span></td><td><span class="mono">2290 mV</span></td><td><span class="mono">2246 mV</span></td></tr>
+        <tr><td>최대출력 전류 Imp</td><td><span class="mono">504.4 mA</span></td><td><span class="mono">503.2 mA</span></td><td><span class="mono">500.6 mA</span></td><td><span class="mono">486.6 mA</span></td></tr>
+        <tr><td>효율 (1367 W/m²)</td><td><span class="mono">29.5%</span></td><td><span class="mono">28.6%</span></td><td><span class="mono">27.8%</span></td><td><span class="mono">26.5%</span></td></tr>
+      </table>
+      <div class="note">온도 보정: 80℃ 운용 시 EOL 28.6% → 약 25% 적용. 전자 조사(fluence) 1MeV 기준.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Battery 설계 파라미터</div>
+      <table>
+        <tr><th>파라미터</th><th>권장값</th><th>비고</th></tr>
+        <tr><td>DoD</td><td><span class="mono" style="color:var(--warn)">≤ 30%</span></td><td>수명 보장 핵심 조건</td></tr>
+        <tr><td>Li-ion 셀 전압</td><td><span class="mono">3.6 ~ 3.7 V</span></td><td>공칭 전압 기준</td></tr>
+        <tr><td>방전 효율</td><td><span class="mono">90 ~ 95%</span></td><td>일반 Li-ion 기준</td></tr>
+        <tr><td>운용 온도</td><td><span class="mono">0 ~ 40 ℃</span></td><td>히터 필수 — 저온 시 성능 급락</td></tr>
+        <tr><td>BMS</td><td>필수</td><td>Battery Management System — 과충전/과방전 보호</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title">설계 마진 가이드</div>
+      <table>
+        <tr><th>항목</th><th>일반 마진</th><th>비고</th></tr>
+        <tr><td>각 부품 전력 contingency</td><td><span class="mono">+10%</span></td><td>슬라이드 p.8 기준</td></tr>
+        <tr><td>태양전지판 출력 마진</td><td><span class="mono">10 ~ 20%</span></td><td>배치 손실, 각도 손실 포함</td></tr>
+        <tr><td>Battery 용량 마진</td><td><span class="mono">≥ 20%</span></td><td>열화 대비</td></tr>
+        <tr><td>설계 기준</td><td><span class="mono" style="color:var(--accent)">EOL</span></td><td>수명 말기 기준으로 설계</td></tr>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="container">
+    <p>SATELLITE EPS DESIGN CALCULATOR · Introduction to Space System Ch.6 · Electrical Power System</p>
+  </div>
+</footer>
+
+<script>
+  function showPanel(name) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('panel-' + name).classList.add('active');
+    const tabs = document.querySelectorAll('.nav-tab');
+    const names = ['solar','battery','theory-solar','theory-bat','reference'];
+    tabs[names.indexOf(name)].classList.add('active');
+  }
+
+  function calcSolar() {
+    const period   = parseFloat(document.getElementById('s_period').value)  || 0;
+    const eclipse  = parseFloat(document.getElementById('s_eclipse').value) || 0;
+    const power    = parseFloat(document.getElementById('s_power').value)   || 0;
+    const margin   = parseFloat(document.getElementById('s_margin').value)  || 1;
+    const pcdu     = parseFloat(document.getElementById('s_pcdu').value)    / 100 || 0.85;
+    const irr      = parseFloat(document.getElementById('s_irr').value)     || 0;
+    const area     = parseFloat(document.getElementById('s_area').value)    / 10000;
+    const eff      = parseFloat(document.getElementById('s_eff').value)     / 100;
+
+    const daylight   = (period - eclipse) / 60;
+    const orbitWh    = power * margin * (period / 60);
+    const saRequired = orbitWh / daylight / pcdu;
+    const cellOut    = irr * area * eff;
+    const numCells   = cellOut > 0 ? Math.ceil(saRequired / cellOut) : 0;
+
+    const rows = document.getElementById('solar-result-rows');
+    rows.innerHTML = `
+      <div class="result-row"><span class="result-label">낮 시간 (daylight)</span><span class="result-val">${(period-eclipse).toFixed(0)} min = ${daylight.toFixed(3)} h</span></div>
+      <div class="result-row"><span class="result-label">1궤도 필요 에너지</span><span class="result-val">${orbitWh.toFixed(2)} Wh</span></div>
+      <div class="result-row"><span class="result-label">태양전지판 필요 출력</span><span class="result-val">${saRequired.toFixed(2)} W</span></div>
+      <div class="result-row"><span class="result-label">셀 1개 출력 (EOL worst)</span><span class="result-val">${cellOut.toFixed(4)} W / 셀</span></div>
+      <div class="result-row"><span class="result-label">필요 셀 개수 (올림)</span><span class="result-val primary">${numCells} 개</span></div>
+    `;
+  }
+
+  function calcBat() {
+    const power      = parseFloat(document.getElementById('b_power').value)   || 0;
+    const eclipse    = parseFloat(document.getElementById('b_eclipse').value) / 60 || 0;
+    const dod        = parseFloat(document.getElementById('b_dod').value)     / 100 || 0.3;
+    const discEff    = parseFloat(document.getElementById('b_discEff').value) / 100 || 0.9;
+    const margin     = parseFloat(document.getElementById('b_margin').value)  || 1;
+    const volt       = parseFloat(document.getElementById('b_volt').value)    || 3.6;
+    const sapower    = parseFloat(document.getElementById('b_sapower').value) || 0;
+    const daylight   = parseFloat(document.getElementById('b_daylight').value)/ 60 || 0;
+
+    const eclipseEnergy  = power * eclipse;
+    const requiredByDoD  = eclipseEnergy / dod;
+    const designCap      = requiredByDoD / discEff * margin;
+    const actualDoD      = designCap > 0 ? (eclipseEnergy / designCap * 100) : 0;
+    const capAh          = designCap / volt;
+
+    const chargeAvail    = sapower - power;
+    const chargeTime     = chargeAvail > 0 ? (eclipseEnergy / chargeAvail * 60) : Infinity;
+
+    const dodColor = actualDoD <= 30 ? 'success' : actualDoD <= 40 ? 'warn' : 'danger';
+    const dodText  = actualDoD <= 30 ? '✓ 조건 만족' : '⚠ 조건 초과!';
+
+    const rows = document.getElementById('bat-result-rows');
+    rows.innerHTML = `
+      <div class="result-row"><span class="result-label">이클립스 소비 에너지</span><span class="result-val">${eclipseEnergy.toFixed(2)} Wh</span></div>
+      <div class="result-row"><span class="result-label">DoD 적용 최소 용량</span><span class="result-val">${requiredByDoD.toFixed(2)} Wh</span></div>
+      <div class="result-row"><span class="result-label">효율+마진 적용 설계 용량</span><span class="result-val primary">${designCap.toFixed(1)} Wh</span></div>
+      <div class="result-row"><span class="result-label">실제 DoD (역산 검증)</span><span class="result-val ${dodColor}">${actualDoD.toFixed(1)}% ${dodText}</span></div>
+      <div class="result-row"><span class="result-label">용량 (Ah 환산)</span><span class="result-val">${capAh.toFixed(2)} Ah</span></div>
+      <div class="result-row"><span class="result-label">충전 완료 시간 (낮 시간 중)</span><span class="result-val ${chargeTime <= daylight*60 ? 'success':'danger'}">${isFinite(chargeTime) ? chargeTime.toFixed(1)+' min' : '∞'} ${isFinite(chargeTime) && chargeTime <= daylight*60 ? '✓' : '⚠'}</span></div>
+    `;
+
+    const meter = document.getElementById('dod-meter');
+    meter.style.display = 'block';
+    const bar = document.getElementById('dod-bar');
+    const pct = Math.min(actualDoD, 100);
+    bar.style.width = pct + '%';
+    bar.style.background = actualDoD <= 30
+      ? 'linear-gradient(90deg, #10b981, #34d399)'
+      : actualDoD <= 40
+      ? 'linear-gradient(90deg, #f59e0b, #fbbf24)'
+      : 'linear-gradient(90deg, #ef4444, #f87171)';
+    document.getElementById('dod-val-label').textContent = actualDoD.toFixed(1) + '%';
+  }
+
+  // init
+  calcSolar();
+  calcBat();
+</script>
+</body>
+</html>
