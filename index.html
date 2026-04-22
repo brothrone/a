@@ -194,9 +194,74 @@
   }
 
   footer .links a:hover { color: #fff; }
+
+  .quick-nav { position: fixed; right: 20px; bottom: 20px; display: flex; flex-direction: column; gap: 8px; z-index: 9999; }
+  .quick-btn, .quick-link {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    border: 1px solid #1a1a1a;
+    background: #1a1a1a;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    min-width: 92px;
+  }
+  .quick-link { display: inline-block; }
+  .quick-btn:hover, .quick-link:hover { background: #333; border-color: #333; }
+
+  #toc-panel {
+    position: fixed;
+    right: 20px;
+    bottom: 116px;
+    width: min(360px, calc(100vw - 40px));
+    max-height: 60vh;
+    overflow: auto;
+    background: #fff;
+    border: 1px solid #dcdcdc;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+    padding: 12px;
+    display: none;
+    z-index: 9998;
+  }
+  #toc-panel.open { display: block; }
+  #toc-panel .toc-title {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    color: #666;
+    margin-bottom: 10px;
+  }
+  #toc-list { list-style: none; padding: 0; margin: 0; }
+  #toc-list li { padding: 4px 0; border-bottom: 1px dotted #e5e5e5; }
+  #toc-list li:last-child { border-bottom: none; }
+  #toc-list a {
+    color: #222;
+    text-decoration: none;
+    font-size: 12px;
+    line-height: 1.45;
+    display: block;
+  }
+  #toc-list a:hover { color: #0c8599; }
+  #toc-list .toc-disabled { color: #999; font-size: 12px; }
+
+  @media (max-width: 640px) {
+    .quick-nav { right: 12px; bottom: 12px; }
+    #toc-panel { right: 12px; bottom: 108px; width: calc(100vw - 24px); }
+  }
 </style>
 </head>
 <body>
+<div class="quick-nav">
+  <button class="quick-btn" id="toc-toggle" type="button">목차</button>
+  <button class="quick-btn" id="back-button" type="button">뒤로가기</button>
+</div>
+<aside id="toc-panel" aria-label="페이지 목차">
+  <p class="toc-title">목차</p>
+  <ul id="toc-list"></ul>
+</aside>
 
 <header class="site-header">
   <p class="eyebrow">PUSAN NATIONAL UNIVERSITY · AE2001018</p>
@@ -281,5 +346,55 @@
   </div>
 </footer>
 
+<script>
+(function () {
+  var tocList = document.getElementById("toc-list");
+  var tocPanel = document.getElementById("toc-panel");
+  var tocToggle = document.getElementById("toc-toggle");
+  var backButton = document.getElementById("back-button");
+  if (!tocList || !tocPanel || !tocToggle || !backButton) return;
+
+  var cards = Array.prototype.slice.call(document.querySelectorAll(".chapter-grid .chapter-card"));
+  cards.forEach(function (card) {
+    var titleNode = card.querySelector(".card-title");
+    var numNode = card.querySelector(".card-num");
+    var label = "";
+    if (numNode) label += numNode.textContent.trim() + " ";
+    if (titleNode) label += titleNode.textContent.trim();
+
+    var li = document.createElement("li");
+    if (card.tagName.toLowerCase() === "a" && card.getAttribute("href")) {
+      var a = document.createElement("a");
+      a.href = card.getAttribute("href");
+      a.textContent = label.trim();
+      li.appendChild(a);
+    } else {
+      var span = document.createElement("span");
+      span.className = "toc-disabled";
+      span.textContent = label.trim();
+      li.appendChild(span);
+    }
+    tocList.appendChild(li);
+  });
+
+  tocToggle.addEventListener("click", function () {
+    tocPanel.classList.toggle("open");
+  });
+
+  backButton.addEventListener("click", function () {
+    if (window.history.length > 1) {
+      window.history.back();
+    } else {
+      window.location.href = "ae1.html";
+    }
+  });
+
+  document.addEventListener("click", function (event) {
+    if (!tocPanel.contains(event.target) && event.target !== tocToggle) {
+      tocPanel.classList.remove("open");
+    }
+  });
+})();
+</script>
 </body>
 </html>
