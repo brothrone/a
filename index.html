@@ -160,6 +160,12 @@
     transform: translateX(4px);
   }
 
+  .chapter-card.disabled {
+    opacity: 0.45;
+    pointer-events: none;
+    cursor: default;
+  }
+
   footer {
     background: #1a1a1a;
     padding: 24px 40px;
@@ -195,80 +201,59 @@
 <header class="site-header">
   <p class="eyebrow">PUSAN NATIONAL UNIVERSITY · AE2001018</p>
   <h1>항공우주 개념설계 핵심정리</h1>
-  <p class="subtitle">Aerospace Conceptual Design — File Access Index</p>
+  <p class="subtitle">Aerospace Conceptual Design — Chapter Index</p>
 </header>
 
 <main>
-  <p class="section-heading">FILES — gallery 제외, 전체 파일 바로가기</p>
+  <p class="section-heading">CHAPTERS — Chapter 3 미업로드 상태 반영</p>
 
   <div class="chapter-grid">
     <a href="ae1.html" class="chapter-card ch1">
-      <span class="card-num">FILE 01</span>
+      <span class="card-num">CH. 01</span>
       <span class="card-title">Chapter 1</span>
       <span class="card-subtitle">Introduction to Aircraft Design</span>
       <span class="card-arrow">열기</span>
     </a>
 
     <a href="ae2.html" class="chapter-card ch2">
-      <span class="card-num">FILE 02</span>
+      <span class="card-num">CH. 02</span>
       <span class="card-title">Chapter 2</span>
       <span class="card-subtitle">Overview of the Design Process</span>
       <span class="card-arrow">열기</span>
     </a>
 
-    <a href="ae3.html" class="chapter-card ch3">
-      <span class="card-num">FILE 03</span>
+    <div class="chapter-card ch3 disabled">
+      <span class="card-num">CH. 03</span>
       <span class="card-title">Chapter 3</span>
-      <span class="card-subtitle">Sizing from Mission Requirements</span>
-      <span class="card-arrow">열기</span>
-    </a>
+      <span class="card-subtitle">미업로드 (업로드 후 연결 예정)</span>
+      <span class="card-arrow">준비중</span>
+    </div>
 
-    <a href="ae4.html" class="chapter-card ch4">
-      <span class="card-num">FILE 04</span>
+    <a href="ae3.html" class="chapter-card ch4">
+      <span class="card-num">CH. 04</span>
       <span class="card-title">Chapter 4</span>
       <span class="card-subtitle">Airfoil &amp; Wing / Tail Geometry</span>
       <span class="card-arrow">열기</span>
     </a>
 
-    <a href="ae5.html" class="chapter-card ch5">
-      <span class="card-num">FILE 05</span>
+    <a href="ae4.html" class="chapter-card ch5">
+      <span class="card-num">CH. 05</span>
       <span class="card-title">Chapter 5</span>
       <span class="card-subtitle">Thrust-to-Weight Ratio &amp; Wing Loading</span>
       <span class="card-arrow">열기</span>
     </a>
 
-    <a href="ae6.html" class="chapter-card ch6">
-      <span class="card-num">FILE 06</span>
+    <a href="ae5.html" class="chapter-card ch6">
+      <span class="card-num">CH. 06</span>
       <span class="card-title">Chapter 6</span>
       <span class="card-subtitle">Initial Sizing</span>
       <span class="card-arrow">열기</span>
     </a>
 
-    <a href="ae7.html" class="chapter-card ch7">
-      <span class="card-num">FILE 07</span>
+    <a href="ae6.html" class="chapter-card ch7">
+      <span class="card-num">CH. 07</span>
       <span class="card-title">Chapter 7</span>
       <span class="card-subtitle">Configuration Layout &amp; Loft</span>
-      <span class="card-arrow">열기</span>
-    </a>
-
-    <a href="ae8.html" class="chapter-card ch8">
-      <span class="card-num">FILE 08</span>
-      <span class="card-title">Chapter 8</span>
-      <span class="card-subtitle">추가 정리 파일</span>
-      <span class="card-arrow">열기</span>
-    </a>
-
-    <a href="mid.html" class="chapter-card ch9">
-      <span class="card-num">FILE 09</span>
-      <span class="card-title">Mid Summary</span>
-      <span class="card-subtitle">중간 정리/요약 페이지</span>
-      <span class="card-arrow">열기</span>
-    </a>
-
-    <a href="index.html" class="chapter-card ch10">
-      <span class="card-num">FILE 10</span>
-      <span class="card-title">Main Index</span>
-      <span class="card-subtitle">현재 인덱스 페이지</span>
       <span class="card-arrow">열기</span>
     </a>
   </div>
