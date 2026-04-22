@@ -1,116 +1,277 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <title>Brothrone</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <style>
-        /* 배경과 전체적인 스타일 */
-        body { 
-            background-color: #f8f9fa; 
-            display: flex; 
-            flex-direction: column; /* 푸터를 아래로 보내기 위해 변경 */
-            justify-content: center; 
-            align-items: center; 
-            min-height: 100vh; 
-            margin: 0; 
-            font-family: sans-serif; 
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AE2001018 · 핵심정리</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@300;400;600&family=IBM+Plex+Mono:wght@400;600&display=swap');
 
-        /* 중앙 카드 스타일 */
-        .card { 
-            background: white; 
-            width: 320px; 
-            padding: 30px; 
-            border-radius: 20px; 
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1); 
-            text-align: center; 
-            margin-top: 50px;
-        }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        /* 사진 스타일 */
-        img { 
-            width: 150px; height: 150px; 
-            object-fit: cover; 
-            border-radius: 50%; 
-            margin-bottom: 20px; 
-            border: 3px solid #007aff; 
-        }
+  body {
+    font-family: 'IBM Plex Sans KR', sans-serif;
+    background: #f5f4f0;
+    color: #1a1a1a;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
 
-        h1 { font-size: 24px; color: #333; margin: 10px 0; }
-        p { color: #666; font-size: 16px; }
+  /* ── 헤더 ── */
+  .site-header {
+    background: #1a1a1a;
+    color: #fff;
+    padding: 48px 40px 40px;
+  }
 
-        /* 푸터 스타일 */
-        .footer {
-            background-color: #333;
-            color: #fff;
-            padding: 40px 0;
-            margin-top: 50px;
-            width: 100%;
-            text-align: center;
-        }
+  .site-header .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: #888;
+    letter-spacing: 0.08em;
+    margin-bottom: 10px;
+  }
 
-        .social-links {
-            margin: 20px 0;
-        }
+  .site-header h1 {
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
+  }
 
-        /* 아이콘 공통 스타일 */
-        .social-icon {
-            color: #fff;
-            font-size: 24px; /* 로고 크기 */
-            margin: 0 15px;
-            text-decoration: none;
-            transition: color 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px; /* 아이콘과 글자 간격 */
-        }
+  .site-header .subtitle {
+    font-size: 13px;
+    color: #aaa;
+    font-weight: 300;
+  }
 
-        /* 마우스 올렸을 때 인스타그램 색상 */
-        .social-icon:hover .fa-instagram { color: #E1306C; }
-        /* 마우스 올렸을 때 깃허브 색상 */
-        .social-icon:hover .fa-github { color: #4078c0; }
+  /* ── 메인 ── */
+  main {
+    flex: 1;
+    max-width: 860px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 48px 24px;
+  }
 
-        .copyright {
-            font-size: 12px;
-            color: #999;
-            margin-top: 20px;
-        }
-    </style>
+  .section-heading {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: #aaa;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+  }
+
+  /* ── 챕터 그리드 ── */
+  .chapter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+    margin-bottom: 48px;
+  }
+
+  .chapter-card {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 22px;
+    transition: box-shadow 0.15s, transform 0.15s, border-color 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .chapter-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--accent, #1a1a1a);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.2s;
+  }
+
+  .chapter-card:hover {
+    box-shadow: 0 6px 20px rgba(0,0,0,0.10);
+    transform: translateY(-2px);
+    border-color: #ccc;
+  }
+
+  .chapter-card:hover::before {
+    transform: scaleX(1);
+  }
+
+  /* 챕터별 accent 색상 */
+  .ch1 { --accent: #3b5bdb; }
+  .ch2 { --accent: #2f9e44; }
+  .ch3 { --accent: #e67700; }
+  .ch4 { --accent: #c2255c; }
+  .ch5 { --accent: #7048e8; }
+  .ch6 { --accent: #0c8599; }
+  .ch7 { --accent: #862e9c; }
+  .ch8 { --accent: #d63031; }
+
+  .card-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: #bbb;
+    margin-bottom: 8px;
+  }
+
+  .card-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a1a;
+    line-height: 1.4;
+    margin-bottom: 8px;
+  }
+
+  .card-subtitle {
+    font-size: 11.5px;
+    color: #888;
+    line-height: 1.6;
+    flex: 1;
+  }
+
+  .card-arrow {
+    margin-top: 16px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--accent, #1a1a1a);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .card-arrow::after {
+    content: '→';
+    transition: transform 0.15s;
+  }
+
+  .chapter-card:hover .card-arrow::after {
+    transform: translateX(4px);
+  }
+
+  /* ── 미리보기 없는 카드(준비중) ── */
+  .chapter-card.disabled {
+    opacity: 0.45;
+    pointer-events: none;
+    cursor: default;
+  }
+
+  /* ── 푸터 ── */
+  footer {
+    background: #1a1a1a;
+    padding: 24px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  footer .copy {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: #555;
+  }
+
+  footer .links {
+    display: flex;
+    gap: 20px;
+  }
+
+  footer .links a {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: #555;
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+
+  footer .links a:hover { color: #fff; }
+</style>
 </head>
 <body>
 
-    <div class="card">
-        <img src="sapporo.jpeg" alt="sapporo"> 
-        <h1></h1>  항설 👋</h1>
-        <p>요약 </p>
+<header class="site-header">
+  <p class="eyebrow">PUSAN NATIONAL UNIVERSITY · AE2001018</p>
+  <h1>항공우주 개념설계 핵심정리</h1>
+  <p class="subtitle">Aerospace Conceptual Design — Chapter Summary Index</p>
+</header>
 
-        <a href="mid.html" style="
-            display: inline-block;
-            margin-top: 15px;
-            padding: 10px 20px;
-            background-color: #007aff;
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: bold;
-        ">바로가기</a>
-    </div>
+<main>
 
-    <footer class="footer">
-        <div class="social-links">
-            <a href="https://instagram.com/본인아이디" target="_blank" class="social-icon">
-                <i class="fab fa-instagram"></i>
-                <span style="font-size: 14px;">Instagram</span>
-            </a>
-            <a href="https://github.com/brothrone" target="_blank" class="social-icon">
-                <i class="fab fa-github"></i>
-                <span style="font-size: 14px;">GitHub</span>
-            </a>
-        </div>
-        <p class="copyright">© 2026 brothrone. All rights reserved.</p>
-    </footer>
+  <p class="section-heading">CHAPTERS — 클릭하면 해당 챕터 정리로 이동</p>
+
+  <div class="chapter-grid">
+
+    <a href="Chapter1_핵심정리.html" class="chapter-card ch1">
+      <span class="card-num">Ch. 01</span>
+      <span class="card-title">Introduction to<br>Aircraft Design</span>
+      <span class="card-subtitle">종합공학·IPD, Life-Cycle 6단계, Design Wheel, ConOps, 개념설계 9단계, 감항성·인증</span>
+      <span class="card-arrow">열기</span>
+    </a>
+
+    <a href="Chapter2_핵심정리.html" class="chapter-card ch2">
+      <span class="card-num">Ch. 02</span>
+      <span class="card-title">Overview of the<br>Design Process</span>
+      <span class="card-subtitle">Requirements, 설계 5단계, Conceptual·Preliminary·Detail, AHP(Aij 스케일), 의사결정 7단계</span>
+      <span class="card-arrow">열기</span>
+    </a>
+
+    <a href="Chapter3_핵심정리.html" class="chapter-card ch3 disabled">
+      <span class="card-num">Ch. 03</span>
+      <span class="card-title">Sizing from<br>Mission Requirements</span>
+      <span class="card-subtitle">준비중</span>
+      <span class="card-arrow">열기</span>
+    </a>
+
+    <a href="Chapter4_핵심정리.html" class="chapter-card ch4">
+      <span class="card-num">Ch. 04</span>
+      <span class="card-title">Airfoil &amp; Wing / Tail<br>Geometry</span>
+      <span class="card-subtitle">에어포일 계수·AC·CP, 실속 3유형, t/c 트레이드오프, 기준 날개·MAC, AR·후퇴각·테이퍼비·비틀림, 꼬리날개 배치, Canard, AHP</span>
+      <span class="card-arrow">열기</span>
+    </a>
+
+    <a href="Chapter5_핵심정리.html" class="chapter-card ch5">
+      <span class="card-num">Ch. 05</span>
+      <span class="card-title">Thrust-to-Weight Ratio<br>&amp; Wing Loading</span>
+      <span class="card-subtitle">T/W · W/S 결정 방법, 성능 제약 곡선, 최적 설계점 도출</span>
+      <span class="card-arrow">열기</span>
+    </a>
+
+    <a href="Chapter6_핵심정리.html" class="chapter-card ch6">
+      <span class="card-num">Ch. 06</span>
+      <span class="card-title">Initial Sizing</span>
+      <span class="card-subtitle">미션 프로파일, 연료 분율, Breguet 항속거리, 중량 추정 경험식</span>
+      <span class="card-arrow">열기</span>
+    </a>
+
+    <a href="Chapter7_핵심정리.html" class="chapter-card ch7">
+      <span class="card-num">Ch. 07</span>
+      <span class="card-title">Configuration Layout<br>&amp; Loft</span>
+      <span class="card-subtitle">동체 레이아웃, 좌석 배치, 화물·연료 탑재, Lofting 기법, 내부 구성 설계</span>
+      <span class="card-arrow">열기</span>
+    </a>
+
+  </div>
+
+</main>
+
+<footer>
+  <span class="copy">© 2026 AE2001018 · 부산대학교 항공우주공학과</span>
+  <div class="links">
+    <a href="https://github.com/brothrone" target="_blank">GitHub</a>
+    <a href="https://instagram.com/본인아이디" target="_blank">Instagram</a>
+  </div>
+</footer>
 
 </body>
 </html>
