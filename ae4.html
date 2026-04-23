@@ -3,555 +3,514 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chapter 5 핵심정리</title>
+<title>Chapter 4 핵심정리</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@300;400;600&family=IBM+Plex+Mono:wght@400;600&display=swap');
-
   * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    font-family: 'IBM Plex Sans KR', sans-serif;
-    background: #f5f4f0;
-    color: #1a1a1a;
-    padding: 40px 20px;
-    font-size: 14px;
-    line-height: 1.7;
-  }
-
+  body { font-family: 'IBM Plex Sans KR', sans-serif; background: #f5f4f0; color: #1a1a1a; padding: 40px 20px; font-size: 14px; line-height: 1.7; }
   .page { max-width: 780px; margin: 0 auto; }
-
-  header {
-    border-bottom: 3px solid #1a1a1a;
-    padding-bottom: 16px;
-    margin-bottom: 36px;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-  }
-
+  header { border-bottom: 3px solid #1a1a1a; padding-bottom: 16px; margin-bottom: 36px; display: flex; justify-content: space-between; align-items: flex-end; }
   header h1 { font-size: 26px; font-weight: 600; letter-spacing: -0.5px; }
   header .meta { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #888; text-align: right; }
-
-  .section {
-    margin-bottom: 28px;
-    display: grid;
-    grid-template-columns: 220px 1fr;
-    gap: 0;
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 24px;
-  }
-
+  .section { margin-bottom: 28px; display: grid; grid-template-columns: 220px 1fr; gap: 0; border-bottom: 1px solid #ddd; padding-bottom: 24px; }
   .section:last-child { border-bottom: none; }
-
   .section-label { padding-top: 2px; padding-right: 20px; }
   .section-num { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #aaa; display: block; margin-bottom: 4px; }
   .section-title { font-size: 13px; font-weight: 600; color: #1a1a1a; line-height: 1.4; }
-
   .section-content ol { list-style: none; padding: 0; }
-
-  .section-content ol li {
-    padding: 5px 0;
-    border-bottom: 1px dotted #e0e0e0;
-    display: flex;
-    gap: 10px;
-    align-items: baseline;
-  }
-
+  .section-content ol li { padding: 5px 0; border-bottom: 1px dotted #e0e0e0; display: flex; gap: 10px; align-items: baseline; }
   .section-content ol li:last-child { border-bottom: none; }
-
   .idx { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #bbb; min-width: 18px; flex-shrink: 0; }
   .keyword { font-weight: 600; color: #1a1a1a; }
   .desc { color: #555; font-size: 13px; }
-
   .prose { color: #333; font-size: 13.5px; line-height: 1.9; }
   .prose strong { font-weight: 600; color: #1a1a1a; }
-
-  /* 2컬럼 비교 박스 */
   .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-
-  .box {
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    padding: 14px 16px;
-  }
-
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+  .box { background: #fff; border: 1px solid #ddd; border-radius: 4px; padding: 14px 16px; }
   .box h4 { font-size: 12px; font-weight: 600; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid #eee; }
   .box ul { list-style: none; padding: 0; }
   .box ul li { font-size: 12.5px; color: #444; padding: 3px 0; padding-left: 12px; position: relative; line-height: 1.5; }
   .box ul li::before { content: "–"; position: absolute; left: 0; color: #bbb; }
-
   .tag { display: inline-block; font-family: 'IBM Plex Mono', monospace; font-size: 10px; padding: 1px 6px; border-radius: 2px; margin-left: 6px; vertical-align: middle; }
   .tag-a { background: #e8f0fe; color: #3b5bdb; }
   .tag-b { background: #fff0f6; color: #c2255c; }
   .tag-c { background: #f0fff4; color: #2f9e44; }
   .tag-d { background: #fff9e6; color: #e67700; }
-  .tag-e { background: #f3f0ff; color: #7048e8; }
-
-  /* 수식 블록 */
-  .formula-box {
-    background: #fff;
-    border: 1px solid #e0e0e0;
-    border-left: 3px solid #aaa;
-    border-radius: 4px;
-    padding: 12px 16px;
-    margin-top: 10px;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 12.5px;
-    color: #333;
-    line-height: 1.9;
-  }
-
-  .formula-box .eq-label {
-    font-size: 10px;
-    color: #bbb;
-    float: right;
-  }
-
-  /* 테이블 */
-  .data-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 12.5px;
-    margin-top: 4px;
-  }
-
-  .data-table th {
-    background: #1a1a1a;
-    color: #fff;
-    padding: 6px 10px;
-    text-align: left;
-    font-weight: 600;
-    font-size: 11px;
-  }
-
-  .data-table td {
-    padding: 6px 10px;
-    border-bottom: 1px solid #eee;
-    color: #444;
-  }
-
+  .data-table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-top: 4px; }
+  .data-table th { background: #1a1a1a; color: #fff; padding: 6px 10px; text-align: left; font-weight: 600; font-size: 11px; }
+  .data-table td { padding: 6px 10px; border-bottom: 1px solid #eee; color: #444; }
   .data-table tr:last-child td { border-bottom: none; }
   .data-table tr:nth-child(even) td { background: #f9f9f7; }
-
   .note { font-size: 11.5px; color: #888; margin-top: 8px; padding-left: 4px; }
-
   footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid #ddd; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #bbb; text-align: center; }
+  .quick-nav { position: fixed; right: 20px; bottom: 20px; display: flex; flex-direction: column; gap: 8px; z-index: 9999; }
+  .quick-btn, .quick-link { font-family: "IBM Plex Mono", monospace; font-size: 11px; border: 1px solid #1a1a1a; background: #1a1a1a; color: #fff; padding: 8px 12px; border-radius: 6px; cursor: pointer; text-decoration: none; text-align: center; min-width: 92px; }
+  .quick-link { display: inline-block; }
+  .quick-btn:hover, .quick-link:hover { background: #333; border-color: #333; }
+  #toc-panel { position: fixed; right: 20px; bottom: 116px; width: min(360px, calc(100vw - 40px)); max-height: 60vh; overflow: auto; background: #fff; border: 1px solid #dcdcdc; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.14); padding: 12px; display: none; z-index: 9998; }
+  #toc-panel.open { display: block; }
+  #toc-panel .toc-title { font-family: "IBM Plex Mono", monospace; font-size: 11px; color: #666; margin-bottom: 10px; }
+  #toc-list { list-style: none; padding: 0; margin: 0; }
+  #toc-list li { padding: 4px 0; border-bottom: 1px dotted #e5e5e5; }
+  #toc-list li:last-child { border-bottom: none; }
+  #toc-list a { color: #222; text-decoration: none; font-size: 12px; line-height: 1.45; display: block; }
+  #toc-list a:hover { color: #0c8599; }
+  @media (max-width: 640px) { .quick-nav { right: 12px; bottom: 12px; } #toc-panel { right: 12px; bottom: 108px; width: calc(100vw - 24px); } }
 </style>
 </head>
 <body>
+<div class="quick-nav">
+  <button class="quick-btn" id="toc-toggle" type="button">목차</button>
+  <a class="quick-link" href="index.html">뒤로가기</a>
+</div>
+<aside id="toc-panel" aria-label="페이지 목차">
+  <p class="toc-title">목차</p>
+  <ul id="toc-list"></ul>
+</aside>
 <div class="page">
 
   <header>
-    <h1>Chapter 5 · T/W and Wing Loading</h1>
-    <div class="meta">주관식 / 개념 위주<br>25년 1학기</div>
+    <h1>Chapter 4 · Airfoil &amp; Wing / Tail Geometry</h1>
+    <div class="meta">개념 위주<br>25년 1학기</div>
   </header>
 
-  <!-- 01. 5.1 Introduction -->
   <div class="section">
     <div class="section-label">
       <span class="section-num">01</span>
-      <span class="section-title">T/W · W/S 결정<br>두 가지 접근법</span>
-    </div>
-    <div class="section-content">
-      <p class="prose">
-        <strong>T/W</strong>와 <strong>W/S</strong>는 항공기 성능에 영향을 주는 가장 중요한 두 파라미터이며, 서로 밀접하게 연결되어 있다. 초기 설계에서 두 값을 동시에 최적화하기 전에 한쪽을 먼저 결정하는 두 가지 방법이 있다.
-      </p>
-      <div class="two-col" style="margin-top:12px;">
-        <div class="box">
-          <h4>방법 ① W/S 먼저 결정 <span class="tag tag-a">실속속도 기준</span></h4>
-          <ul>
-            <li>실속 속도 요구조건으로 W/S 추정</li>
-            <li>결정된 W/S로 각 성능 조건에서 필요 T/W 계산</li>
-            <li>이착륙 거리, 상승률 등에서 요구 T/W 도출</li>
-          </ul>
-        </div>
-        <div class="box">
-          <h4>방법 ② T/W 먼저 결정 <span class="tag tag-b">통계값 기준</span></h4>
-          <ul>
-            <li>유사 항공기 통계로 T/W 초기 추정</li>
-            <li>결정된 T/W로 각 성능 조건에서 W/S 계산</li>
-            <li>여러 W/S 중 <strong>가장 낮은 값 선택</strong> → 날개가 모든 조건에서 충분히 크도록</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 02. T/W 정의 및 통계값 -->
-  <div class="section">
-    <div class="section-label">
-      <span class="section-num">02</span>
-      <span class="section-title">T/W 정의 및<br>항공기 유형별 통계값</span>
-    </div>
-    <div class="section-content">
-      <p class="prose">
-        T/W는 <strong>해수면, 정지상태, 표준대기, 설계 이륙중량, 최대 추력(에프터버너 포함)</strong> 조건을 기준으로 정의된다. 비행 중 T/W가 변하면 반드시 이륙 조건으로 환산해야 한다.
-      </p>
-      <table class="data-table" style="margin-top:10px;">
-        <thead>
-          <tr><th>항공기 유형</th><th>Typical T/W</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>Jet trainer</td><td>0.4</td></tr>
-          <tr><td>Jet fighter (dogfighter)</td><td>0.9</td></tr>
-          <tr><td>Jet fighter (other)</td><td>0.6</td></tr>
-          <tr><td>Military cargo / bomber</td><td>0.25</td></tr>
-          <tr><td>Jet transport (엔진 수↑ → T/W↓)</td><td>0.25 – 0.4</td></tr>
-        </tbody>
-      </table>
-      <p class="note">※ 쌍발 여객기 T/W ≈ 0.4, 4발 T/W ≈ 0.25 (1발 고장 시 0.2로 상승 가능해야 함)</p>
-    </div>
-  </div>
-
-  <!-- 03. Props & Power Loading -->
-  <div class="section">
-    <div class="section-label">
-      <span class="section-num">03</span>
-      <span class="section-title">프로펠러기<br>Power Loading</span>
-    </div>
-    <div class="section-content">
-      <p class="prose">
-        프로펠러기는 엔진 회사가 <strong>추력</strong>이 아닌 <strong>마력(hp)</strong>을 판매하므로 <strong>Power Loading W/P</strong>를 사용한다. 높은 W/P = 작은 엔진을 의미하며 보통 10–15 lb/hp 수준.
-      </p>
-      <div class="formula-box">
-        T/W = (η<sub>p</sub>/V)(P/W) = (550η<sub>p</sub>/V)(hp/W)
-        <span class="eq-label">프로펠러 효율 η<sub>p</sub></span>
-      </div>
-      <p class="note">※ η<sub>p</sub> = 프로펠러 효율 (추력×속도 / 실제 엔진 출력). 속도 증가 시 추력은 감소함</p>
-    </div>
-  </div>
-
-  <!-- 04. 통계적 T/W 추정 -->
-  <div class="section">
-    <div class="section-label">
-      <span class="section-num">04</span>
-      <span class="section-title">T/W 통계 추정식<br>(5.2.3)</span>
-    </div>
-    <div class="section-content">
-      <p class="prose">최대 마하수 또는 최대 속도와 T/W(또는 P/W)의 관계를 log-log 직선으로 표현한 회귀식.</p>
-      <div class="formula-box">
-        T/W₀ = α · M<sub>max</sub><sup>C</sup>
-        <span class="eq-label">제트기 — Table 5.3</span>
-      </div>
-      <div class="formula-box" style="margin-top:6px;">
-        P/W₀ = α · V<sub>max</sub><sup>C</sup>
-        <span class="eq-label">프로펠러기 — Table 5.4</span>
-      </div>
-      <table class="data-table" style="margin-top:10px;">
-        <thead>
-          <tr><th>항공기 유형</th><th>a</th><th>C</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>Jet trainer</td><td>0.488</td><td>0.728</td></tr>
-          <tr><td>Jet fighter (dogfighter)</td><td>0.648</td><td>0.594</td></tr>
-          <tr><td>Jet fighter (other)</td><td>0.514</td><td>0.141</td></tr>
-          <tr><td>Military cargo / bomber</td><td>0.244</td><td>0.341</td></tr>
-          <tr><td>Jet transport</td><td>0.267</td><td>0.363</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- 05. Thrust Matching -->
-  <div class="section">
-    <div class="section-label">
-      <span class="section-num">05</span>
-      <span class="section-title">Thrust Matching<br>(5.2.4)</span>
-    </div>
-    <div class="section-content">
-      <p class="prose">정속 수평 비행에서 추력 = 항력, 양력 = 무게이므로 다음이 성립한다.</p>
-      <div class="formula-box">
-        (T/W)<sub>cruise</sub> = 1 / (L/D)<sub>cruise</sub>
-        <span class="eq-label">Eq. 5.2</span>
-      </div>
-      <div class="formula-box" style="margin-top:6px;">
-        (T/W)<sub>climb</sub> = 1/(L/D)<sub>climb</sub> + V<sub>vertical</sub>/V
-        <span class="eq-label">Eq. 5.3</span>
-      </div>
-      <ol style="margin-top:12px;">
-        <li><span class="idx">①</span><div><span class="keyword">L/D 추정</span> <span class="desc">— Wetted aspect ratio → max L/D → 제트기 cruise L/D = 0.866 × max L/D</span></div></li>
-        <li><span class="idx">②</span><div><span class="keyword">T/W 최종 선택</span> <span class="desc">— 통계값 vs 추력매칭값 중 <strong>높은 쪽</strong> 선택</span></div></li>
-        <li><span class="idx">③</span><div><span class="keyword">이유</span> <span class="desc">— 상승에 충분한 추력이 있으면 동일 고도 순항도 가능; 엔진을 max throttle로 장시간 운용 불가</span></div></li>
-      </ol>
-    </div>
-  </div>
-
-  <!-- 06. T/W → 이륙 조건 환산 -->
-  <div class="section">
-    <div class="section-label">
-      <span class="section-num">06</span>
-      <span class="section-title">T/W 이륙 조건<br>환산 (5.2.5)</span>
-    </div>
-    <div class="section-content">
-      <p class="prose">
-        계산된 모든 T/W는 <strong>이륙 조건</strong>으로 환산해야 비교 가능하다. 비행 중 연료가 소모되어 무게가 감소하고, 고도·속도에 따라 추력도 변하기 때문.
-      </p>
-      <div class="formula-box">
-        (T/W)<sub>takeoff</sub> = (T/W)<sub>cruise</sub> × (W<sub>cruise</sub>/W<sub>TO</sub>) / (T<sub>cruise</sub>/T<sub>SLS</sub>)
-        <span class="eq-label">일반 환산식</span>
-      </div>
-      <table class="data-table" style="margin-top:10px;">
-        <thead>
-          <tr><th>엔진 유형</th><th>순항 추력 / 이륙 추력</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>고바이패스비 터보팬 (여객기)</td><td>약 20 – 25 %</td></tr>
-          <tr><td>저바이패스비 애프터버닝 터보팬·터보젯 (전투기)</td><td>약 40 – 70 %</td></tr>
-          <tr><td>피스톤 엔진 (비과급)</td><td>밀도비 σ에 비례하여 감소</td></tr>
-          <tr><td>터보프롭 (등가 축마력, eshp)</td><td>순항 eshp ≈ 이륙의 60 – 80 %</td></tr>
-        </tbody>
-      </table>
-      <p class="note">※ 이륙→상승 무게비: 0.97×0.985 = 0.956 → 순항 T/W에 0.956 곱하면 이륙 기준 무게 반영</p>
-    </div>
-  </div>
-
-  <!-- 07. W/S 개요 및 통계값 -->
-  <div class="section">
-    <div class="section-label">
-      <span class="section-num">07</span>
-      <span class="section-title">Wing Loading W/S<br>개요 및 통계값</span>
-    </div>
-    <div class="section-content">
-      <p class="prose">
-        <strong>W/S = 항공기 중량 / 기준 날개 면적</strong>으로, 실속 속도·상승률·이착륙 거리·선회 성능에 직접 영향. 여러 조건에서 구한 W/S 중 <strong>가장 낮은 값 선택</strong>해야 날개가 모든 비행 조건에서 충분히 크다.
-      </p>
-      <table class="data-table" style="margin-top:10px;">
-        <thead>
-          <tr><th>항공기 유형</th><th>W/S [lb/ft²]</th><th>[kg/m²]</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>Sailplane</td><td>6</td><td>{30}</td></tr>
-          <tr><td>Homebuilt</td><td>11</td><td>{54}</td></tr>
-          <tr><td>GA — single engine</td><td>17</td><td>{83}</td></tr>
-          <tr><td>GA — twin engine</td><td>26</td><td>{127}</td></tr>
-          <tr><td>Twin turboprop</td><td>40</td><td>{195}</td></tr>
-          <tr><td>Jet trainer</td><td>50</td><td>{244}</td></tr>
-          <tr><td>Jet fighter</td><td>70</td><td>{342}</td></tr>
-          <tr><td>Jet transport / bomber</td><td>120</td><td>{586}</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- 08. 실속 속도 -->
-  <div class="section">
-    <div class="section-label">
-      <span class="section-num">08</span>
-      <span class="section-title">Stall Speed →<br>W/S (5.3.2)</span>
-    </div>
-    <div class="section-content">
-      <div class="formula-box">
-        W/S = ½ρV²<sub>stall</sub> · C<sub>Lmax</sub>
-        <span class="eq-label">실속 시 L = W</span>
-      </div>
-      <ol style="margin-top:12px;">
-        <li><span class="idx">①</span><div><span class="keyword">접근 속도 규정</span> <span class="desc">— 민간: V<sub>approach</sub> ≥ 1.3 V<sub>stall</sub> / 군용: ≥ 1.2 V<sub>stall</sub></span></div></li>
-        <li><span class="idx">②</span><div><span class="keyword">FAR 23 규정</span> <span class="desc">— TOGW ≤ 12,500 lb 민간기: V<sub>stall</sub> ≤ 61 kt (113 km/h)</span></div></li>
-        <li><span class="idx">③</span><div><span class="keyword">후퇴익 C<sub>Lmax</sub></span> <span class="desc">— C<sub>Lmax</sub> = 0.9 · C<sub>lmax</sub> · cosΛ<sub>0.25c</sub></span></div></li>
-      </ol>
-      <table class="data-table" style="margin-top:10px;">
-        <thead>
-          <tr><th>날개 형태</th><th>C<sub>Lmax</sub> 범위</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>플랩 없는 순수 날개</td><td>1.2 – 1.5</td></tr>
-          <tr><td>일반기 (내측 플랩)</td><td>1.6 – 2.0</td></tr>
-          <tr><td>여객기 (플랩 + 슬랫)</td><td>≈ 2.4</td></tr>
-          <tr><td>STOL (대형 플랩·슬랫)</td><td>≈ 3.0</td></tr>
-          <tr><td>프롭워시·제트워시 침지</td><td>최대 5.0</td></tr>
-        </tbody>
-      </table>
-      <p class="note">※ 이륙 C<sub>Lmax</sub> ≈ 착륙 C<sub>Lmax</sub> × 0.80 (이착륙 설정 다름)</p>
-    </div>
-  </div>
-
-  <!-- 09. 이륙 거리 -->
-  <div class="section">
-    <div class="section-label">
-      <span class="section-num">09</span>
-      <span class="section-title">이륙 거리 →<br>W/S (5.3.3)</span>
-    </div>
-    <div class="section-content">
-      <p class="prose">이륙 거리 개념 3가지: <strong>Ground roll</strong> (바퀴가 뜨는 순간까지 활주거리), <strong>Obstacle clearance distance</strong> (군 50ft, 민 35ft 고도 장애물 통과까지), <strong>BFL (Balanced Field Length)</strong> (엔진 고장 시 계속 이륙 vs 정지 거리가 같아지는 최소 활주로 길이).</p>
-      <div class="formula-box">
-        TOP (Jet) = (W/S) / (σ · C<sub>LTO</sub> · T/W)
-        <span class="eq-label">이륙 파라미터</span>
-      </div>
-      <div class="formula-box" style="margin-top:6px;">
-        (W/S) = TOP · σ · C<sub>LTO</sub> · (T/W)
-        <span class="eq-label">W/S 역산</span>
-      </div>
-      <ol style="margin-top:12px;">
-        <li><span class="idx">①</span><div><span class="keyword">V<sub>liftoff</sub> = 1.1 × V<sub>stall</sub></span> <span class="desc">— 이륙 활주 중 양력 계수: C<sub>LTO</sub> = C<sub>Lmax</sub>/1.21</span></div></li>
-        <li><span class="idx">②</span><div><span class="keyword">Decision Speed (V₁)</span> <span class="desc">— BFL: 정지 거리 = 잔여 엔진 이륙 거리가 되는 속도</span></div></li>
-        <li><span class="idx">③</span><div><span class="keyword">쌍발기 BFL</span> <span class="desc">— 3·4발기보다 큼 → 더 높은 총 T/W 필요</span></div></li>
-      </ol>
-    </div>
-  </div>
-
-  <!-- 10. 착륙 거리 -->
-  <div class="section">
-    <div class="section-label">
-      <span class="section-num">10</span>
-      <span class="section-title">착륙 거리 →<br>W/S (5.3.5)</span>
-    </div>
-    <div class="section-content">
-      <div class="formula-box">
-        S<sub>landing</sub> [ft] ≈ 0.3 · V²<sub>approach</sub> [knots]
-        <span class="eq-label">초기 추정</span>
-      </div>
-      <div class="formula-box" style="margin-top:6px;">
-        S<sub>landing</sub> = 80 · (W/S) · (1/σC<sub>Lmax</sub>) + S<sub>a</sub>   [ft]
-        <span class="eq-label">Eq. 5.11</span>
-      </div>
-      <ol style="margin-top:12px;">
-        <li><span class="idx">Sa</span><div><span class="keyword">장애물 통과 거리 S<sub>a</sub></span> <span class="desc">— 여객기(3° 진입): 1000 ft / GA 동력 차단: 600 ft / STOL(7°): 450 ft</span></div></li>
-        <li><span class="idx">①</span><div><span class="keyword">FAR 25 (수송기)</span> <span class="desc">— 총 착륙 거리 × 1.67 (안전 여유)</span></div></li>
-        <li><span class="idx">②</span><div><span class="keyword">역추력/역피치</span> <span class="desc">— 지상 활주 부분 × 0.66</span></div></li>
-        <li><span class="idx">③</span><div><span class="keyword">이륙 W/S 환산</span> <span class="desc">— (W/S)<sub>TO</sub> = (W/S)<sub>landing</sub> × W<sub>TO</sub>/W<sub>landing</sub>. 제트기: 착륙중량 ≈ 이륙중량의 85%</span></div></li>
-      </ol>
-    </div>
-  </div>
-
-  <!-- 11. 순항 W/S -->
-  <div class="section">
-    <div class="section-label">
-      <span class="section-num">11</span>
-      <span class="section-title">순항 최적 W/S<br>(5.3.7)</span>
-    </div>
-    <div class="section-content">
-      <p class="prose">
-        L/D 최대점에서 최적 W/S가 결정된다. 필요 공력 계수: <strong>C<sub>D0</sub></strong> (영양력 항력계수)와 <strong>e</strong> (Oswald 효율).
-      </p>
-      <div class="formula-box">
-        <strong>프로펠러기 최대 항속 (L/D max 비행):</strong><br>
-        W/S = q√(πAeC<sub>D0</sub>)
-        <span class="eq-label">Eq. 5.13</span>
-      </div>
-      <div class="formula-box" style="margin-top:6px;">
-        <strong>제트기 최대 항속 (기생항력 = 3×유도항력):</strong><br>
-        W/S = q√(πAeC<sub>D0</sub>/3)
-        <span class="eq-label">Eq. 5.14</span>
-      </div>
-      <ol style="margin-top:10px;">
-        <li><span class="idx">C<sub>D0</sub></span><div><span class="keyword">영양력 항력계수</span> <span class="desc">— 제트기 ≈ 0.015 / 청결 프롭기 ≈ 0.02 / 고정 기어 프롭기 ≈ 0.03</span></div></li>
-        <li><span class="idx">e</span><div><span class="keyword">Oswald 효율</span> <span class="desc">— 전투기 ≈ 0.6–0.8 / 일반기 ≈ 0.8</span></div></li>
-        <li><span class="idx">q</span><div><span class="keyword">동압 q = ½ρV²</span> <span class="desc">— 해당 순항 고도·속도 조건</span></div></li>
-      </ol>
-    </div>
-  </div>
-
-  <!-- 12. 체공 W/S -->
-  <div class="section">
-    <div class="section-label">
-      <span class="section-num">12</span>
-      <span class="section-title">체공 최적 W/S<br>(5.3.8)</span>
-    </div>
-    <div class="section-content">
-      <p class="prose">체공(Loiter)은 L/D 최대점(제트) 또는 필요 동력 최소점(프롭)에서 최적화된다.</p>
-      <div class="formula-box">
-        <strong>제트기 최대 체공 (L/D max):</strong><br>
-        W/S = q√(πAeC<sub>D0</sub>)
-        <span class="eq-label">Eq. 5.15</span>
-      </div>
-      <div class="formula-box" style="margin-top:6px;">
-        <strong>프로펠러기 최대 체공 (유도항력 = 3×기생항력):</strong><br>
-        W/S = q√(3πAeC<sub>D0</sub>)
-        <span class="eq-label">Eq. 5.16</span>
-      </div>
-      <div class="formula-box" style="margin-top:6px;">
-        (W/S)<sub>takeoff</sub> = (W/S)<sub>loiter</sub> × W<sub>TO</sub>/W<sub>loiter</sub>
-        <span class="eq-label">이륙 조건 환산 (비율 ≈ 0.85)</span>
-      </div>
-      <p class="note">※ 체공 최적 고도: 제트 30,000–40,000 ft, 프롭 과급기 한계 고도 이내</p>
-    </div>
-  </div>
-
-  <!-- 13. Instantaneous Turn -->
-  <div class="section">
-    <div class="section-label">
-      <span class="section-num">13</span>
-      <span class="section-title">순간 선회<br>(5.3.9)</span>
-    </div>
-    <div class="section-content">
-      <p class="prose">
-        <strong>순간 선회율(Instantaneous Turn Rate)</strong>: 속도·고도 유지를 무시하고 최대 선회율만 추구. 날개 실속 또는 구조 하중 한계에 의해 제한됨.
-      </p>
-      <div class="formula-box">
-        ψ̇ = g√(n²−1) / V   [rad/s]
-        <span class="eq-label">Eq. 5.17</span>
-      </div>
-      <div class="formula-box" style="margin-top:6px;">
-        n = qC<sub>L</sub> / (W/S)   (하중 계수 = Load Factor)
-        <span class="eq-label">Eq. 5.18</span>
-      </div>
-      <div class="formula-box" style="margin-top:6px;">
-        V* = √(2n<sub>max</sub>/(ρ·C<sub>Lmax</sub>) · W/S)   (코너 속도, 최대 선회율 속도)
-        <span class="eq-label">Corner Speed</span>
-      </div>
-      <div class="formula-box" style="margin-top:6px;">
-        W/S = qC<sub>Lmax</sub> / n
-        <span class="eq-label">Eq. 5.20</span>
-      </div>
-      <ol style="margin-top:10px;">
-        <li><span class="idx">n</span><div><span class="keyword">최대 하중 계수</span> <span class="desc">— 구형 전투기: 7.33g / 신형 전투기: 8g</span></div></li>
-        <li><span class="idx">W<sub>c</sub></span><div><span class="keyword">전투 중량</span> <span class="desc">— 외부 탱크 투하 + 내부 연료 50% 소모 ≈ 이륙중량의 0.85배</span></div></li>
-        <li><span class="idx">C<sub>L</sub></span><div><span class="keyword">전투 C<sub>Lmax</sub></span> <span class="desc">— 단순 후연 플랩: 0.6–0.8 / 전·후연 복합: 1.0–1.5</span></div></li>
-      </ol>
-    </div>
-  </div>
-
-  <!-- 14. Sustained Turn -->
-  <div class="section">
-    <div class="section-label">
-      <span class="section-num">14</span>
-      <span class="section-title">지속 선회<br>(5.3.10)</span>
-    </div>
-    <div class="section-content">
-      <p class="prose">
-        <strong>지속 선회(Sustained Turn)</strong>: 속도·고도를 유지하며 선회 (추력 = 항력). L/D 최대점에서 하중 계수 최대.
-      </p>
-      <div class="formula-box">
-        n = (T/W)(L/D)
-        <span class="eq-label">Eq. 5.21</span>
-      </div>
-      <div class="formula-box" style="margin-top:6px;">
-        W/S = (q/n)√(πAeC<sub>D0</sub>)
-        <span class="eq-label">Eq. 5.22  (n=1이면 순항 최적식과 동일)</span>
-      </div>
-      <div class="formula-box" style="margin-top:6px;">
-        T/W = qC<sub>D0</sub>/(W/S) + (W/S)(n²/qπAe)
-        <span class="eq-label">Eq. 5.24  W/S 역산 가능</span>
-      </div>
-      <div class="formula-box" style="margin-top:6px;">
-        W/S = [(T/W) ± √((T/W)² − 4n²C<sub>D0</sub>/πAe)] / (2n²/qπAe)
-        <span class="eq-label">Eq. 5.25  요구 지속 선회 n 달성 W/S</span>
-      </div>
-      <p class="note">※ 순간 선회: 짧은 시간 최대 선회율 / 지속 선회: 속도·고도 유지하며 장시간 선회</p>
-    </div>
-  </div>
-
-  <!-- 15. W/S 결정 절차 요약 -->
-  <div class="section">
-    <div class="section-label">
-      <span class="section-num">15</span>
-      <span class="section-title">W/S 최종 결정<br>절차 요약</span>
+      <span class="section-title">Airfoil Geometry<br>Basic Definitions</span>
     </div>
     <div class="section-content">
       <ol>
-        <li><span class="idx">1</span><div><span class="keyword">실속 속도 기준 W/S</span> <span class="desc">— FAR 규정 또는 접근속도 요구로 산출</span></div></li>
-        <li><span class="idx">2</span><div><span class="keyword">이륙 거리 기준 W/S</span> <span class="desc">— TOP 그래프에서 TOP 읽고 W/S = TOP×σ×C<sub>LTO</sub>×T/W</span></div></li>
-        <li><span class="idx">3</span><div><span class="keyword">착륙 거리 기준 W/S</span> <span class="desc">— Eq. 5.11 역산 후 이륙 조건으로 환산 (÷ W<sub>land</sub>/W<sub>TO</sub>)</span></div></li>
-        <li><span class="idx">4</span><div><span class="keyword">순항 최적 W/S</span> <span class="desc">— Eq. 5.13 or 5.14 (제트/프롭 구분)</span></div></li>
-        <li><span class="idx">5</span><div><span class="keyword">선회 기준 W/S</span> <span class="desc">— 순간/지속 선회 요구조건에서 산출 후 이륙 조건 환산</span></div></li>
-        <li><span class="idx">★</span><div><span class="keyword">최종 선택: 가장 낮은 W/S</span> <span class="desc">— 모든 조건에서 날개가 충분히 크도록 보장</span></div></li>
+        <li><span class="idx">1</span><span><span class="keyword">Mean Camber Line</span> <span class="desc">— LE(Leading Edge)와 TE(Trailing Edge)를 연결하는 Chord line과 에어포일 상·하면 사이의 중간선. Camber = 최대 이격 거리 (chord 대비 %)</span></span></li>
+        <li><span class="idx">2</span><span><span class="keyword">Chord Line</span> <span class="desc">— LE ~ TE 직선; chord 길이 c는 기준 치수</span></span></li>
+        <li><span class="idx">3</span><span><span class="keyword">Thickness Ratio (t/c)</span> <span class="desc">— 최대 두께 / chord 길이. 에어포일 성능·구조를 지배하는 핵심 파라미터</span></span></li>
+        <li><span class="idx">4</span><span><span class="keyword">Leading Edge Radius</span> <span class="desc">— LE 곡률 반경. 두꺼울수록 크고, Stall 특성에 결정적 영향</span></span></li>
+        <li><span class="idx">5</span><span><span class="keyword">Symmetrical Airfoil</span> <span class="desc">— Camber = 0, 대칭. Zero AoA에서 Lift = 0; Tail surfaces에 사용</span></span></li>
+        <li><span class="idx">6</span><span><span class="keyword">Cambered Airfoil</span> <span class="desc">— Camber &gt; 0; Zero AoA에서도 Lift 발생. Design Lift Coefficient 결정</span></span></li>
       </ol>
     </div>
   </div>
 
-  <footer>항공기 설계 · Chapter 5 Thrust-to-Weight Ratio and Wing Loading 핵심 정리 · 25년 1학기</footer>
+  <div class="section">
+    <div class="section-label">
+      <span class="section-num">02</span>
+      <span class="section-title">Aerodynamic Coefficients<br>(Section / 2D)</span>
+    </div>
+    <div class="section-content">
+      <p class="prose">에어포일(2D) 계수는 단위 스팬 기준이며 chord c를 기준 치수로 사용한다.</p>
+      <ol style="margin-top:10px;">
+        <li><span class="idx">1</span><span><span class="keyword">Section Lift Coefficient (Cl)</span> <span class="desc">— 단위 스팬당 Lift force를 Dynamic pressure × chord로 무차원화한 값</span></span></li>
+        <li><span class="idx">2</span><span><span class="keyword">Section Drag Coefficient (Cd)</span> <span class="desc">— 단위 스팬당 Drag force를 Dynamic pressure × chord로 무차원화한 값</span></span></li>
+        <li><span class="idx">3</span><span><span class="keyword">Section Pitching Moment Coefficient (Cm)</span> <span class="desc">— 단위 스팬당 Pitching moment를 Dynamic pressure × chord²으로 무차원화한 값</span></span></li>
+      </ol>
+      <p class="note">소문자 l, d, m → 2D section 계수 (대문자 L, D, M → 3D wing 계수)</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">
+      <span class="section-num">03</span>
+      <span class="section-title">Aerodynamic Center (AC)<br>vs Center of Pressure (CP)</span>
+    </div>
+    <div class="section-content">
+      <div class="two-col">
+        <div class="box">
+          <h4>Aerodynamic Center (AC) <span class="tag tag-a">★출제</span></h4>
+          <ul>
+            <li>Pitching moment가 AoA에 무관하게 일정한 점</li>
+            <li>Subsonic: chord 앞에서 25% 위치</li>
+            <li>Supersonic: chord 앞에서 35~40% 위치</li>
+            <li>설계 기준점으로 사용 (CG 위치 결정에 활용)</li>
+          </ul>
+        </div>
+        <div class="box">
+          <h4>Center of Pressure (CP)</h4>
+          <ul>
+            <li>수직력(Lift)의 합력 작용점</li>
+            <li>AoA 변화에 따라 이동 → 기준점으로 부적절</li>
+            <li>Cambered airfoil: AoA↑ → CP 앞으로 이동</li>
+            <li>설계에서 잘 사용하지 않음</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">
+      <span class="section-num">04</span>
+      <span class="section-title">Design Lift Coefficient<br>Cl,design</span>
+    </div>
+    <div class="section-content">
+      <p class="prose">
+        <strong>Design Lift Coefficient (Cl,design)</strong>은 L/D가 최대가 되는 Lift coefficient. Drag Polar 그래프에서 <strong>원점에서 그은 접선의 접점</strong>이 바로 Cl,design이다. 에어포일의 Camber에 의해 결정된다.
+      </p>
+      <ol style="margin-top:10px;">
+        <li><span class="idx">1</span><span><span class="keyword">Camber ↑ → Cl,design ↑</span> <span class="desc">— Camber가 증가할수록 더 높은 Design Lift Coefficient</span></span></li>
+        <li><span class="idx">2</span><span><span class="keyword">Design Condition</span> <span class="desc">— 순항 CL이 Cl,design과 일치하도록 Airfoil 선정 → 최소 Drag</span></span></li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">
+      <span class="section-num">05</span>
+      <span class="section-title">Stall Types<br>3 Types by t/c</span>
+    </div>
+    <div class="section-content">
+      <div class="three-col">
+        <div class="box">
+          <h4>① Fat Airfoil<br><span style="font-weight:400;color:#888">t/c &gt; ~14%</span></h4>
+          <ul>
+            <li>Trailing edge에서부터 Stall 진행</li>
+            <li>완만하고 점진적 (Gradual stall)</li>
+            <li>LE radius 커서 분리 늦음</li>
+            <li>저속기·GA에 유리</li>
+          </ul>
+        </div>
+        <div class="box">
+          <h4>② Medium Airfoil<br><span style="font-weight:400;color:#888">t/c 6~14%</span></h4>
+          <ul>
+            <li>LE Separation bubble에서 Stall</li>
+            <li>급격하고 불연속적 (Abrupt stall)</li>
+            <li>조종사 경고 없이 Stall → 위험</li>
+            <li>주의 필요</li>
+          </ul>
+        </div>
+        <div class="box">
+          <h4>③ Very Thin<br><span style="font-weight:400;color:#888">t/c &lt; 6%</span></h4>
+          <ul>
+            <li>LE Nose separation</li>
+            <li>Cl은 부드럽게 감소</li>
+            <li>Cm 급변 → 조종성 문제</li>
+            <li>Supersonic wing에 사용</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">
+      <span class="section-num">06</span>
+      <span class="section-title">Thickness Ratio (t/c)<br>3-Way Tradeoff</span>
+    </div>
+    <div class="section-content">
+      <ol>
+        <li><span class="idx">1</span><span><span class="keyword">Drag</span> <span class="desc">— t/c ↑ → Wave drag 및 Friction drag 증가; 고속기일수록 t/c를 최소화</span></span></li>
+        <li><span class="idx">2</span><span><span class="keyword">Critical Mach Number (Mcr)</span> <span class="desc">— t/c ↑ → Mcr ↓ (날개 위 흐름이 더 빨리 음속 돌파). 고속 설계에서 t/c 감소 필요</span></span></li>
+        <li><span class="idx">3</span><span><span class="keyword">Structural Weight</span> <span class="desc">— t/c ↑ → 구조적으로 유리 (Spar height 증가). 저속·대형기는 t/c를 어느 정도 크게</span></span></li>
+      </ol>
+      <p class="note">★ 세 가지가 서로 반대 방향 → 최적 t/c는 Mission과 Speed에 따라 결정</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">
+      <span class="section-num">07</span>
+      <span class="section-title">Airfoil Families<br>Types &amp; Characteristics</span>
+    </div>
+    <div class="section-content">
+      <table class="data-table">
+        <thead><tr><th>Family</th><th>Characteristics</th><th>Primary Use</th></tr></thead>
+        <tbody>
+          <tr><td><strong>NACA 4-digit</strong><br>(ex: 2412)</td><td>First two digits → Camber &amp; position, last two → t/c. Simple, well-validated</td><td>Tail surfaces, general low-speed aircraft</td></tr>
+          <tr><td><strong>NACA 5-digit</strong></td><td>Max camber position moved forward → Higher Cl,max. However, worse stall characteristics</td><td>Some GA &amp; older transports</td></tr>
+          <tr><td><strong>NACA 6-series</strong><br>(ex: 64A-series)</td><td>Laminar bucket design. Low drag bucket region. 64A → High-speed wings</td><td>Subsonic transports, fighter wings</td></tr>
+          <tr><td><strong>Supercritical Airfoil</strong> <span class="tag tag-a">★</span></td><td>Flattened upper surface → Weaker shock wave → Mcr increase. Same speed allows higher t/c</td><td>Modern transports (B737, A320, etc.)</td></tr>
+          <tr><td><strong>Laminar Flow Airfoil</strong></td><td>Max thickness moved aft → Extended laminar region → Friction drag reduction</td><td>Small low-speed aircraft, some business jets</td></tr>
+          <tr><td><strong>Biconvex / Diamond</strong></td><td>Very thin, supersonic-specific. Poor subsonic performance</td><td>Supersonic fighters &amp; missiles</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">
+      <span class="section-num">08</span>
+      <span class="section-title">Reference (Trapezoidal) Wing<br>Definition</span>
+    </div>
+    <div class="section-content">
+      <p class="prose">
+        실제 항공기 날개는 동체를 통과하므로 형상 정의가 복잡하다. <strong>Reference Wing</strong>은 동체를 무시하고 Trapezoidal wing을 Centerline까지 연장한 가상의 날개다. 모든 Wing area·geometry parameter는 이를 기준으로 정의한다.
+      </p>
+      <ol style="margin-top:10px;">
+        <li><span class="idx">1</span><span><span class="keyword">Wing Area (S)</span> <span class="desc">— Reference (trapezoidal) wing area. Fuselage portion 포함</span></span></li>
+        <li><span class="idx">2</span><span><span class="keyword">Span (b)</span> <span class="desc">— Tip-to-tip span (centerline 기준)</span></span></li>
+        <li><span class="idx">3</span><span><span class="keyword">Taper Ratio (λ)</span> <span class="desc">— C_tip / C_root</span></span></li>
+        <li><span class="idx">4</span><span><span class="keyword">Aspect Ratio (AR)</span> <span class="desc">— b² / S (스팬²을 날개 면적으로 나눈 값)</span></span></li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">
+      <span class="section-num">09</span>
+      <span class="section-title">MAC (Mean Aerodynamic Chord)<br>&amp; Wing AC</span>
+    </div>
+    <div class="section-content">
+      <p class="prose">
+        <strong>MAC (Mean Aerodynamic Chord)</strong>: 날개 전체 면적이 그 한 점에 압축된 것처럼 작용하는 등가 Chord. MAC의 25% 지점 = 날개 전체의 Aerodynamic Center (AC).
+      </p>
+      <ol style="margin-top:10px;">
+        <li><span class="idx">1</span><span><span class="keyword">MAC Location</span> <span class="desc">— Spanwise 위치는 Taper ratio에 의해 결정. MAC의 25%에 Wing AC가 위치</span></span></li>
+        <li><span class="idx">2</span><span><span class="keyword">CG Proximity</span> <span class="desc">— CG는 Wing AC 근처에 위치시켜야 Stability &amp; Controllability 확보 가능</span></span></li>
+        <li><span class="idx">3</span><span><span class="keyword">Subsonic vs Supersonic AC</span> <span class="desc">— Subsonic: 25% MAC / Supersonic: 30~40% MAC</span></span></li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">
+      <span class="section-num">10</span>
+      <span class="section-title">Aspect Ratio (AR)<br>Effects &amp; Typical Values</span>
+    </div>
+    <div class="section-content">
+      <p class="prose">AR은 Induced drag 및 Stall 특성에 직접적 영향을 준다. AR ↑ → Induced drag 감소, Stall angle 감소.</p>
+      <table class="data-table" style="margin-top:12px;">
+        <thead><tr><th>Aircraft Type</th><th>Typical AR</th></tr></thead>
+        <tbody>
+          <tr><td>Glider (Sailplane)</td><td>20 ~ 30</td></tr>
+          <tr><td>GA Single-engine</td><td>6 ~ 8</td></tr>
+          <tr><td>GA Twin-engine</td><td>7 ~ 9</td></tr>
+          <tr><td>Transport</td><td>7 ~ 12</td></tr>
+          <tr><td>Military Trainer</td><td>5 ~ 8</td></tr>
+          <tr><td>Fighter</td><td>2 ~ 4</td></tr>
+          <tr><td>Supersonic Fighter</td><td>1.5 ~ 3</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">
+      <span class="section-num">11</span>
+      <span class="section-title">Wing Sweep (Λ)<br>LE vs Quarter-Chord</span>
+    </div>
+    <div class="section-content">
+      <ol>
+        <li><span class="idx">1</span><span><span class="keyword">Λ_C/4 (Quarter-Chord Sweep)</span> <span class="desc">— Subsonic 기준. 1/4 Chord line 기준 후퇴각. Pitching moment 및 Aerodynamic center 분석에 사용</span></span></li>
+        <li><span class="idx">2</span><span><span class="keyword">Λ_LE (Leading Edge Sweep)</span> <span class="desc">— Supersonic 기준. LE가 Mach cone 안쪽에 위치해야 Wave drag 감소</span></span></li>
+        <li><span class="idx">3</span><span><span class="keyword">Mcr Increase Effect</span> <span class="desc">— 후퇴각 증가 시 유효 Normal Mach number 감소 → Critical Mach number 증가</span></span></li>
+        <li><span class="idx">4</span><span><span class="keyword">Variable-Sweep Wing</span> <span class="desc">— 저속↔초음속 전환 가능. Weight penalty: Empty weight +4%, Wing weight +19%</span> <span class="tag tag-b">페널티 암기</span></span></li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">
+      <span class="section-num">12</span>
+      <span class="section-title">Taper Ratio (λ)<br>Selection</span>
+    </div>
+    <div class="section-content">
+      <p class="prose">
+        <strong>Taper Ratio λ = C_tip / C_root</strong>. Elliptical lift distribution (최소 Induced drag)을 근사하는 최적 λ가 존재하며, Sweep angle과 연계하여 선정한다.
+      </p>
+      <ol style="margin-top:10px;">
+        <li><span class="idx">1</span><span><span class="keyword">Optimal Range</span> <span class="desc">— λ ≈ 0.45 → 직선 날개에서 Elliptical lift distribution 근사 (최적)</span></span></li>
+        <li><span class="idx">2</span><span><span class="keyword">Low Sweep (≤20°)</span> <span class="desc">— λ = 0.4 ~ 0.5 권장</span></span></li>
+        <li><span class="idx">3</span><span><span class="keyword">High Sweep (&gt;25°)</span> <span class="desc">— λ = 0.2 ~ 0.3 권장</span></span></li>
+        <li><span class="idx">4</span><span><span class="keyword">Tip Stall Warning</span> <span class="desc">— λ &lt; 0.2 피할 것 → Tip stall 위험</span></span></li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">
+      <span class="section-num">13</span>
+      <span class="section-title">Wing Twist<br>Types</span>
+    </div>
+    <div class="section-content">
+      <div class="two-col">
+        <div class="box">
+          <h4>Geometric Twist</h4>
+          <ul>
+            <li>Chord line의 실제 Angle of Attack 변화</li>
+            <li>Root → Tip 방향으로 AoA 감소</li>
+            <li>Washout: Tip LE 아래 방향 → Tip AoA 감소</li>
+            <li>일반적으로 약 −3° (Washout 방향)</li>
+          </ul>
+        </div>
+        <div class="box">
+          <h4>Aerodynamic Twist</h4>
+          <ul>
+            <li>Zero-lift angle 차이로 정의</li>
+            <li>에어포일 계열을 Root/Tip 다르게 사용</li>
+            <li>Geometric twist와 결합하여 설계</li>
+            <li>Spanwise lift distribution 최적화</li>
+          </ul>
+        </div>
+      </div>
+      <p class="note">Washout (−3°)의 목적: Root가 먼저 Stall → Tip stall 방지 → Aileron 효율 유지</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">
+      <span class="section-num">14</span>
+      <span class="section-title">Wing Incidence<br>Setting Angle</span>
+    </div>
+    <div class="section-content">
+      <p class="prose">
+        Fuselage Reference Line (FRL) 대비 Wing chord line의 각도. 순항 시 동체를 수평으로 유지하면서 필요한 Lift를 얻기 위해 설정. <strong>Cruise drag 최소화</strong>가 목적.
+      </p>
+      <table class="data-table" style="margin-top:10px;">
+        <thead><tr><th>Aircraft Type</th><th>Typical Incidence</th></tr></thead>
+        <tbody>
+          <tr><td>GA (General Aviation)</td><td>~+2°</td></tr>
+          <tr><td>Transport</td><td>~+1°</td></tr>
+          <tr><td>Military</td><td>~0°</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">
+      <span class="section-num">15</span>
+      <span class="section-title">Dihedral<br>Lateral Stability Effect</span>
+    </div>
+    <div class="section-content">
+      <ol>
+        <li><span class="idx">1</span><span><span class="keyword">Dihedral ↑</span> <span class="desc">— Lateral static stability 증가. Bank 시 Restoring moment 발생</span></span></li>
+        <li><span class="idx">2</span><span><span class="keyword">Equivalence with Sweep</span> <span class="desc">— Sweep 10° ≈ Dihedral 1°의 안정성 효과. High-sweep wing은 Dihedral 줄임</span></span></li>
+        <li><span class="idx">3</span><span><span class="keyword">Forward Sweep Wing</span> <span class="desc">— Sweep 효과가 반대 → Lateral stability 감소 → Anhedral (negative dihedral) 적용</span></span></li>
+        <li><span class="idx">4</span><span><span class="keyword">Low Wing vs High Wing</span> <span class="desc">— Low wing: Dihedral 필요 (+5~7°). High wing: Dihedral 불필요 또는 약간의 Anhedral</span></span></li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">
+      <span class="section-num">16</span>
+      <span class="section-title">Tail Functions<br>3 Roles</span>
+    </div>
+    <div class="section-content">
+      <ol>
+        <li><span class="idx">1</span><span><span class="keyword">Trim</span> <span class="desc">— 원하는 비행 조건에서 Moment sum = 0 되도록 힘 제공. Speed·CG 변화에 대응</span></span></li>
+        <li><span class="idx">2</span><span><span class="keyword">Stability</span> <span class="desc">— 외란 발생 시 원래 평형 상태로 복원하는 Moment 제공 (Pitch, Yaw, Roll)</span></span></li>
+        <li><span class="idx">3</span><span><span class="keyword">Control</span> <span class="desc">— 조종사 입력에 따라 원하는 Attitude·Motion 유발 (Elevator, Rudder, Aileron)</span></span></li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">
+      <span class="section-num">17</span>
+      <span class="section-title">Tail Arrangements<br>Types &amp; Tradeoffs</span>
+    </div>
+    <div class="section-content">
+      <table class="data-table">
+        <thead><tr><th>Type</th><th>Advantages</th><th>Disadvantages / Notes</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Conventional</strong></td><td>Over 70% of all aircraft. Easy design, fabrication, maintenance. Well validated.</td><td>— (baseline)</td></tr>
+          <tr><td><strong>T-tail</strong> <span class="tag tag-a">★</span></td><td>HT at top of VT → Avoids fuselage/wing wake. VT efficiency ↑ (end-plate effect)</td><td><strong>Deep stall (Pitch-up) risk</strong>: At high AoA, HT trapped in wing wake → loss of control. Structural weight increase</td></tr>
+          <tr><td><strong>H-tail</strong></td><td>2 VTs + HT connection. HT acts as end-plate. Saves VT area</td><td>Complex structure, weight increase</td></tr>
+          <tr><td><strong>V-tail (Butterfly)</strong></td><td>Combined HT+VT function → Reduced area, interference drag reduction</td><td>Ruddervator complex. Roll-yaw coupling. Limited use.</td></tr>
+          <tr><td><strong>Y-tail</strong></td><td>V-tail + downward fin. Propeller wake avoidance</td><td>Complex, rare use</td></tr>
+          <tr><td><strong>Twin-tail</strong></td><td>Advantageous for low-altitude high-speed maneuvering. Avoids fuselage wake. Reduced height (carrier aircraft)</td><td>VT efficiency reduction, weight increase</td></tr>
+          <tr><td><strong>Boom-mounted</strong></td><td>Frees aft propulsion space. Advantageous for twin-propeller aircraft</td><td>Structural strength requirement</td></tr>
+          <tr><td><strong>Canard</strong> <span class="tag tag-a">★</span></td><td>See Section 18 below</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">
+      <span class="section-num">18</span>
+      <span class="section-title">Canard Types<br>Control vs Lifting</span>
+    </div>
+    <div class="section-content">
+      <div class="two-col">
+        <div class="box">
+          <h4>Control Canard <span class="tag tag-c">Control Only</span></h4>
+          <ul>
+            <li>Pitch control role only (no trim)</li>
+            <li>Low AR, small area, no camber (symmetric)</li>
+            <li>Generates almost no lift during cruise</li>
+            <li>Used on some fighters &amp; missiles</li>
+          </ul>
+        </div>
+        <div class="box">
+          <h4>Lifting Canard <span class="tag tag-d">Lift Sharing</span></h4>
+          <ul>
+            <li>Shares lift with main wing (includes trim)</li>
+            <li>High AR, has camber</li>
+            <li>No tail download → Fuel savings possible</li>
+            <li>Stability issue → see below</li>
+          </ul>
+        </div>
+      </div>
+      <div class="box" style="margin-top:14px; border-left: 3px solid #c2255c;">
+        <h4>Canard Stability Issue <span class="tag tag-b">★출제</span></h4>
+        <ul>
+          <li>Static Longitudinal Stability: dCm/dCL &lt; 0 required</li>
+          <li>If Canard stalls → Nose down → Recoverable</li>
+          <li><strong>If Main wing stalls first</strong> → Canard still generating lift → Pitch-up → Dangerous</li>
+          <li>Solution: Design Canard to always stall before main wing (via t/c and AoA settings)</li>
+          <li>CG range tends to be narrower than conventional aft-tail</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">
+      <span class="section-num">19</span>
+      <span class="section-title">Spin Recovery<br>One-Third Rule</span>
+    </div>
+    <div class="section-content">
+      <p class="prose">
+        Spin recovery에서 <strong>Vertical Tail (Rudder)</strong>의 역할이 결정적이다.
+        Spin 중 Horizontal Tail의 wake가 Rudder 일부를 가리기 때문에,
+        <strong>Rudder의 최소 1/3은 Horizontal Tail wake 바깥에 노출</strong>되어야 Spin recovery가 가능하다.
+      </p>
+      <div class="two-col" style="margin-top:12px;">
+        <div class="box">
+          <h4>T-tail Spin Recovery <span class="tag tag-a">장점</span></h4>
+          <ul>
+            <li>HT가 VT 위에 위치</li>
+            <li>Rudder 전체가 Wake 밖에 노출</li>
+            <li>Spin recovery에 유리</li>
+          </ul>
+        </div>
+        <div class="box">
+          <h4>T-tail Deep Stall <span class="tag tag-b">위험</span></h4>
+          <ul>
+            <li>High AoA: Main wing wake가 HT 완전 차단</li>
+            <li>Elevator 효율 상실 → Pitch-up 고착</li>
+            <li>출구 없는 Stall (Deep stall / Locked-in stall)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>AE2001018 · Chapter 4 · Airfoil &amp; Wing/Tail Geometry Selection · 부산대학교 항공우주공학과</footer>
 
 </div>
+<script>
+(function () {
+  var tocList = document.getElementById("toc-list");
+  var tocPanel = document.getElementById("toc-panel");
+  var tocToggle = document.getElementById("toc-toggle");
+  if (!tocList || !tocPanel || !tocToggle) return;
+  var nodes = Array.prototype.slice.call(document.querySelectorAll(".section-title"));
+  nodes.forEach(function (node, idx) {
+    if (!node.id) node.id = "toc-item-" + (idx + 1);
+    var li = document.createElement("li");
+    var a = document.createElement("a");
+    a.href = "#" + node.id;
+    a.textContent = (node.textContent || "").replace(/\s+/g, " ").trim();
+    li.appendChild(a);
+    tocList.appendChild(li);
+  });
+  tocToggle.addEventListener("click", function () { tocPanel.classList.toggle("open"); });
+  tocList.addEventListener("click", function () { tocPanel.classList.remove("open"); });
+  document.addEventListener("click", function (e) { if (!tocPanel.contains(e.target) && e.target !== tocToggle) tocPanel.classList.remove("open"); });
+})();
+</script>
 </body>
 </html>

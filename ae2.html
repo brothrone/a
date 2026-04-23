@@ -6,410 +6,283 @@
 <title>Chapter 2 핵심정리</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@300;400;600&family=IBM+Plex+Mono:wght@400;600&display=swap');
-
   * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    font-family: 'IBM Plex Sans KR', sans-serif;
-    background: #f5f4f0;
-    color: #1a1a1a;
-    padding: 40px 20px;
-    font-size: 14px;
-    line-height: 1.7;
-  }
-
+  body { font-family: 'IBM Plex Sans KR', sans-serif; background: #f5f4f0; color: #1a1a1a; padding: 40px 20px; font-size: 14px; line-height: 1.7; }
   .page { max-width: 780px; margin: 0 auto; }
-
-  header {
-    border-bottom: 3px solid #1a1a1a;
-    padding-bottom: 16px;
-    margin-bottom: 36px;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-  }
-
+  header { border-bottom: 3px solid #1a1a1a; padding-bottom: 16px; margin-bottom: 36px; display: flex; justify-content: space-between; align-items: flex-end; }
   header h1 { font-size: 26px; font-weight: 600; letter-spacing: -0.5px; }
   header .meta { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #888; text-align: right; }
-
-  .section {
-    margin-bottom: 28px;
-    display: grid;
-    grid-template-columns: 220px 1fr;
-    gap: 0;
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 24px;
-  }
-
+  .section { margin-bottom: 28px; display: grid; grid-template-columns: 220px 1fr; gap: 0; border-bottom: 1px solid #ddd; padding-bottom: 24px; }
   .section:last-child { border-bottom: none; }
-
   .section-label { padding-top: 2px; padding-right: 20px; }
   .section-num { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #aaa; display: block; margin-bottom: 4px; }
   .section-title { font-size: 13px; font-weight: 600; color: #1a1a1a; line-height: 1.4; }
-
   .section-content ol { list-style: none; padding: 0; }
-
-  .section-content ol li {
-    padding: 5px 0;
-    border-bottom: 1px dotted #e0e0e0;
-    display: flex;
-    gap: 10px;
-    align-items: baseline;
-  }
-
+  .section-content ol li { padding: 5px 0; border-bottom: 1px dotted #e0e0e0; display: flex; gap: 10px; align-items: baseline; }
   .section-content ol li:last-child { border-bottom: none; }
-
   .idx { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #bbb; min-width: 18px; flex-shrink: 0; }
   .keyword { font-weight: 600; color: #1a1a1a; }
   .desc { color: #555; font-size: 13px; }
-
   .prose { color: #333; font-size: 13.5px; line-height: 1.9; }
   .prose strong { font-weight: 600; color: #1a1a1a; }
-
   .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
-
-  .box {
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    padding: 14px 16px;
-  }
-
+  .box { background: #fff; border: 1px solid #ddd; border-radius: 4px; padding: 14px 16px; }
   .box h4 { font-size: 12px; font-weight: 600; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid #eee; }
   .box ul { list-style: none; padding: 0; }
   .box ul li { font-size: 12.5px; color: #444; padding: 3px 0; padding-left: 12px; position: relative; line-height: 1.5; }
   .box ul li::before { content: "–"; position: absolute; left: 0; color: #bbb; }
-
   .tag { display: inline-block; font-family: 'IBM Plex Mono', monospace; font-size: 10px; padding: 1px 6px; border-radius: 2px; margin-left: 6px; vertical-align: middle; }
   .tag-a { background: #e8f0fe; color: #3b5bdb; }
   .tag-b { background: #fff0f6; color: #c2255c; }
-  .tag-c { background: #f0fff4; color: #2f9e44; }
-  .tag-d { background: #fff9e6; color: #e67700; }
-  .tag-e { background: #f3f0ff; color: #7048e8; }
-
-  .formula-box {
-    background: #fff;
-    border: 1px solid #e0e0e0;
-    border-left: 3px solid #aaa;
-    border-radius: 4px;
-    padding: 12px 16px;
-    margin-top: 10px;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 12.5px;
-    color: #333;
-    line-height: 1.9;
-  }
-
-  .formula-box .eq-label {
-    font-size: 10px;
-    color: #bbb;
-    float: right;
-  }
-
-  .data-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 12.5px;
-    margin-top: 4px;
-  }
-
-  .data-table th {
-    background: #1a1a1a;
-    color: #fff;
-    padding: 6px 10px;
-    text-align: left;
-    font-weight: 600;
-    font-size: 11px;
-  }
-
-  .data-table td {
-    padding: 6px 10px;
-    border-bottom: 1px solid #eee;
-    color: #444;
-  }
-
+  .data-table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-top: 4px; }
+  .data-table th { background: #1a1a1a; color: #fff; padding: 6px 10px; text-align: left; font-weight: 600; font-size: 11px; }
+  .data-table td { padding: 6px 10px; border-bottom: 1px solid #eee; color: #444; }
   .data-table tr:last-child td { border-bottom: none; }
   .data-table tr:nth-child(even) td { background: #f9f9f7; }
-
   .note { font-size: 11.5px; color: #888; margin-top: 8px; padding-left: 4px; }
-
-  .flow {
-    display: flex;
-    align-items: center;
-    gap: 0;
-    flex-wrap: wrap;
-    margin-top: 10px;
-  }
-  .flow-item {
-    background: #fff;
-    border: 1px solid #ccc;
-    border-radius: 3px;
-    padding: 7px 14px;
-    font-size: 12px;
-    font-weight: 600;
-    color: #1a1a1a;
-    white-space: nowrap;
-  }
-  .flow-arrow {
-    font-size: 14px;
-    color: #bbb;
-    padding: 0 6px;
-  }
-
+  .flow { display: flex; align-items: center; flex-wrap: wrap; margin-top: 10px; }
+  .flow-item { background: #fff; border: 1px solid #ccc; border-radius: 3px; padding: 7px 14px; font-size: 12px; font-weight: 600; color: #1a1a1a; white-space: nowrap; }
+  .flow-arrow { font-size: 14px; color: #bbb; padding: 0 6px; }
   footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid #ddd; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #bbb; text-align: center; }
+  .quick-nav { position: fixed; right: 20px; bottom: 20px; display: flex; flex-direction: column; gap: 8px; z-index: 9999; }
+  .quick-btn, .quick-link { font-family: "IBM Plex Mono", monospace; font-size: 11px; border: 1px solid #1a1a1a; background: #1a1a1a; color: #fff; padding: 8px 12px; border-radius: 6px; cursor: pointer; text-decoration: none; text-align: center; min-width: 92px; }
+  .quick-link { display: inline-block; }
+  .quick-btn:hover, .quick-link:hover { background: #333; border-color: #333; }
+  #toc-panel { position: fixed; right: 20px; bottom: 116px; width: min(360px, calc(100vw - 40px)); max-height: 60vh; overflow: auto; background: #fff; border: 1px solid #dcdcdc; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.14); padding: 12px; display: none; z-index: 9998; }
+  #toc-panel.open { display: block; }
+  #toc-panel .toc-title { font-family: "IBM Plex Mono", monospace; font-size: 11px; color: #666; margin-bottom: 10px; }
+  #toc-list { list-style: none; padding: 0; margin: 0; }
+  #toc-list li { padding: 4px 0; border-bottom: 1px dotted #e5e5e5; }
+  #toc-list li:last-child { border-bottom: none; }
+  #toc-list a { color: #222; text-decoration: none; font-size: 12px; line-height: 1.45; display: block; }
+  #toc-list a:hover { color: #0c8599; }
+  @media (max-width: 640px) { .quick-nav { right: 12px; bottom: 12px; } #toc-panel { right: 12px; bottom: 108px; width: calc(100vw - 24px); } }
 </style>
 </head>
 <body>
+<div class="quick-nav">
+  <button class="quick-btn" id="toc-toggle" type="button">목차</button>
+  <a class="quick-link" href="index.html">뒤로가기</a>
+</div>
+<aside id="toc-panel" aria-label="페이지 목차">
+  <p class="toc-title">목차</p>
+  <ul id="toc-list"></ul>
+</aside>
 <div class="page">
 
   <header>
     <h1>Chapter 2 · Overview of the Design Process</h1>
-    <div class="meta">주관식 / 개념 위주<br>25년 1학기</div>
+    <div class="meta">개념 위주<br>25년 1학기</div>
   </header>
 
-  <!-- 01. 설계 요구사항의 성격 -->
   <div class="section">
     <div class="section-label">
       <span class="section-num">01</span>
-      <span class="section-title">2.1 Requirements<br>설계요구사항의 성격</span>
+      <span class="section-title">Nature of Design Requirements</span>
     </div>
     <div class="section-content">
       <ol>
-        <li><span class="idx">1</span><span><span class="keyword">반복 과정</span> <span class="desc">— 항공기 설계는 iterative process. 첫 번째 설계를 그대로 제작하는 일은 없다. 요구사항도 설계 과정에서 함께 발전한다.</span></span></li>
-        <li><span class="idx">2</span><span><span class="keyword">firm numbers 필요</span> <span class="desc">— 새 개념을 그리려면 날개 면적, 엔진 크기 등의 구체적 수치가 필요. 이는 특정 요구사항으로부터만 계산 가능</span></span></li>
-        <li><span class="idx">3</span><span><span class="keyword">고객 중심 요구사항</span> <span class="desc">— 실제 임무 및 성능: 항속거리(Range), 페이로드(Payload), 속도, 저관측성, 주기장 크기 제한 등 포함</span></span></li>
-        <li><span class="idx">4</span><span><span class="keyword">RFP (군용)</span> <span class="desc">— Request for Proposal. 군용기는 고객(군)이 RFP를 통해 최종 요구사항을 "납품물"로 명시. 계약업체와 군 양측의 분석 결과</span> <span class="tag tag-a">★</span></span></li>
-        <li><span class="idx">5</span><span><span class="keyword">MTOW 결정</span> <span class="desc">— 대부분 항공기의 최대 이륙 총 중량은 페이로드 중량과 항속거리 요구사항으로 결정 → Chap. 3 &amp; 6 "Sizing"</span></span></li>
-        <li><span class="idx">6</span><span><span class="keyword">엔진 크기·날개 면적 결정</span> <span class="desc">— 최대 속도, 실속 속도, 상승율, 이륙 거리 등 성능 요구사항으로 결정 → Chap. 5</span></span></li>
-        <li><span class="idx">7</span><span><span class="keyword">비용 목표</span> <span class="desc">— 개발 비용 + 구매 단가 + 운영 비용 포함. 동일 임무를 수행하는 다른 방법보다 비싸면 안 됨</span></span></li>
-        <li><span class="idx">8</span><span><span class="keyword">규정/규격</span> <span class="desc">— 민항: FAR Part 23 (소형), Part 25 (대형 수송기). 군용: Mil-Specs / Mil-Standards (예: MIL-XX-XXXX)</span></span></li>
+        <li><span class="idx">1</span><span><span class="keyword">Iterative Process</span> <span class="desc">— 항공기 설계는 iterative process. 첫 번째 설계를 그대로 제작하는 일은 없다. 요구사항도 설계 과정에서 함께 발전한다.</span></span></li>
+        <li><span class="idx">2</span><span><span class="keyword">Firm Numbers Required</span> <span class="desc">— 새 개념을 그리려면 Wing area, Engine size 등의 구체적 수치가 필요. 이는 특정 요구사항으로부터만 계산 가능</span></span></li>
+        <li><span class="idx">3</span><span><span class="keyword">Customer-driven Requirements</span> <span class="desc">— 실제 임무 및 성능: Range, Payload, Speed, Low Observability, Parking area limits 등 포함</span></span></li>
+        <li><span class="idx">4</span><span><span class="keyword">RFP (Request for Proposal)</span> <span class="desc">— 군용기는 고객(군)이 RFP를 통해 최종 요구사항을 명시. Contractor와 군 양측의 분석 결과</span> <span class="tag tag-a">★</span></span></li>
+        <li><span class="idx">5</span><span><span class="keyword">MTOW (Maximum Takeoff Weight)</span> <span class="desc">— 대부분 항공기의 최대 이륙 총 중량은 Payload weight와 Range 요구사항으로 결정</span></span></li>
+        <li><span class="idx">6</span><span><span class="keyword">Cost Objective</span> <span class="desc">— Development cost + Unit price + Operating cost 포함. 동일 임무를 수행하는 다른 방법보다 비싸면 안 됨</span></span></li>
+        <li><span class="idx">7</span><span><span class="keyword">Regulations</span> <span class="desc">— 민항: FAR Part 23 (Small Aircraft), Part 25 (Transport). 군용: Mil-Specs / Mil-Standards</span></span></li>
       </ol>
     </div>
   </div>
 
-  <!-- 02. 설계 단계 전체 흐름 -->
   <div class="section">
     <div class="section-label">
       <span class="section-num">02</span>
-      <span class="section-title">2.2 Phases of<br>Aircraft Design</span>
+      <span class="section-title">Phases of Aircraft Design</span>
     </div>
     <div class="section-content">
       <p class="prose">항공기 개발은 5단계로 진행된다.</p>
       <div class="flow" style="margin-top:12px;">
-        <div class="flow-item">Requirements</div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-item">Conceptual Design</div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-item">Preliminary Design</div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-item">Detail Design</div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-item">Fabrication</div>
-        <div class="flow-arrow">→</div>
+        <div class="flow-item">Requirements</div><div class="flow-arrow">→</div>
+        <div class="flow-item">Conceptual Design</div><div class="flow-arrow">→</div>
+        <div class="flow-item">Preliminary Design</div><div class="flow-arrow">→</div>
+        <div class="flow-item">Detail Design</div><div class="flow-arrow">→</div>
+        <div class="flow-item">Fabrication</div><div class="flow-arrow">→</div>
         <div class="flow-item">Ground / Flight Test</div>
       </div>
     </div>
   </div>
 
-  <!-- 03. Conceptual Design -->
   <div class="section">
     <div class="section-label">
       <span class="section-num">03</span>
-      <span class="section-title">2.2.1 Conceptual Design<br>개념 설계</span>
+      <span class="section-title">Conceptual Design</span>
     </div>
     <div class="section-content">
       <ol>
-        <li><span class="idx">1</span><span><span class="keyword">목적</span> <span class="desc">— 다양한 형상 개념을 검토, 트레이드 스터디 수행, 최종 단일 최적 설계로 수렴</span></span></li>
-        <li><span class="idx">2</span><span><span class="keyword">설계 배치 항목</span> <span class="desc">— 날개·꼬리 기하, 동체 형상, 승무원·페이로드·승객·장비의 내부 위치, 엔진 장착, 착륙 장치, 기타(canard? aft tail?)</span></span></li>
-        <li><span class="idx">3</span><span><span class="keyword">Fluid process</span> <span class="desc">— 설계 배치가 지속적으로 변경됨. 고급 CAD 시스템 불필요. 종이 스케치 수준으로 진행</span></span></li>
-        <li><span class="idx">4</span><span><span class="keyword">기간</span> <span class="desc">— 수 주 ~ 6개월 (대형 상용·군용 프로젝트 기준)</span></span></li>
-        <li><span class="idx">5</span><span><span class="keyword">설계 상세도</span> <span class="desc">— 전방 날개보(front wing spar)를 예로 들면, 개념 설계 수준에서는 루트~팁 간 평판(flat plate)으로만 표현. 날개 박스·연료 탱크·LE 플랩 크기 추정 가능</span></span></li>
+        <li><span class="idx">1</span><span><span class="keyword">Purpose</span> <span class="desc">— 다양한 형상 개념을 검토, Trade study 수행, 최종 단일 최적 설계로 수렴</span></span></li>
+        <li><span class="idx">2</span><span><span class="keyword">Configuration Layout Items</span> <span class="desc">— Wing/tail geometry, Fuselage shape, Crew/payload/passenger/equipment internal position, Engine installation, Landing gear, Canard vs aft tail 선택</span></span></li>
+        <li><span class="idx">3</span><span><span class="keyword">Fluid Process</span> <span class="desc">— 설계 배치가 지속적으로 변경됨. Advanced CAD 불필요, 종이 스케치 수준으로 진행</span></span></li>
+        <li><span class="idx">4</span><span><span class="keyword">Duration</span> <span class="desc">— 수 주 ~ 6개월 (대형 상용·군용 프로젝트 기준)</span></span></li>
+        <li><span class="idx">5</span><span><span class="keyword">Level of Detail</span> <span class="desc">— Front wing spar를 예로 들면, Conceptual design 수준에서는 Root~tip 간 flat plate로만 표현. Wing box·Fuel tank·LE Flap 크기 추정 가능</span></span></li>
       </ol>
     </div>
   </div>
 
-  <!-- 04. Preliminary Design -->
   <div class="section">
     <div class="section-label">
       <span class="section-num">04</span>
-      <span class="section-title">2.2.2 Preliminary Design<br>기본 설계</span>
+      <span class="section-title">Preliminary Design</span>
     </div>
     <div class="section-content">
       <ol>
-        <li><span class="idx">1</span><span><span class="keyword">시작 조건</span> <span class="desc">— 주요 변경이 완료된 시점. Canard냐 후방 꼬리날개냐 등 큰 이슈가 해결된 후 시작</span></span></li>
-        <li><span class="idx">2</span><span><span class="keyword">형상 동결 (Freeze)</span> <span class="desc">— 전체 설계 배치 변경 금지. 이후 세부 변경만 허용</span> <span class="tag tag-b">★출제</span></span></li>
-        <li><span class="idx">3</span><span><span class="keyword">설계 성숙</span> <span class="desc">— 수개월에 걸쳐 공력·중량·추진·안정성·구조 전문가들이 각 파트를 설계·분석. 신뢰도 증가</span></span></li>
-        <li><span class="idx">4</span><span><span class="keyword">Lofting</span> <span class="desc">— 핵심 작업. 외피를 충분한 정확도로 수학적으로 모델링. 서로 다른 설계자가 만든 부품들이 정확히 맞는지 확인 (wireframe → surface model)</span> <span class="tag tag-a">★</span></span></li>
+        <li><span class="idx">1</span><span><span class="keyword">Starting Condition</span> <span class="desc">— 주요 변경이 완료된 시점. Canard냐 Aft tail이냐 등 큰 이슈가 해결된 후 시작</span></span></li>
+        <li><span class="idx">2</span><span><span class="keyword">Configuration Freeze</span> <span class="desc">— 전체 설계 배치 변경 금지. 이후 세부 변경만 허용</span> <span class="tag tag-b">★출제</span></span></li>
+        <li><span class="idx">3</span><span><span class="keyword">Design Maturation</span> <span class="desc">— 수개월에 걸쳐 Aerodynamics / Weight / Propulsion / Stability / Structures 전문가들이 각 파트를 설계·분석. 신뢰도 증가</span></span></li>
+        <li><span class="idx">4</span><span><span class="keyword">Lofting</span> <span class="desc">— 핵심 작업. 외피를 충분한 정확도로 수학적으로 모델링. 서로 다른 설계자가 만든 부품들이 정확히 맞는지 확인 (Wireframe → Surface model)</span> <span class="tag tag-a">★</span></span></li>
         <li><span class="idx">5</span><span><span class="keyword">Mockup</span> <span class="desc">— 실물 크기 목업 또는 전자(CAD) 목업 제작. 실제 비용 추정 시작 ("You bet your company!")</span></span></li>
-        <li><span class="idx">6</span><span><span class="keyword">진지한 시험 시작</span> <span class="desc">— 공력, 추진, 구조, 안정성·조종 분야 본격 시험</span></span></li>
+        <li><span class="idx">6</span><span><span class="keyword">Serious Testing Begins</span> <span class="desc">— Aerodynamics, Propulsion, Structures, Stability &amp; Control 분야 본격 시험</span></span></li>
       </ol>
     </div>
   </div>
 
-  <!-- 05. Detail Design -->
   <div class="section">
     <div class="section-label">
       <span class="section-num">05</span>
-      <span class="section-title">2.2.3 Detail Design<br>상세 설계</span>
+      <span class="section-title">Detail Design</span>
     </div>
     <div class="section-content">
       <ol>
-        <li><span class="idx">1</span><span><span class="keyword">실제 부품 설계</span> <span class="desc">— 개별 구조 부품, 모든 시스템(착륙 장치·유압·전기·공압·연료·추진 등) 설계. 전투기: 수십만 부품; 대형 여객기: 수백만 부품 + 수백 마일의 배선</span></span></li>
-        <li><span class="idx">2</span><span><span class="keyword">생산 설계</span> <span class="desc">— Production design: 제작 가능성·조립 순서 고려. 또 하나의 중요 업무</span></span></li>
-        <li><span class="idx">3</span><span><span class="keyword">시험 강화</span> <span class="desc">— 실제 구조 시험, 비행 시뮬레이터 개발·운용 (제작사 + 고객 시험 조종사)</span></span></li>
-        <li><span class="idx">4</span><span><span class="keyword">시제기(Prototype)</span> <span class="desc">— "soft" 또는 임시 툴링으로 제작. 실제 생산용 hard tooling은 이후 단계</span></span></li>
-        <li><span class="idx">5</span><span><span class="keyword">실제 수치 확정</span> <span class="desc">— "NOW you learn the real numbers!" 중량·성능 최종 확정</span></span></li>
+        <li><span class="idx">1</span><span><span class="keyword">Actual Part Design</span> <span class="desc">— 개별 구조 부품, 모든 시스템(Landing gear, Hydraulic, Electrical, Pneumatic, Fuel, Propulsion 등) 설계</span></span></li>
+        <li><span class="idx">2</span><span><span class="keyword">Production Design</span> <span class="desc">— 제작 가능성·조립 순서 고려. 또 하나의 중요 업무</span></span></li>
+        <li><span class="idx">3</span><span><span class="keyword">Enhanced Testing</span> <span class="desc">— Actual structural test, Flight simulator development/operation (제작사 + 고객 조종사)</span></span></li>
+        <li><span class="idx">4</span><span><span class="keyword">Prototype</span> <span class="desc">— "Soft" 또는 임시 tooling으로 제작. Actual production hard tooling은 이후 단계</span></span></li>
+        <li><span class="idx">5</span><span><span class="keyword">Real Numbers Confirmed</span> <span class="desc">— "NOW you learn the real numbers!" — Weight &amp; Performance 최종 확정</span></span></li>
       </ol>
     </div>
   </div>
 
-  <!-- 06. 개념 설계 3단계 프로세스 -->
   <div class="section">
     <div class="section-label">
       <span class="section-num">06</span>
-      <span class="section-title">2.3 Conceptual Design<br>Process 3단계</span>
+      <span class="section-title">Conceptual Design Process<br>3 Steps</span>
     </div>
     <div class="section-content">
       <div class="two-col">
         <div class="box">
-          <h4>① Conceptual Sketch<br>개념 스케치</h4>
+          <h4>① Conceptual Sketch</h4>
           <ul>
-            <li>날개·꼬리 기하, 동체 형상, 주요 구성품 내부 위치(엔진·조종석·페이로드·착륙 장치·연료 탱크) 포함</li>
-            <li>이전 설계 대비로 공력·중량 분율 추정 (Sizing)</li>
+            <li>Wing/tail geometry, Fuselage shape, Major component internal positions (Engine, Cockpit, Payload, Landing gear, Fuel tank) 포함</li>
+            <li>Aerodynamic/weight fraction 초기 추정 (Sizing)</li>
             <li>기존 설계와 유사하면 생략 가능</li>
           </ul>
         </div>
         <div class="box">
-          <h4>② Initial Sizing<br>초기 크기 결정</h4>
+          <h4>② Initial Sizing</h4>
           <ul>
-            <li>설계 임무 수행에 필요한 총 중량과 연료 중량의 첫 번째 추정</li>
-            <li>초기 배치도 작성 (단면 충분히 포함)</li>
-            <li>배치도를 공력·중량·추진 분석에 사용 → 상세 크기 결정</li>
+            <li>설계 임무 수행에 필요한 Total weight와 Fuel weight의 첫 번째 추정</li>
+            <li>Initial layout drawing 작성</li>
+            <li>Layout을 Aerodynamics / Weight / Propulsion 분석에 사용 → 상세 Sizing 진행</li>
           </ul>
         </div>
       </div>
       <div class="box" style="margin-top:14px;">
-        <h4>③ Optimization through Iterative Process<br>반복 최적화</h4>
+        <h4>③ Optimization through Iterative Process</h4>
         <ul>
           <li>가장 가볍거나 최저 비용이면서 임무 수행 + 성능 요구사항 충족하는 항공기 도출</li>
-          <li>예: 조종면 전문가의 6자유도 해석으로 조종면 크기 검증 → 부족하면 설계자에게 확장 지시</li>
-          <li>도면 번호 체계: D645-1 (Dash-One) → D645-2, D645-3 … D645-5 순으로 개정</li>
+          <li>Drawing number scheme: D645-1 (Dash-One) → D645-2, D645-3 … 순으로 개정</li>
           <li><strong>"You never build the Dash-One"</strong> — 설계는 항상 반복된다</li>
-          <li>최종 결과물은 기본 설계(Preliminary Design) 단계로 전달</li>
+          <li>최종 결과물은 Preliminary Design 단계로 전달</li>
         </ul>
       </div>
-      <p class="note">기술 가용성: 근미래 → 현 기술만; 먼 미래 → 미래 기술 고려 가능(개발 위험 증가)</p>
     </div>
   </div>
 
-  <!-- 07. 개념 설계 프로세스 흐름도 -->
   <div class="section">
     <div class="section-label">
       <span class="section-num">07</span>
-      <span class="section-title">Fig. 2.4<br>개념 설계 흐름</span>
+      <span class="section-title">Conceptual Design Flow<br>Fig. 2.4</span>
     </div>
     <div class="section-content">
-      <p class="prose">개념 설계는 <strong>설계요구조건 + 새로운 아이디어</strong>에서 출발하여 두 단계를 거쳐 기본 설계로 넘어간다.</p>
+      <p class="prose">Conceptual design은 <strong>Design requirements + New ideas</strong>에서 출발하여 두 단계를 거쳐 Preliminary design으로 넘어간다.</p>
       <div class="two-col" style="margin-top:12px;">
         <div class="box">
-          <h4>1차 루프 (초기 배치)</h4>
+          <h4>Loop 1 — Initial Layout</h4>
           <ul>
-            <li>개념 스케치 → 초기배치</li>
-            <li>공력 / 중량 / 추진기관 초기 분석</li>
-            <li>초기 크기 결정 및 성능 최적화</li>
-            <li>불만족 시 → 개념 스케치로 되돌아감</li>
+            <li>Concept sketch → Initial layout</li>
+            <li>Aerodynamics / Weight / Propulsion 초기 분석</li>
+            <li>Initial sizing &amp; performance optimization</li>
+            <li>불만족 시 → Concept sketch로 되돌아감</li>
           </ul>
         </div>
         <div class="box">
-          <h4>2차 루프 (수정 배치)</h4>
+          <h4>Loop 2 — Revised Layout</h4>
           <ul>
-            <li>수정배치: 공력·중량·추진기관·비용·구조·착륙장치·기타 상세 분석</li>
-            <li>수정된 크기 결정 및 성능 최적화</li>
-            <li>불만족 시 → 1차 루프로 되돌아감</li>
-            <li>만족 → 기본 설계(Preliminary) 진행</li>
+            <li>Revised layout: Aerodynamics / Weight / Propulsion / Cost / Structure / Landing gear 상세 분석</li>
+            <li>Revised sizing &amp; performance optimization</li>
+            <li>불만족 시 → Loop 1으로 되돌아감</li>
+            <li>만족 → Preliminary Design 진행</li>
           </ul>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- 08. 의사결정 7단계 -->
   <div class="section">
     <div class="section-label">
       <span class="section-num">08</span>
-      <span class="section-title">불확실성 하의 의사결정<br>7단계 기본 절차</span>
+      <span class="section-title">Decision-Making Process<br>7 Steps</span>
     </div>
     <div class="section-content">
       <ol>
-        <li><span class="idx">1</span><span><span class="keyword">평가 기준 수립</span> <span class="desc">— Establish evaluation criteria</span></span></li>
-        <li><span class="idx">2</span><span><span class="keyword">상대적 중요도 결정</span> <span class="desc">— Determine relative importance of criteria</span></span></li>
-        <li><span class="idx">3</span><span><span class="keyword">대안 개념 개발</span> <span class="desc">— 목표와 top-level requirements를 충족하는 대안 개념들 개발</span></span></li>
-        <li><span class="idx">4</span><span><span class="keyword">각 대안 평가</span> <span class="desc">— 수립된 평가 기준에 따라 각 대안을 평가</span></span></li>
-        <li><span class="idx">5</span><span><span class="keyword">잠정 개념 선택</span> <span class="desc">— 평가 기준을 가장 잘 만족하는 대안이 잠정적 개념 선택안이 됨</span></span></li>
-        <li><span class="idx">6</span><span><span class="keyword">잠정 선택안 상세 평가</span> <span class="desc">— 예상치 못한 단점 식별을 위해 더 상세하게 평가</span></span></li>
-        <li><span class="idx">7</span><span><span class="keyword">최종 결정 또는 재검토</span> <span class="desc">— 더 상세한 연구를 바탕으로 최종 결정. 필요시 3단계로 돌아감</span></span></li>
+        <li><span class="idx">1</span><span><span class="keyword">Establish Evaluation Criteria</span> <span class="desc">— 평가 기준 수립</span></span></li>
+        <li><span class="idx">2</span><span><span class="keyword">Determine Relative Importance</span> <span class="desc">— 각 기준의 상대적 중요도 결정</span></span></li>
+        <li><span class="idx">3</span><span><span class="keyword">Develop Alternative Concepts</span> <span class="desc">— 목표와 top-level requirements를 충족하는 대안 개념들 개발</span></span></li>
+        <li><span class="idx">4</span><span><span class="keyword">Evaluate Each Alternative</span> <span class="desc">— 수립된 평가 기준에 따라 각 대안을 평가</span></span></li>
+        <li><span class="idx">5</span><span><span class="keyword">Select Tentative Concept</span> <span class="desc">— 평가 기준을 가장 잘 만족하는 대안이 잠정적 선택안이 됨</span></span></li>
+        <li><span class="idx">6</span><span><span class="keyword">Detailed Evaluation of Tentative Selection</span> <span class="desc">— 예상치 못한 단점 식별을 위해 더 상세하게 평가</span></span></li>
+        <li><span class="idx">7</span><span><span class="keyword">Final Decision or Re-study</span> <span class="desc">— 최종 결정. 필요시 Step 3으로 되돌아감</span></span></li>
       </ol>
     </div>
   </div>
 
-  <!-- 09. AHP -->
   <div class="section">
     <div class="section-label">
       <span class="section-num">09</span>
-      <span class="section-title">AHP<br>분석적 계층 과정</span>
+      <span class="section-title">AHP<br>Analytic Hierarchy Process</span>
     </div>
     <div class="section-content">
       <p class="prose">
-        <strong>Analytical Hierarchy Process (AHP)</strong>는 여러 평가 기준에 대한 쌍대 비교(pairwise comparison)를 통해 대안들의 우선순위를 정량적으로 결정하는 의사결정 기법이다.
+        <strong>AHP (Analytic Hierarchy Process)</strong>는 여러 평가 기준에 대한 Pairwise Comparison을 통해 대안들의 우선순위를 정량적으로 결정하는 의사결정 기법이다.
       </p>
-      <div class="formula-box" style="margin-top:12px;">
-        <strong>Aij 비교값 의미:</strong><br>
-        Aij = 1   : i 와 j 가 동등하게 중요 (equal importance)<br>
-        Aij = 3   : i 가 j 보다 약간 더 중요 (weakly more important)<br>
-        Aij = 5   : i 가 j 보다 상당히 중요 (strongly more important)<br>
-        Aij = 7   : i 가 j 보다 매우 중요 (very strongly more important)<br>
-        Aij = 9   : i 가 j 보다 절대적으로 중요 (absolutely more important)<br>
-        2, 4, 6, 8 → 중간 값<br><br>
-        Aii = 1  (자기 자신과의 비교는 항상 1)<br>
-        Aji = 1/Aij  (역수 관계)  ← if Aij = p, then Aji = 1/p
-        <span class="eq-label">★ 역수 관계 암기</span>
+      <div class="box" style="margin-top:12px;">
+        <h4>Comparison Scale (A<sub>ij</sub> values) <span class="tag tag-b">★암기</span></h4>
+        <ul>
+          <li><strong>1</strong> — Equal importance (i와 j가 동등하게 중요)</li>
+          <li><strong>3</strong> — Weakly more important (i가 j보다 약간 더 중요)</li>
+          <li><strong>5</strong> — Strongly more important (i가 j보다 상당히 중요)</li>
+          <li><strong>7</strong> — Very strongly more important (i가 j보다 매우 중요)</li>
+          <li><strong>9</strong> — Absolutely more important (i가 j보다 절대적으로 중요)</li>
+          <li><strong>2, 4, 6, 8</strong> — Intermediate values (중간 값)</li>
+          <li><strong>A<sub>ii</sub> = 1</strong> — 자기 자신과의 비교는 항상 1</li>
+          <li><strong>A<sub>ji</sub> = 1 / A<sub>ij</sub></strong> — Reciprocal relationship (역수 관계)</li>
+        </ul>
       </div>
-      <p class="note" style="margin-top:10px;">예시 (RFP 2011, 5대 속성): 연료 효율 &gt; 신뢰성 &gt; 속도 &gt; 제자리비행 능력 &gt; 비용</p>
     </div>
   </div>
 
-  <!-- 10. 3단계 설계 상세도 비교 -->
   <div class="section">
     <div class="section-label">
       <span class="section-num">10</span>
-      <span class="section-title">3단계 설계<br>상세도 비교 요약</span>
+      <span class="section-title">3-Phase Design<br>Comparison Summary</span>
     </div>
     <div class="section-content">
       <table class="data-table">
         <thead>
-          <tr>
-            <th>단계</th>
-            <th>주요 활동</th>
-            <th>특징/키워드</th>
-          </tr>
+          <tr><th>Phase</th><th>Key Activities</th><th>Characteristics / Keywords</th></tr>
         </thead>
         <tbody>
-          <tr>
-            <td><strong>Conceptual</strong></td>
-            <td>개념 스케치, 초기 크기 결정, 반복 최적화</td>
-            <td>Fluid process, 고급 CAD 불필요, 수 주~6개월</td>
-          </tr>
-          <tr>
-            <td><strong>Preliminary</strong></td>
-            <td>형상 동결(Freeze), Lofting, 전문가 분석, Mockup</td>
-            <td>"You bet your company!" 실제 비용 추정 시작</td>
-          </tr>
-          <tr>
-            <td><strong>Detail</strong></td>
-            <td>개별 부품 설계, 생산 설계, 구조 시험, 시제기 제작</td>
-            <td>Soft tooling, "NOW you learn the real numbers!"</td>
-          </tr>
+          <tr><td><strong>Conceptual</strong></td><td>Concept sketch, Initial sizing, Iterative optimization</td><td>Fluid process, Advanced CAD not needed, Weeks to 6 months</td></tr>
+          <tr><td><strong>Preliminary</strong></td><td>Configuration freeze, Lofting, Expert analysis, Mockup</td><td>"You bet your company!" — Real cost estimation begins</td></tr>
+          <tr><td><strong>Detail</strong></td><td>Individual part design, Production design, Structural test, Prototype fabrication</td><td>Soft tooling, "NOW you learn the real numbers!"</td></tr>
         </tbody>
       </table>
     </div>
@@ -418,5 +291,26 @@
   <footer>AE2001018 · Chapter 2 · Overview of the Design Process · 부산대학교 항공우주공학과</footer>
 
 </div>
+<script>
+(function () {
+  var tocList = document.getElementById("toc-list");
+  var tocPanel = document.getElementById("toc-panel");
+  var tocToggle = document.getElementById("toc-toggle");
+  if (!tocList || !tocPanel || !tocToggle) return;
+  var nodes = Array.prototype.slice.call(document.querySelectorAll(".section-title"));
+  nodes.forEach(function (node, idx) {
+    if (!node.id) node.id = "toc-item-" + (idx + 1);
+    var li = document.createElement("li");
+    var a = document.createElement("a");
+    a.href = "#" + node.id;
+    a.textContent = (node.textContent || "").replace(/\s+/g, " ").trim();
+    li.appendChild(a);
+    tocList.appendChild(li);
+  });
+  tocToggle.addEventListener("click", function () { tocPanel.classList.toggle("open"); });
+  tocList.addEventListener("click", function () { tocPanel.classList.remove("open"); });
+  document.addEventListener("click", function (e) { if (!tocPanel.contains(e.target) && e.target !== tocToggle) tocPanel.classList.remove("open"); });
+})();
+</script>
 </body>
 </html>

@@ -6,483 +6,310 @@
 <title>Chapter 1 핵심정리</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@300;400;600&family=IBM+Plex+Mono:wght@400;600&display=swap');
-
   * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    font-family: 'IBM Plex Sans KR', sans-serif;
-    background: #f5f4f0;
-    color: #1a1a1a;
-    padding: 40px 20px;
-    font-size: 14px;
-    line-height: 1.7;
-  }
-
+  body { font-family: 'IBM Plex Sans KR', sans-serif; background: #f5f4f0; color: #1a1a1a; padding: 40px 20px; font-size: 14px; line-height: 1.7; }
   .page { max-width: 780px; margin: 0 auto; }
-
-  header {
-    border-bottom: 3px solid #1a1a1a;
-    padding-bottom: 16px;
-    margin-bottom: 36px;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-  }
-
+  header { border-bottom: 3px solid #1a1a1a; padding-bottom: 16px; margin-bottom: 36px; display: flex; justify-content: space-between; align-items: flex-end; }
   header h1 { font-size: 26px; font-weight: 600; letter-spacing: -0.5px; }
   header .meta { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #888; text-align: right; }
-
-  .section {
-    margin-bottom: 28px;
-    display: grid;
-    grid-template-columns: 220px 1fr;
-    gap: 0;
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 24px;
-  }
-
+  .section { margin-bottom: 28px; display: grid; grid-template-columns: 220px 1fr; gap: 0; border-bottom: 1px solid #ddd; padding-bottom: 24px; }
   .section:last-child { border-bottom: none; }
-
   .section-label { padding-top: 2px; padding-right: 20px; }
   .section-num { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #aaa; display: block; margin-bottom: 4px; }
   .section-title { font-size: 13px; font-weight: 600; color: #1a1a1a; line-height: 1.4; }
-
   .section-content ol { list-style: none; padding: 0; }
-
-  .section-content ol li {
-    padding: 5px 0;
-    border-bottom: 1px dotted #e0e0e0;
-    display: flex;
-    gap: 10px;
-    align-items: baseline;
-  }
-
+  .section-content ol li { padding: 5px 0; border-bottom: 1px dotted #e0e0e0; display: flex; gap: 10px; align-items: baseline; }
   .section-content ol li:last-child { border-bottom: none; }
-
   .idx { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #bbb; min-width: 18px; flex-shrink: 0; }
   .keyword { font-weight: 600; color: #1a1a1a; }
   .desc { color: #555; font-size: 13px; }
-
   .prose { color: #333; font-size: 13.5px; line-height: 1.9; }
   .prose strong { font-weight: 600; color: #1a1a1a; }
-
   .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
-
-  .box {
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    padding: 14px 16px;
-  }
-
+  .box { background: #fff; border: 1px solid #ddd; border-radius: 4px; padding: 14px 16px; }
   .box h4 { font-size: 12px; font-weight: 600; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid #eee; }
   .box ul { list-style: none; padding: 0; }
   .box ul li { font-size: 12.5px; color: #444; padding: 3px 0; padding-left: 12px; position: relative; line-height: 1.5; }
   .box ul li::before { content: "–"; position: absolute; left: 0; color: #bbb; }
-
   .tag { display: inline-block; font-family: 'IBM Plex Mono', monospace; font-size: 10px; padding: 1px 6px; border-radius: 2px; margin-left: 6px; vertical-align: middle; }
   .tag-a { background: #e8f0fe; color: #3b5bdb; }
   .tag-b { background: #fff0f6; color: #c2255c; }
-  .tag-c { background: #f0fff4; color: #2f9e44; }
-  .tag-d { background: #fff9e6; color: #e67700; }
-  .tag-e { background: #f3f0ff; color: #7048e8; }
-
-  .formula-box {
-    background: #fff;
-    border: 1px solid #e0e0e0;
-    border-left: 3px solid #aaa;
-    border-radius: 4px;
-    padding: 12px 16px;
-    margin-top: 10px;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 12.5px;
-    color: #333;
-    line-height: 1.9;
-  }
-
-  .formula-box .eq-label { font-size: 10px; color: #bbb; float: right; }
-
-  .data-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 12px;
-    margin-top: 4px;
-  }
-
-  .data-table th {
-    background: #1a1a1a;
-    color: #fff;
-    padding: 6px 10px;
-    text-align: left;
-    font-weight: 600;
-    font-size: 11px;
-  }
-
-  .data-table td {
-    padding: 6px 10px;
-    border-bottom: 1px solid #eee;
-    color: #444;
-    vertical-align: top;
-  }
-
+  .data-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 4px; }
+  .data-table th { background: #1a1a1a; color: #fff; padding: 6px 10px; text-align: left; font-weight: 600; font-size: 11px; }
+  .data-table td { padding: 6px 10px; border-bottom: 1px solid #eee; color: #444; vertical-align: top; }
   .data-table tr:last-child td { border-bottom: none; }
   .data-table tr:nth-child(even) td { background: #f9f9f7; }
-
   .note { font-size: 11.5px; color: #888; margin-top: 8px; padding-left: 4px; }
-
-  .flow {
-    display: flex;
-    align-items: center;
-    gap: 0;
-    flex-wrap: wrap;
-    margin-top: 10px;
-  }
-  .flow-item {
-    background: #fff;
-    border: 1px solid #ccc;
-    border-radius: 3px;
-    padding: 7px 12px;
-    font-size: 12px;
-    font-weight: 600;
-    color: #1a1a1a;
-    white-space: nowrap;
-  }
+  .flow { display: flex; align-items: center; flex-wrap: wrap; margin-top: 10px; gap: 0; }
+  .flow-item { background: #fff; border: 1px solid #ccc; border-radius: 3px; padding: 7px 12px; font-size: 12px; font-weight: 600; color: #1a1a1a; white-space: nowrap; }
   .flow-arrow { font-size: 14px; color: #bbb; padding: 0 5px; }
-
   footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid #ddd; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #bbb; text-align: center; }
+  .quick-nav { position: fixed; right: 20px; bottom: 20px; display: flex; flex-direction: column; gap: 8px; z-index: 9999; }
+  .quick-btn, .quick-link { font-family: "IBM Plex Mono", monospace; font-size: 11px; border: 1px solid #1a1a1a; background: #1a1a1a; color: #fff; padding: 8px 12px; border-radius: 6px; cursor: pointer; text-decoration: none; text-align: center; min-width: 92px; }
+  .quick-link { display: inline-block; }
+  .quick-btn:hover, .quick-link:hover { background: #333; border-color: #333; }
+  #toc-panel { position: fixed; right: 20px; bottom: 116px; width: min(360px, calc(100vw - 40px)); max-height: 60vh; overflow: auto; background: #fff; border: 1px solid #dcdcdc; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.14); padding: 12px; display: none; z-index: 9998; }
+  #toc-panel.open { display: block; }
+  #toc-panel .toc-title { font-family: "IBM Plex Mono", monospace; font-size: 11px; color: #666; margin-bottom: 10px; }
+  #toc-list { list-style: none; padding: 0; margin: 0; }
+  #toc-list li { padding: 4px 0; border-bottom: 1px dotted #e5e5e5; }
+  #toc-list li:last-child { border-bottom: none; }
+  #toc-list a { color: #222; text-decoration: none; font-size: 12px; line-height: 1.45; display: block; }
+  #toc-list a:hover { color: #0c8599; }
+  @media (max-width: 640px) { .quick-nav { right: 12px; bottom: 12px; } #toc-panel { right: 12px; bottom: 108px; width: calc(100vw - 24px); } }
 </style>
 </head>
 <body>
+<div class="quick-nav">
+  <button class="quick-btn" id="toc-toggle" type="button">목차</button>
+  <a class="quick-link" href="index.html">뒤로가기</a>
+</div>
+<aside id="toc-panel" aria-label="페이지 목차">
+  <p class="toc-title">목차</p>
+  <ul id="toc-list"></ul>
+</aside>
 <div class="page">
 
   <header>
     <h1>Chapter 1 · Introduction to Aircraft Design</h1>
-    <div class="meta">주관식 / 개념 위주<br>25년 1학기</div>
+    <div class="meta">개념 위주<br>25년 1학기</div>
   </header>
 
-  <!-- 01. 항공기 설계의 본질 -->
   <div class="section">
     <div class="section-label">
       <span class="section-num">01</span>
-      <span class="section-title">항공기 설계의 본질<br>종합공학 / IPD</span>
+      <span class="section-title">Nature of Aircraft Design<br>IPD</span>
     </div>
     <div class="section-content">
       <ol>
-        <li><span class="idx">1</span><span><span class="keyword">다분야 체계활동</span> <span class="desc">— 항공기 설계는 여러 분야가 참여하는 시스템 활동. 단계별 주요 업무와 분야 간 연관성 이해 필수</span></span></li>
-        <li><span class="idx">2</span><span><span class="keyword">수요자 요구 + 개발 목적</span> <span class="desc">— 고객의 요구를 만족시키면서 임무를 성공적으로 수행하는 것이 설계의 목적</span></span></li>
-        <li><span class="idx">3</span><span><span class="keyword">IPD (통합개발)</span> <span class="desc">— Integrated Product Development: 설계 초기 단계부터 항공기의 운용 및 지원체계까지 동시적으로 고려하여 개발</span> <span class="tag tag-a">★</span></span></li>
-        <li><span class="idx">4</span><span><span class="keyword">종합공학</span> <span class="desc">— 공기역학 / 구조역학 / 추진역학 / 제어 + 기계·전기전자·재료·화학·환경공학 + 신뢰성·안전·인간·물류공학 등 통합</span></span></li>
-        <li><span class="idx">5</span><span><span class="keyword">핵심 명제</span> <span class="desc">— <strong>Design ≠ Aero + Structures + Propulsion + …</strong> 단순 합이 아닌 체계적·종합적 사고 필요</span></span></li>
-        <li><span class="idx">6</span><span><span class="keyword">요구사항 상충</span> <span class="desc">— "가볍고, 성능 좋고, 탑재물 많고, 제작 쉽고…" → 각 요구사항은 서로 충돌. 한 분야만 극대화하면 다른 분야 희생 (Fig. 1.1 Dream Airplanes)</span></span></li>
+        <li><span class="idx">1</span><span><span class="keyword">Multidisciplinary Systems Activity</span> <span class="desc">— 항공기 설계는 여러 분야가 참여하는 시스템 활동. 단계별 주요 업무와 분야 간 연관성 이해 필수</span></span></li>
+        <li><span class="idx">2</span><span><span class="keyword">Customer Requirements + Mission Goals</span> <span class="desc">— 고객 요구를 만족시키면서 임무를 성공적으로 수행하는 것이 설계의 목적</span></span></li>
+        <li><span class="idx">3</span><span><span class="keyword">IPD (Integrated Product Development)</span> <span class="desc">— 설계 초기 단계부터 운용 및 지원체계까지 동시적으로 고려하여 개발하는 통합개발 방법론</span> <span class="tag tag-a">★</span></span></li>
+        <li><span class="idx">4</span><span><span class="keyword">Systems Engineering</span> <span class="desc">— Aerodynamics / Structures / Propulsion / Controls + Mechanical, Electrical, Materials Engineering + Reliability, Safety, Human Factors, Logistics 등 통합</span></span></li>
+        <li><span class="idx">5</span><span><span class="keyword">Core Principle</span> <span class="desc">— <strong>Design ≠ Aero + Structures + Propulsion + …</strong> 단순 합이 아닌 체계적·종합적 사고 필요</span></span></li>
+        <li><span class="idx">6</span><span><span class="keyword">Requirements Conflict</span> <span class="desc">— "Light weight, high performance, large payload, easy to manufacture…" 각 요구사항은 서로 충돌. 한 분야 극대화 시 다른 분야 희생 (Dream Airplanes 개념)</span></span></li>
       </ol>
     </div>
   </div>
 
-  <!-- 02. 항공기 총순기(Lift-Cycle) -->
   <div class="section">
     <div class="section-label">
       <span class="section-num">02</span>
-      <span class="section-title">항공기 총순기<br>(Life-Cycle) 6단계</span>
+      <span class="section-title">Aircraft Life-Cycle<br>6 Phases</span>
     </div>
     <div class="section-content">
       <table class="data-table">
-        <thead>
-          <tr>
-            <th>단계</th>
-            <th>주요 활동</th>
-            <th>산출물 예시</th>
-          </tr>
-        </thead>
+        <thead><tr><th>Phase</th><th>Key Activities</th><th>Deliverables</th></tr></thead>
         <tbody>
-          <tr>
-            <td><strong>개념설계</strong><br>(Conceptual)</td>
-            <td>운영/정비 요구·시장 분석, 개발가능성 분석, 항공기 개념설계, 사업추진계획</td>
-            <td>개념 형상, 초기 크기</td>
-          </tr>
-          <tr>
-            <td><strong>기본설계</strong><br>(Preliminary)</td>
-            <td>기능분석, 기능배분/할당, 대안분석/최적화, 항공기 기본설계, 세부사업계획</td>
-            <td>기준 형상, 주요 도면</td>
-          </tr>
-          <tr>
-            <td><strong>상세설계</strong><br>(Detail)</td>
-            <td>구성품/계통설계, 대안분석 비교, 공학모형/시제품, 개발 시험평가, 생산계획</td>
-            <td>시제기, 세부 도면</td>
-          </tr>
-          <tr>
-            <td><strong>생산</strong><br>(Production)</td>
-            <td>주장비·부품 생산, 생산업체 관리, 사용자 지원, 운용시험평가, 지원체계개발</td>
-            <td>양산 항공기</td>
-          </tr>
-          <tr>
-            <td><strong>운영유지</strong><br>(O&amp;M)</td>
-            <td>체계운영, 사용자 환경 지원, 군수지원, 운용시험평가, 개량·보완</td>
-            <td>개량형, 성능 보고</td>
-          </tr>
-          <tr>
-            <td><strong>폐기</strong><br>(Phaseout)</td>
-            <td>운용 종료, 부품 활용, 환경 처리</td>
-            <td>—</td>
-          </tr>
+          <tr><td><strong>Conceptual Design</strong></td><td>Mission/market analysis, feasibility study, conceptual design, program plan</td><td>Concept configuration, initial sizing</td></tr>
+          <tr><td><strong>Preliminary Design</strong></td><td>Functional analysis, trade study/optimization, baseline design, detail program plan</td><td>Baseline configuration, key drawings</td></tr>
+          <tr><td><strong>Detail Design</strong></td><td>Component/system design, trade study, engineering mockup/prototype, DT&amp;E, production planning</td><td>Prototype, detail drawings</td></tr>
+          <tr><td><strong>Production</strong></td><td>Parts production, production management, user support, OT&amp;E, support system development</td><td>Production aircraft</td></tr>
+          <tr><td><strong>Operations &amp; Maintenance</strong></td><td>System operation, logistics support, operational test, modification</td><td>Upgraded variants, performance reports</td></tr>
+          <tr><td><strong>Phase-Out</strong></td><td>End of service, parts utilization, environmental disposal</td><td>—</td></tr>
         </tbody>
       </table>
-      <p class="note">새 항공기 개발을 위한 필요 기술: 기반기술 → 핵심기술 + 요소기술 → 설계/해석기술 → 시험/평가기술 → 생산기술 → 운용유지기술</p>
     </div>
   </div>
 
-  <!-- 03. 항공기 설계 과정 구분 -->
   <div class="section">
     <div class="section-label">
       <span class="section-num">03</span>
-      <span class="section-title">항공기 설계 과정<br>탐색개발 vs 체계개발</span>
+      <span class="section-title">Development Phases<br>Exploratory vs Full-Scale</span>
     </div>
     <div class="section-content">
       <div class="two-col">
         <div class="box">
-          <h4>탐색개발 (Exploratory Development)</h4>
+          <h4>Exploratory Development</h4>
           <ul>
-            <li>개념설계 + 기본설계 포함</li>
-            <li>임무요구·성능/비용 목표 입력</li>
-            <li>풍동시험, 전산유체/구조/진동 모의실험 병행</li>
+            <li>Conceptual Design + Preliminary Design 포함</li>
+            <li>Mission requirements, performance/cost goals 입력</li>
+            <li>Wind tunnel tests + CFD/structural/vibration simulations 병행</li>
           </ul>
         </div>
         <div class="box">
-          <h4>체계개발 (Full Scale Development)</h4>
+          <h4>Full-Scale Development</h4>
           <ul>
-            <li>상세설계 + 시제항공기(prototype) 제작 + 개발시험</li>
+            <li>Detail Design + Prototype fabrication + Development test</li>
             <li>CAD/CAM 활용</li>
-            <li>비행시험 → 생산(Production)</li>
+            <li>Flight test → Production</li>
           </ul>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- 04. Design Wheel -->
   <div class="section">
     <div class="section-label">
       <span class="section-num">04</span>
-      <span class="section-title">Design Wheel<br>설계 시작 방법</span>
+      <span class="section-title">Design Wheel<br>Iterative Design Process</span>
     </div>
     <div class="section-content">
-      <p class="prose">
-        설계는 초기 요구사항 기반으로 개념을 만들고, 공력·성능 해석을 거쳐 Sizing &amp; Trade Study → Optimization을 반복한다. <strong>"The wheel turns, again and again, until the emergence of a well-balanced design."</strong>
-      </p>
-      <div class="formula-box" style="margin-top:10px;">
-        Requirements → Initial reqs. → Initial sizing → Design concept
-        → Design analysis → Design trades → Optimization
-        → Sizing &amp; Trade studies → (다시 Requirements로)
-        <span class="eq-label">Design Wheel</span>
+      <p class="prose">설계는 초기 요구사항 기반으로 개념을 만들고, 공력·성능 해석을 거쳐 Sizing &amp; Trade Study → Optimization을 반복한다. <strong>"The wheel turns again and again until the emergence of a well-balanced design."</strong></p>
+      <div class="flow" style="margin-top:10px;">
+        <div class="flow-item">Requirements</div><div class="flow-arrow">→</div>
+        <div class="flow-item">Initial Sizing</div><div class="flow-arrow">→</div>
+        <div class="flow-item">Design Concept</div><div class="flow-arrow">→</div>
+        <div class="flow-item">Analysis</div><div class="flow-arrow">→</div>
+        <div class="flow-item">Trade Study</div><div class="flow-arrow">→</div>
+        <div class="flow-item">Optimization</div><div class="flow-arrow">→</div>
+        <div class="flow-item">(Repeat)</div>
       </div>
       <ol style="margin-top:12px;">
-        <li><span class="idx">1</span><span><span class="keyword">설계 시작점</span> <span class="desc">— 대부분 stated requirements에서 출발. 초기엔 군용: "전쟁에서 이겨라", 민항: "돈을 벌어라" 수준으로 모호함</span></span></li>
-        <li><span class="idx">2</span><span><span class="keyword">요구사항 정제</span> <span class="desc">— 오랜 반복 과정을 거쳐 "clean" set of requirements 도출</span></span></li>
-        <li><span class="idx">3</span><span><span class="keyword">설계 주도</span> <span class="desc">— 새 설계는 대개 항공기 회사에서 시작 (Boeing·Airbus: 시장 수요 파악; 군: 항공기 회사와 협력하여 요구사항 구체화)</span></span></li>
-        <li><span class="idx">4</span><span><span class="keyword">X-plane</span> <span class="desc">— 군/상업 목적 외에 개념 검증·실험 연구 목적으로 설계된 항공기도 존재</span></span></li>
+        <li><span class="idx">1</span><span><span class="keyword">Starting Point</span> <span class="desc">— 대부분 stated requirements에서 출발. 초기엔 군용: "Win the war", 민항: "Make money" 수준으로 모호함</span></span></li>
+        <li><span class="idx">2</span><span><span class="keyword">Requirements Refinement</span> <span class="desc">— 오랜 반복 과정을 거쳐 clean set of requirements 도출</span></span></li>
+        <li><span class="idx">3</span><span><span class="keyword">X-plane</span> <span class="desc">— 군/상업 목적 외에 개념 검증·실험 연구 목적으로 설계된 항공기 (concept validation aircraft)</span></span></li>
       </ol>
     </div>
   </div>
 
-  <!-- 05. 운용개념서 ConOps -->
   <div class="section">
     <div class="section-label">
       <span class="section-num">05</span>
-      <span class="section-title">ConOps<br>운용개념서</span>
+      <span class="section-title">ConOps<br>Concept of Operations</span>
     </div>
     <div class="section-content">
       <ol>
-        <li><span class="idx">1</span><span><span class="keyword">정의</span> <span class="desc">— Concept of Operation: 전체 시스템 수준의 운용 개념 및 절차를 정의한 문서</span> <span class="tag tag-a">★</span></span></li>
-        <li><span class="idx">2</span><span><span class="keyword">포함 범위</span> <span class="desc">— 항공기 설계뿐 아니라 인프라, 교통관리, 안전, 서비스까지 포함</span></span></li>
-        <li><span class="idx">3</span><span><span class="keyword">역할</span> <span class="desc">— 기체 설계 요구사항의 <strong>최상위 입력 문서</strong></span></span></li>
-        <li><span class="idx">4</span><span><span class="keyword">UAM 예시</span> <span class="desc">— UAM(도심항공교통)은: eVTOL 기체 + 버티포트 + UTM/UATM + 지상운영시스템 + 승객서비스 + 통신·관제 + 유지보수 + 규제·인증의 통합 시스템</span></span></li>
+        <li><span class="idx">1</span><span><span class="keyword">Definition</span> <span class="desc">— 전체 시스템 수준의 운용 개념 및 절차를 정의한 문서</span> <span class="tag tag-a">★</span></span></li>
+        <li><span class="idx">2</span><span><span class="keyword">Scope</span> <span class="desc">— 항공기 설계뿐 아니라 Infrastructure, Traffic Management, Safety, Service까지 포함</span></span></li>
+        <li><span class="idx">3</span><span><span class="keyword">Role</span> <span class="desc">— 기체 설계 요구사항의 <strong>Top-Level Input Document (최상위 입력 문서)</strong></span></span></li>
+        <li><span class="idx">4</span><span><span class="keyword">UAM Example</span> <span class="desc">— eVTOL + Vertiport + UTM/UATM + Ground Operations + Passenger Service + Communication/ATC + Maintenance + Regulation/Certification의 통합 시스템</span></span></li>
       </ol>
     </div>
   </div>
 
-  <!-- 06. 개념 설계 과정 9단계 -->
   <div class="section">
     <div class="section-label">
       <span class="section-num">06</span>
-      <span class="section-title">개념 설계 과정<br>9단계 상세</span>
+      <span class="section-title">9-Step Conceptual Design<br>Process</span>
     </div>
     <div class="section-content">
       <table class="data-table">
-        <thead>
-          <tr><th>#</th><th>단계</th><th>주요 내용</th></tr>
-        </thead>
+        <thead><tr><th>#</th><th>Step</th><th>Key Content</th></tr></thead>
         <tbody>
-          <tr>
-            <td>1</td>
-            <td><strong>설계 요구조건</strong></td>
-            <td>임무/성능/운용/신뢰성/정비성/지원성 요구조건 + 비용·경제성·시장 분석<br>전형적 요구: 항속거리, 탑재하중, 이착륙거리, 기동성, 최대속도, 순항속도, 이착륙속도, 실속속도, 구조한계, 조종석시계, 잔류연료</td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td><strong>개념 스케치</strong></td>
-            <td>요구조건 + 새 아이디어 → 외부형태(날개·꼬리·동체) + 내부배치(좌석·엔진·조종석) 개략 도면<br>공력 해석 및 중량 예측에 활용. 현재 가용/근미래 기술 여부 검토</td>
-          </tr>
-          <tr>
-            <td>3</td>
-            <td><strong>비교 분석 연구</strong></td>
-            <td>여러 후보 형상을 configuration trade study matrix로 비교<br>형상 선택 항목: 날개-꼬리 유형, 삼각/카나드형, 엔진 수·흡입구, 날개 위치(고/중/저익), 수직꼬리 수<br>평가 분야: 공력, 조종/안정성, 중량, 추진계통, 구조, 세부계통, 무장, 체계통합</td>
-          </tr>
-          <tr>
-            <td>4</td>
-            <td><strong>초기 크기 결정</strong><br>(Initial Sizing)</td>
-            <td>과거 항공기 경험식 이용. 설계변수 변화에 따른 성능 변화 분석<br>→ 성능요구조건 만족하는 것 중 <strong>중량 또는 가격이 가장 작은 항공기 선택</strong></td>
-          </tr>
-          <tr>
-            <td>5</td>
-            <td><strong>설계/해석 반복</strong></td>
-            <td>외형 설계 + 개념적 계통구성 집중 → 설계 가능한 최적기본형상 도출<br>다양한 형상 검토를 위해 설계 순기(Design Cycle) 단축 필요</td>
-          </tr>
-          <tr>
-            <td>6</td>
-            <td><strong>기준 형상 선정</strong></td>
-            <td>각 설계 분야별 선정 기준 + 평가표 + 가중치 적용 → 최적 형상 결정<br>선정형상 + 세부계통 설계 결과 = 기본설계 기준 형상 (예: T-50 형상 진화)</td>
-          </tr>
-          <tr>
-            <td>7</td>
-            <td><strong>부 계통별 개념 설계</strong></td>
-            <td>각 부 계통(추진·구조·전기 등)별로 개념 설계 진행</td>
-          </tr>
-          <tr>
-            <td>8</td>
-            <td><strong>설계 분야별 활동</strong></td>
-            <td>체계종합, 형상설계, 공력설계/해석, 성능해석, 중량분석, 구조설계/해석, 추진기관, 세부계통 각각 수행 → 분야별 결과 통합</td>
-          </tr>
-          <tr>
-            <td>9</td>
-            <td><strong>개발 및 양산 단가 추정</strong></td>
-            <td>양산 단가·총순기 비용 → 경험식 이용. 실제 가격 추정보다는 비교연구를 위한 상대적 비교자료 생산이 목적</td>
-          </tr>
+          <tr><td>1</td><td><strong>Design Requirements</strong></td><td>Mission / Performance / Operational / Reliability / Maintainability requirements + Cost &amp; Market analysis. Typical: Range, Payload, T-O/Landing distance, Maneuverability, Max speed, Stall speed, Structural limits</td></tr>
+          <tr><td>2</td><td><strong>Concept Sketch</strong></td><td>Requirements + New ideas → External configuration (Wing, Tail, Fuselage) + Internal layout (Seats, Engine, Cockpit) sketch. Used for aerodynamic analysis and weight estimation.</td></tr>
+          <tr><td>3</td><td><strong>Comparative Study</strong></td><td>Compare candidate configurations using Configuration Trade Study Matrix. Evaluation: Aerodynamics, Stability &amp; Control, Weight, Propulsion, Structure, Subsystems, Systems Integration</td></tr>
+          <tr><td>4</td><td><strong>Initial Sizing</strong></td><td>Use historical data and statistical relationships. Select aircraft with minimum weight or cost satisfying all performance requirements.</td></tr>
+          <tr><td>5</td><td><strong>Design / Analysis Iteration</strong></td><td>Focus on external configuration design + conceptual subsystem layout → derive optimum baseline configuration</td></tr>
+          <tr><td>6</td><td><strong>Baseline Configuration Selection</strong></td><td>Apply evaluation criteria + scoring matrix + weighting factors → determine optimum configuration</td></tr>
+          <tr><td>7</td><td><strong>Subsystem Conceptual Design</strong></td><td>Conceptual design for each subsystem (Propulsion, Structure, Electrical, etc.)</td></tr>
+          <tr><td>8</td><td><strong>Design Discipline Activities</strong></td><td>Systems Integration, Configuration Design, Aerodynamic Analysis, Performance Analysis, Weight Analysis, Structural Design, Propulsion, Subsystems — each performed and results integrated</td></tr>
+          <tr><td>9</td><td><strong>Cost Estimation</strong></td><td>Production unit cost &amp; life-cycle cost estimation. Goal is relative comparison, not absolute prediction.</td></tr>
         </tbody>
       </table>
     </div>
   </div>
 
-  <!-- 07. 기본 설계 과정 -->
   <div class="section">
     <div class="section-label">
       <span class="section-num">07</span>
-      <span class="section-title">기본 설계 과정<br>(Preliminary Design)</span>
+      <span class="section-title">Preliminary Design Process</span>
     </div>
     <div class="section-content">
       <div class="two-col">
         <div class="box">
-          <h4>① 형상 기본설계</h4>
+          <h4>① Configuration Refinement</h4>
           <ul>
-            <li>Configuration refinement (형상 세밀화)로 특징</li>
-            <li>수정 형상을 기준 형상과 반복 비교</li>
-            <li>풍동 시험 + Computational analysis 수행</li>
+            <li>Iterative comparison of refined vs. baseline configurations</li>
+            <li>Wind tunnel tests + Computational analysis</li>
           </ul>
         </div>
         <div class="box">
-          <h4>② 구조 설계</h4>
+          <h4>② Structural Design</h4>
           <ul>
-            <li>설계 구속요건(설계수명, g한계) + 외부형상 + 내부 배열 → 구조 배치</li>
-            <li>응력 집중 부분 하중 해석</li>
-            <li>조립도면(조종실·주익·미익·동체) + 배치도면(착륙장치·엔진) 작성</li>
+            <li>Design constraints (service life, g-limits) + External shape + Internal layout → Structural arrangement</li>
+            <li>Stress concentration and load analysis</li>
+            <li>Assembly drawings + Layout drawings (Landing gear, Engine)</li>
           </ul>
         </div>
       </div>
       <div class="two-col" style="margin-top:14px;">
         <div class="box">
-          <h4>③ 세부 계통 설계</h4>
+          <h4>③ Subsystem Design</h4>
           <ul>
-            <li>계통 일람 작성</li>
-            <li>항공전자·전기·이차동력·유압·연료·환경제어·착륙계통 등 내부배치도 작성</li>
-            <li>부품 공급업체 조사 후 반영</li>
+            <li>Systems list compilation</li>
+            <li>Avionics, Electrical, Secondary Power, Hydraulic, Fuel, ECS, Landing Gear system layout drawings</li>
           </ul>
         </div>
         <div class="box">
-          <h4>④ 체계 개발 세부 계획</h4>
+          <h4>④ System Development Plan</h4>
           <ul>
-            <li>기술: 예산·인력 계획, 기준형상, 개발규격서, 설계도면</li>
-            <li>분야별: 기술업무규정서, 기관리계획서, 형상관리계획서, 시험평가계획서</li>
-            <li>국내외 부품업체 자료 분석·평가</li>
+            <li>Budget/manpower plan, baseline configuration, development spec, design drawings</li>
+            <li>Configuration Management Plan, Test &amp; Evaluation Plan</li>
           </ul>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- 08. 상세 설계 과정 -->
   <div class="section">
     <div class="section-label">
       <span class="section-num">08</span>
-      <span class="section-title">상세 설계 과정<br>(Detail Design)</span>
+      <span class="section-title">Detail Design Process</span>
     </div>
     <div class="section-content">
       <ol>
-        <li><span class="idx">1</span><span><span class="keyword">기준 형상 구체화</span> <span class="desc">— 하부 시스템 → 구성품 → 부분품 단위까지 세부화</span></span></li>
-        <li><span class="idx">2</span><span><span class="keyword">규격서·도면 산출</span> <span class="desc">— 관련 규격서, 성능분석 결과, 세부기술 도면 산출</span></span></li>
-        <li><span class="idx">3</span><span><span class="keyword">소프트웨어</span> <span class="desc">— 컴퓨터 소프트웨어 정의 및 개발</span></span></li>
-        <li><span class="idx">4</span><span><span class="keyword">시제품 제작·시험</span> <span class="desc">— 시제 모형 및 시제품 제작, 시험평가 실시</span></span></li>
+        <li><span class="idx">1</span><span><span class="keyword">Baseline Configuration Elaboration</span> <span class="desc">— Sub-system → Component → Part level까지 세부화</span></span></li>
+        <li><span class="idx">2</span><span><span class="keyword">Specifications &amp; Drawings</span> <span class="desc">— 관련 규격서, 성능 분석 결과, 세부 기술 도면 산출</span></span></li>
+        <li><span class="idx">3</span><span><span class="keyword">Software Development</span> <span class="desc">— Computer software definition and development</span></span></li>
+        <li><span class="idx">4</span><span><span class="keyword">Prototype Fabrication &amp; Test</span> <span class="desc">— Prototype models fabricated; test and evaluation conducted</span></span></li>
       </ol>
     </div>
   </div>
 
-  <!-- 09. 감항성 & 인증 -->
   <div class="section">
     <div class="section-label">
       <span class="section-num">09</span>
-      <span class="section-title">감항성 &amp; 인증<br>Airworthiness &amp; Cert.</span>
+      <span class="section-title">Airworthiness &amp; Certification</span>
     </div>
     <div class="section-content">
       <div class="two-col">
         <div class="box">
-          <h4>감항성 (Airworthiness) <span class="tag tag-a">★</span></h4>
+          <h4>Airworthiness <span class="tag tag-a">★</span></h4>
           <ul>
-            <li>항공기·부품이 특정 비행조건에서 정상 성능·안전성 발휘 능력</li>
-            <li>한국: 감항성 / 일본: 내공성 / 중국: 적항성</li>
-            <li><strong>초기 감항성</strong>: 설계·제작 단계에서 안전기준 만족 확인</li>
-            <li><strong>계속 감항성</strong>: 운항 시작 이후에도 안전성 유지 (정비·결함추적)</li>
+            <li>항공기·부품이 특정 비행조건에서 정상 성능·안전성을 발휘하는 능력</li>
+            <li><strong>Initial Airworthiness</strong>: 설계·제작 단계에서 안전기준 만족 확인</li>
+            <li><strong>Continued Airworthiness</strong>: 운항 이후에도 안전성 유지 (정비·결함추적)</li>
           </ul>
         </div>
         <div class="box">
-          <h4>인증 (Certification)</h4>
+          <h4>Certification</h4>
           <ul>
-            <li>감항성을 "규정과 절차에 따라 입증하고, 당국이 승인/증서로 인정하는 과정"</li>
-            <li>상업 항공기 개발·생산·운용 단계에서 감항성 적합성 확인하는 법적 절차</li>
-            <li>높은 안전성·신뢰성 요구 → 안전 항행 보증 필요</li>
+            <li>Airworthiness를 규정과 절차에 따라 입증하고 당국이 승인/증서로 인정하는 법적 절차</li>
+            <li>상업 항공기 개발·생산·운용 단계에서 적합성 확인</li>
           </ul>
         </div>
       </div>
       <div class="box" style="margin-top:14px;">
-        <h4>항공기 설계 관련 규정 — 주요 기관 <span class="tag tag-b">★암기</span></h4>
+        <h4>Key Regulatory Bodies <span class="tag tag-b">★암기</span></h4>
         <ul>
-          <li><strong>FAA</strong> (미국): Federal Aviation Administration — 대표적 세계 기준. FAR Part 23(소형), Part 25(수송기)</li>
-          <li><strong>EASA</strong> (유럽): European Union Aviation Safety Agency</li>
-          <li><strong>ICAO</strong> (국제): International Civil Aviation Organization — 국제 민간 항공 기구</li>
-          <li><strong>국내 군용기</strong>: 국방규격서 및 표준체계 / 국방부 통제</li>
-          <li><strong>국내 민항기 (KCAS)</strong>: FAA·EASA 기준 참고하여 자체 감항성 기준 수립</li>
+          <li><strong>FAA</strong> (USA): Federal Aviation Administration — FAR Part 23 (Small Aircraft), Part 25 (Transport Category)</li>
+          <li><strong>EASA</strong> (Europe): European Union Aviation Safety Agency</li>
+          <li><strong>ICAO</strong> (International): International Civil Aviation Organization</li>
+          <li><strong>KCAS</strong> (Korea): Korean Civil Airworthiness Standards — based on FAA/EASA standards</li>
         </ul>
       </div>
     </div>
   </div>
 
-  <!-- 10. 설계 분야별 활동 요약표 -->
   <div class="section">
     <div class="section-label">
       <span class="section-num">10</span>
-      <span class="section-title">설계 분야별 활동<br>및 결과물 요약</span>
+      <span class="section-title">Design Discipline Activities<br>Summary</span>
     </div>
     <div class="section-content">
       <table class="data-table">
-        <thead>
-          <tr><th>분야</th><th>세부 활동</th><th>설계 결과물</th></tr>
-        </thead>
+        <thead><tr><th>Discipline</th><th>Activities</th><th>Deliverables</th></tr></thead>
         <tbody>
-          <tr><td><strong>체계 종합</strong></td><td>성능에 따른 요구도 조정, 분야 간 협조, 경제성·비용 분석, 전체 업무 통제</td><td>세부 설계 밀서, 수정된 요구도, 설계 수정 조건</td></tr>
-          <tr><td><strong>형상 설계</strong></td><td>외형 설계, 내부 배치 개념, 형상 설계 방향 정립</td><td>삼면도, 오측면도, 내부 배치도, 공력 데이터</td></tr>
-          <tr><td><strong>공력 설계/해석</strong></td><td>주요 외형 검토·방향 제시, 최소 항력 계산, 양항력 특성, 안정성 해석, 풍동 시험</td><td>최소 항력 및 유도 항력, 양 항력 곡선</td></tr>
-          <tr><td><strong>성능 해석</strong></td><td>성능 해석, 크기 결정</td><td>임무성능, 기동성능, 지속성능 등</td></tr>
-          <tr><td><strong>중량 분석</strong></td><td>중량 산정 및 중량 감소 방안</td><td>중량 분석표, 연료소모곡선</td></tr>
-          <tr><td><strong>구조 설계/해석</strong></td><td>설계에 따른 무게 추산, 주요 구조물 개념 설계</td><td>구조 배치도, 하중경로 예측</td></tr>
-          <tr><td><strong>추진 기관</strong></td><td>엔진·추진 자료 생산, 흡입구 외형에 따른 추진 효율 계산</td><td>흡입구 외형, 엔진 성능표</td></tr>
-          <tr><td><strong>세부 계통</strong></td><td>주요 부품에 대한 선정</td><td>내부 배치도, 세부 계통 구성도</td></tr>
+          <tr><td><strong>Systems Integration</strong></td><td>Requirements trade, inter-discipline coordination, cost analysis, overall control</td><td>Design directives, revised requirements</td></tr>
+          <tr><td><strong>Configuration Design</strong></td><td>External shape design, internal layout concept, configuration direction</td><td>Three-view drawing, internal layout drawing</td></tr>
+          <tr><td><strong>Aerodynamic Design/Analysis</strong></td><td>External shape review, minimum drag estimation, lift/drag characteristics, stability analysis, wind tunnel test</td><td>Drag polar, lift-drag curves</td></tr>
+          <tr><td><strong>Performance Analysis</strong></td><td>Performance analysis, sizing</td><td>Mission performance, maneuvering performance</td></tr>
+          <tr><td><strong>Weight Analysis</strong></td><td>Weight estimation, weight reduction strategies</td><td>Weight breakdown, fuel consumption curves</td></tr>
+          <tr><td><strong>Structural Design/Analysis</strong></td><td>Weight estimation per design, conceptual structural design</td><td>Structural arrangement, load path prediction</td></tr>
+          <tr><td><strong>Propulsion</strong></td><td>Engine/propulsion data, inlet efficiency analysis</td><td>Inlet configuration, engine performance table</td></tr>
+          <tr><td><strong>Subsystems</strong></td><td>Selection of major components</td><td>Internal layout, subsystem schematic</td></tr>
         </tbody>
       </table>
     </div>
@@ -491,5 +318,26 @@
   <footer>AE2001018 · Chapter 1 · Introduction to Aircraft Design · 부산대학교 항공우주공학과</footer>
 
 </div>
+<script>
+(function () {
+  var tocList = document.getElementById("toc-list");
+  var tocPanel = document.getElementById("toc-panel");
+  var tocToggle = document.getElementById("toc-toggle");
+  if (!tocList || !tocPanel || !tocToggle) return;
+  var nodes = Array.prototype.slice.call(document.querySelectorAll(".section-title"));
+  nodes.forEach(function (node, idx) {
+    if (!node.id) node.id = "toc-item-" + (idx + 1);
+    var li = document.createElement("li");
+    var a = document.createElement("a");
+    a.href = "#" + node.id;
+    a.textContent = (node.textContent || "").replace(/\s+/g, " ").trim();
+    li.appendChild(a);
+    tocList.appendChild(li);
+  });
+  tocToggle.addEventListener("click", function () { tocPanel.classList.toggle("open"); });
+  tocList.addEventListener("click", function () { tocPanel.classList.remove("open"); });
+  document.addEventListener("click", function (e) { if (!tocPanel.contains(e.target) && e.target !== tocToggle) tocPanel.classList.remove("open"); });
+})();
+</script>
 </body>
 </html>
