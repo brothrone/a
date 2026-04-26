@@ -3,659 +3,386 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AE2001018 · 핵심정리</title>
+<title>Aero-Flow AX · 전공별 학습 허브</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap');
+  :root {
+    --bg: #f2f4f8;
+    --ink: #17191f;
+    --muted: #5f667b;
+    --line: #dde2ec;
+    --card: #ffffff;
+    --aero: #5c7cfa;
+    --mech: #f59f00;
+    --elec: #339af0;
+    --org: #40c057;
+  }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
     font-family: 'IBM Plex Sans KR', sans-serif;
-    background: #f5f4f0;
-    color: #1a1a1a;
+    color: var(--ink);
+    background:
+      radial-gradient(circle at 0% 0%, #e8ecff 0%, transparent 42%),
+      radial-gradient(circle at 100% 0%, #edf7ff 0%, transparent 38%),
+      var(--bg);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
   }
 
-  /* ── HEADER ── */
   .site-header {
-    background: #1a1a1a;
+    background: #111319;
     color: #fff;
-    padding: 48px 40px 40px;
+    padding: 44px 24px 34px;
+    border-bottom: 1px solid #1f2330;
   }
-  .site-header .eyebrow {
+
+  .header-wrap {
+    max-width: 1120px;
+    margin: 0 auto;
+  }
+
+  .eyebrow {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 11px;
-    color: #888;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.09em;
+    color: #7f889f;
     margin-bottom: 10px;
   }
-  .site-header h1 {
-    font-size: 28px;
-    font-weight: 600;
-    letter-spacing: -0.5px;
-    margin-bottom: 6px;
-  }
-  .site-header .subtitle {
-    font-size: 13px;
-    color: #aaa;
-    font-weight: 300;
+
+  h1 {
+    font-size: clamp(28px, 4.5vw, 44px);
+    letter-spacing: -0.03em;
+    line-height: 1.08;
+    margin-bottom: 10px;
   }
 
-  /* ── MAIN ── */
+  .subtitle {
+    font-size: 14px;
+    color: #aeb5c8;
+    font-weight: 400;
+    max-width: 720px;
+    line-height: 1.7;
+  }
+
   main {
-    flex: 1;
-    max-width: 900px;
     width: 100%;
+    max-width: 1120px;
     margin: 0 auto;
-    padding: 48px 24px;
+    padding: 36px 24px 56px;
+    flex: 1;
   }
 
-  /* ── SECTION LABEL ── */
-  .section-heading {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px;
-    color: #aaa;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #ddd;
+  .section-label {
     display: flex;
     align-items: center;
     gap: 10px;
-  }
-  .section-heading .sh-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: currentColor;
-    flex-shrink: 0;
-  }
-
-  /* ── CHAPTER GRID ── */
-  .chapter-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 14px;
-    margin-bottom: 52px;
-  }
-
-  /* ── BASE CARD ── */
-  .chapter-card {
-    background: #fff;
-    border: 1px solid #e4e2da;
-    border-radius: 8px;
-    text-decoration: none;
-    color: inherit;
-    display: flex;
-    flex-direction: column;
-    padding: 20px 22px;
-    transition: box-shadow 0.18s, transform 0.18s, border-color 0.18s;
-    position: relative;
-    overflow: hidden;
-  }
-  .chapter-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    background: var(--accent, #1a1a1a);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.22s;
-  }
-  .chapter-card:hover {
-    box-shadow: 0 6px 24px rgba(0,0,0,0.09);
-    transform: translateY(-2px);
-    border-color: #ccc;
-  }
-  .chapter-card:hover::before { transform: scaleX(1); }
-
-  /* chapter colours */
-  .ch1  { --accent: #3b5bdb; }
-  .ch2  { --accent: #2f9e44; }
-  .ch3  { --accent: #e67700; }
-  .ch4  { --accent: #c2255c; }
-  .ch5  { --accent: #7048e8; }
-  .ch6  { --accent: #0c8599; }
-  .ch7  { --accent: #862e9c; }
-  .ch8  { --accent: #d63031; }
-  .ch9  { --accent: #2b8a3e; }
-
-  .card-num {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 11px;
-    color: #bbb;
-    margin-bottom: 8px;
-  }
-  .card-title {
-    font-size: 14px;
-    font-weight: 600;
-    color: #1a1a1a;
-    line-height: 1.4;
-    margin-bottom: 8px;
-  }
-  .card-subtitle {
-    font-size: 11.5px;
-    color: #888;
-    line-height: 1.6;
-    flex: 1;
-  }
-  .card-arrow {
-    margin-top: 16px;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-    color: var(--accent, #1a1a1a);
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-  .card-arrow::after {
-    content: '→';
-    transition: transform 0.15s;
-  }
-  .chapter-card:hover .card-arrow::after { transform: translateX(4px); }
-  .chapter-card.disabled {
-    opacity: 0.42;
-    pointer-events: none;
-  }
-
-  /* ── CAPSTONE SECTION ── */
-  /* 프로젝트 제목 배너 */
-  .project-banner {
-    background: #1a1a1a;
-    border-radius: 10px;
-    padding: 24px 28px;
+    color: #7b8296;
+    letter-spacing: 0.08em;
     margin-bottom: 18px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    flex-wrap: wrap;
-  }
-  .pb-badge {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 26px;
-    font-weight: 600;
-    color: #fff;
-    letter-spacing: -1px;
-    flex-shrink: 0;
-    line-height: 1;
-  }
-  .pb-badge span { color: #748ffc; }
-  .pb-text { flex: 1; min-width: 200px; }
-  .pb-title { font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 4px; }
-  .pb-sub { font-size: 12px; color: #888; line-height: 1.6; }
-  .pb-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
-  .pb-tag {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px;
-    padding: 3px 9px;
-    border: 1px solid rgba(255,255,255,0.12);
-    color: #aaa;
-    border-radius: 3px;
-  }
-  .pb-meta {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    align-items: flex-end;
-    flex-shrink: 0;
-  }
-  .pb-deadline {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-    color: #ff8787;
-    border: 1px solid rgba(255,135,135,0.3);
-    padding: 4px 10px;
-    border-radius: 3px;
-  }
-  .pb-prize {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-    color: #69db7c;
-    border: 1px solid rgba(105,219,124,0.3);
-    padding: 4px 10px;
-    border-radius: 3px;
   }
 
-  /* ── DEPT CARDS ── */
+  .section-label::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #5c7cfa;
+    flex-shrink: 0;
+  }
+
+  .focus-note {
+    font-size: 14px;
+    color: #4f566a;
+    margin-bottom: 24px;
+    line-height: 1.8;
+  }
+
   .dept-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 14px;
-    margin-bottom: 52px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
   }
 
   .dept-card {
-    background: #fff;
-    border: 1px solid #e4e2da;
-    border-radius: 8px;
     text-decoration: none;
     color: inherit;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 24px;
+    min-height: 240px;
     display: flex;
     flex-direction: column;
-    padding: 22px;
-    transition: box-shadow 0.18s, transform 0.18s;
+    gap: 14px;
     position: relative;
     overflow: hidden;
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
   }
-  .dept-card::before {
+
+  .dept-card::after {
     content: '';
     position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 4px;
-    background: var(--dc, #ccc);
-    border-radius: 8px 8px 0 0;
+    inset: auto -32% -40% auto;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    opacity: .12;
+    background: var(--tone);
+    pointer-events: none;
   }
+
   .dept-card:hover {
-    box-shadow: 0 6px 24px rgba(0,0,0,0.10);
-    transform: translateY(-3px);
+    transform: translateY(-4px);
+    box-shadow: 0 14px 34px rgba(20, 24, 34, 0.12);
+    border-color: #c6cfde;
   }
 
-  /* aerospace */
-  .dc-aero { --dc: #748ffc; }
-  /* mechanical */
-  .dc-mech { --dc: #f59f00; }
-  /* electronics */
-  .dc-elec { --dc: #339af0; }
-  /* organic materials */
-  .dc-org  { --dc: #51cf66; }
-
-  .dc-icon {
-    width: 36px; height: 36px;
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 13px;
-    font-weight: 600;
-    margin-bottom: 14px;
-    flex-shrink: 0;
-  }
-  .dc-aero .dc-icon { background: #eef2ff; color: #748ffc; }
-  .dc-mech .dc-icon { background: #fff9db; color: #f59f00; }
-  .dc-elec .dc-icon { background: #e7f5ff; color: #339af0; }
-  .dc-org  .dc-icon { background: #ebfbee; color: #51cf66; }
-
-  .dc-dept {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    margin-bottom: 4px;
-  }
-  .dc-aero .dc-dept { color: #748ffc; }
-  .dc-mech .dc-dept { color: #f59f00; }
-  .dc-elec .dc-dept { color: #339af0; }
-  .dc-org  .dc-dept { color: #51cf66; }
-
-  .dc-title {
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 1.4;
-    margin-bottom: 8px;
-  }
-  .dc-desc {
-    font-size: 12px;
-    color: #888;
-    line-height: 1.65;
-    flex: 1;
-  }
-  .dc-topics {
-    margin-top: 14px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-  }
-  .dc-topic {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px;
-    padding: 2px 7px;
-    border-radius: 3px;
-    border: 1px solid;
-  }
-  .dc-aero .dc-topic { color: #748ffc; border-color: rgba(116,143,252,0.25); background: #eef2ff; }
-  .dc-mech .dc-topic { color: #e67700; border-color: rgba(230,119,0,0.25);   background: #fff4e0; }
-  .dc-elec .dc-topic { color: #1971c2; border-color: rgba(25,113,194,0.25);  background: #e7f5ff; }
-  .dc-org  .dc-topic { color: #2f9e44; border-color: rgba(47,158,68,0.25);   background: #ebfbee; }
-
-  .dc-arrow {
-    margin-top: 16px;
+  .chip {
+    width: fit-content;
     font-family: 'IBM Plex Mono', monospace;
     font-size: 11px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    transition: gap 0.15s;
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: var(--chip-bg);
+    color: var(--tone);
+    border: 1px solid var(--chip-line);
   }
-  .dc-aero .dc-arrow { color: #748ffc; }
-  .dc-mech .dc-arrow { color: #f59f00; }
-  .dc-elec .dc-arrow { color: #339af0; }
-  .dc-org  .dc-arrow { color: #51cf66; }
-  .dc-arrow::after { content: '→'; transition: transform 0.15s; }
-  .dept-card:hover .dc-arrow::after { transform: translateX(4px); }
 
-  /* ── FOOTER ── */
+  .dept-name {
+    font-size: 15px;
+    color: var(--tone);
+    font-weight: 600;
+  }
+
+  .title {
+    font-size: 24px;
+    line-height: 1.22;
+    letter-spacing: -0.02em;
+    font-weight: 700;
+  }
+
+  .desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-top: auto;
+  }
+
+  .arrow {
+    margin-top: 8px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--tone);
+  }
+
+  .dc-aero { --tone: var(--aero); --chip-bg: #eef1ff; --chip-line: rgba(92,124,250,.28); }
+  .dc-mech { --tone: var(--mech); --chip-bg: #fff6dd; --chip-line: rgba(245,159,0,.28); }
+  .dc-elec { --tone: var(--elec); --chip-bg: #e9f6ff; --chip-line: rgba(51,154,240,.28); }
+  .dc-org  { --tone: var(--org);  --chip-bg: #ecfbf0; --chip-line: rgba(64,192,87,.28); }
+
+  .contest {
+    margin-top: 36px;
+    background: #ffffff;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 24px;
+  }
+
+  .contest-head {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: #6f7890;
+    margin-bottom: 12px;
+  }
+
+  .contest-title {
+    font-size: 22px;
+    line-height: 1.3;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .contest-sub {
+    font-size: 14px;
+    color: #4f566a;
+    line-height: 1.8;
+    margin-bottom: 14px;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: #6b7488;
+    border: 1px solid #d7deeb;
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: #f8fafe;
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 4px;
+  }
+
+  .deadline {
+    color: #c2255c;
+    border: 1px solid rgba(194, 37, 92, 0.35);
+    background: #fff0f6;
+  }
+
+  .prize {
+    color: #2b8a3e;
+    border: 1px solid rgba(43,138,62,.35);
+    background: #ebfbee;
+  }
+
   footer {
-    background: #1a1a1a;
-    padding: 24px 40px;
+    background: #111319;
+    border-top: 1px solid #1f2330;
+    padding: 18px 24px;
+  }
+
+  .footer-wrap {
+    max-width: 1120px;
+    margin: 0 auto;
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: 10px;
   }
-  footer .copy {
+
+  .copy {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 10px;
-    color: #555;
+    color: #697089;
   }
-  footer .links { display: flex; gap: 20px; }
-  footer .links a {
+
+  .footer-links {
+    display: flex;
+    gap: 16px;
+  }
+
+  .footer-links a {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 10px;
-    color: #555;
+    color: #697089;
     text-decoration: none;
-    transition: color 0.15s;
   }
-  footer .links a:hover { color: #fff; }
 
-  /* ── QUICK NAV ── */
-  .quick-nav {
-    position: fixed; right: 20px; bottom: 20px;
-    display: flex; flex-direction: column; gap: 8px; z-index: 9999;
-  }
-  .quick-btn {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-    border: 1px solid #1a1a1a;
-    background: #1a1a1a;
-    color: #fff;
-    padding: 8px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    min-width: 92px;
-    text-align: center;
-  }
-  .quick-btn:hover { background: #333; border-color: #333; }
+  .footer-links a:hover { color: #ffffff; }
 
-  #toc-panel {
-    position: fixed; right: 20px; bottom: 72px;
-    width: min(360px, calc(100vw - 40px));
-    max-height: 60vh; overflow: auto;
-    background: #fff;
-    border: 1px solid #dcdcdc;
-    border-radius: 8px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.14);
-    padding: 14px;
-    display: none; z-index: 9998;
+  @media (max-width: 900px) {
+    .dept-grid { grid-template-columns: 1fr; }
+    .dept-card { min-height: 220px; }
   }
-  #toc-panel.open { display: block; }
-  #toc-panel .toc-title {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px; color: #666; margin-bottom: 10px;
-  }
-  #toc-list { list-style: none; }
-  #toc-list li { padding: 4px 0; border-bottom: 1px dotted #eee; }
-  #toc-list li:last-child { border: none; }
-  #toc-list a { color: #222; text-decoration: none; font-size: 12px; display: block; }
-  #toc-list a:hover { color: #3b5bdb; }
-  .toc-disabled { color: #999; font-size: 12px; }
-  .toc-group { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #aaa; letter-spacing: .08em; margin: 10px 0 4px; }
 
   @media (max-width: 640px) {
-    .site-header { padding: 36px 20px 28px; }
-    .project-banner { padding: 18px; }
-    .pb-meta { align-items: flex-start; }
-    .quick-nav { right: 12px; bottom: 12px; }
-    #toc-panel { right: 12px; bottom: 64px; width: calc(100vw - 24px); }
+    .site-header { padding: 34px 16px 28px; }
+    main { padding: 28px 16px 44px; }
+    .contest { padding: 18px; }
+    .title { font-size: 21px; }
+    .contest-title { font-size: 19px; }
   }
 </style>
 </head>
 <body>
 
-<div class="quick-nav">
-  <button class="quick-btn" id="toc-toggle">목차</button>
-</div>
-<aside id="toc-panel">
-  <p class="toc-title">페이지 목차</p>
-  <ul id="toc-list"></ul>
-</aside>
-
 <header class="site-header">
-  <p class="eyebrow">PUSAN NATIONAL UNIVERSITY · AE2001018</p>
-  <h1>항공우주 개념설계 핵심정리</h1>
-  <p class="subtitle">Aerospace Conceptual Design — Chapter Index</p>
+  <div class="header-wrap">
+    <p class="eyebrow">PUSAN NATIONAL UNIVERSITY · AE2001018</p>
+    <h1>Aero-Flow AX 전공별 학습 가이드</h1>
+    <p class="subtitle">총 4개 전공 카드에서 각 전공별 공부 내용 페이지로 바로 이동할 수 있습니다.</p>
+  </div>
 </header>
 
 <main>
+  <p class="section-label">STUDY CARDS — 전공별 학습 내용</p>
+  <p class="focus-note">아래 카드 4개는 각각 항공우주·기계·전기전자·유기소재 전공별 학습 가이드로 연결됩니다.</p>
 
-  <!-- ── 개념설계 챕터 ── -->
-  <p class="section-heading">
-    <span class="sh-dot"></span>
-    CHAPTERS — 항공기 개념설계 (Chapter 3 미업로드)
-  </p>
+  <section class="dept-grid" aria-label="전공별 학습 카드">
+    <a href="aeroflow.html" class="dept-card dc-aero">
+      <span class="chip">AE</span>
+      <p class="dept-name">항공우주공학과</p>
+      <h2 class="title">CFD 유동 해석 &amp;<br>기류 최적 제어</h2>
+      <p class="desc">실내 CFD 시뮬레이션, 드론 LQR 제어 알고리즘 응용, 데드존 정량화, OpenFOAM 실습</p>
+      <span class="arrow">학습 가이드 열기 →</span>
+    </a>
 
-  <div class="chapter-grid">
-    <a href="ae1.html" class="chapter-card ch1">
-      <span class="card-num">CH. 01</span>
-      <span class="card-title">Chapter 1</span>
-      <span class="card-subtitle">Introduction to Aircraft Design</span>
-      <span class="card-arrow">열기</span>
+    <a href="mech.html" class="dept-card dc-mech">
+      <span class="chip">ME</span>
+      <p class="dept-name">기계공학과</p>
+      <h2 class="title">가변형 노즐 &amp;<br>액추에이터 설계</h2>
+      <p class="desc">4-bar linkage 기구, 캠 설계, 서보모터 선정, 코안다 효과, SolidWorks 모델링</p>
+      <span class="arrow">학습 가이드 열기 →</span>
     </a>
-    <a href="ae2.html" class="chapter-card ch2">
-      <span class="card-num">CH. 02</span>
-      <span class="card-title">Chapter 2</span>
-      <span class="card-subtitle">Overview of the Design Process</span>
-      <span class="card-arrow">열기</span>
+
+    <a href="elec.html" class="dept-card dc-elec">
+      <span class="chip">EE</span>
+      <p class="dept-name">전기전자공학과</p>
+      <h2 class="title">센서 퓨전 &amp;<br>예측 제어 시스템</h2>
+      <p class="desc">IoT 센서 네트워크, ESP32 MQTT, 예측 모델(머신러닝), PWM 서보·팬 제어 구현</p>
+      <span class="arrow">학습 가이드 열기 →</span>
     </a>
-    <div class="chapter-card ch3 disabled">
-      <span class="card-num">CH. 03</span>
-      <span class="card-title">Chapter 3</span>
-      <span class="card-subtitle">미업로드 (업로드 후 연결 예정)</span>
-      <span class="card-arrow">준비중</span>
+
+    <a href="organic.html" class="dept-card dc-org">
+      <span class="chip">OM</span>
+      <p class="dept-name">유기소재공학과</p>
+      <h2 class="title">고효율 필터 &amp;<br>나노 코팅 소재</h2>
+      <p class="desc">정전 필터 소재 선정, Darcy 압력 손실, TiO₂ 광촉매 코팅, 나노섬유 전기방사, 수명 곡선</p>
+      <span class="arrow">학습 가이드 열기 →</span>
+    </a>
+  </section>
+
+  <section class="contest" aria-label="대회 개요">
+    <p class="contest-head">PROJECT — IoT-X 캡스톤디자인 경진대회 2026 · M.AX 트랙</p>
+    <h2 class="contest-title">지능형 실내 공기 기류 최적화 가전</h2>
+    <p class="contest-sub">단순 필터링이 아닌 실내 기류 자체를 설계해 오염물을 가장 빠르게 배출하고 깨끗한 공기를 구석구석 전달하는 AI 기반 가전 시스템</p>
+    <div class="tags" aria-label="대회 핵심 키워드">
+      <span class="tag">CFD 기류 시뮬레이션</span>
+      <span class="tag">LQR 최적 제어</span>
+      <span class="tag">IoT 센서 퓨전</span>
+      <span class="tag">가변형 노즐 설계</span>
+      <span class="tag">예측 제어(MPC)</span>
+      <span class="tag">나노 코팅 필터</span>
     </div>
-    <a href="ae3.html" class="chapter-card ch4">
-      <span class="card-num">CH. 04</span>
-      <span class="card-title">Chapter 4</span>
-      <span class="card-subtitle">Airfoil &amp; Wing / Tail Geometry</span>
-      <span class="card-arrow">열기</span>
-    </a>
-    <a href="ae4.html" class="chapter-card ch5">
-      <span class="card-num">CH. 05</span>
-      <span class="card-title">Chapter 5</span>
-      <span class="card-subtitle">Thrust-to-Weight Ratio &amp; Wing Loading</span>
-      <span class="card-arrow">열기</span>
-    </a>
-    <a href="ae5.html" class="chapter-card ch6">
-      <span class="card-num">CH. 06</span>
-      <span class="card-title">Chapter 6</span>
-      <span class="card-subtitle">Initial Sizing</span>
-      <span class="card-arrow">열기</span>
-    </a>
-    <a href="ae6.html" class="chapter-card ch7">
-      <span class="card-num">CH. 07</span>
-      <span class="card-title">Chapter 7</span>
-      <span class="card-subtitle">Configuration Layout &amp; Loft</span>
-      <span class="card-arrow">열기</span>
-    </a>
-    <a href="ae8.html" class="chapter-card ch8">
-      <span class="card-num">CH. 08</span>
-      <span class="card-title">Chapter 8</span>
-      <span class="card-subtitle">Stability, Balance, and Control Sizing</span>
-      <span class="card-arrow">열기</span>
-    </a>
-    <a href="mid.html" class="chapter-card ch9">
-      <span class="card-num">MID</span>
-      <span class="card-title">중간고사 요약정리</span>
-      <span class="card-subtitle">핵심 공식/개념 요약본</span>
-      <span class="card-arrow">열기</span>
-    </a>
-  </div>
-
-  <!-- ── Aero-Flow AX 프로젝트 ── -->
-  <p class="section-heading" style="color:#748ffc;border-color:#d4daff">
-    <span class="sh-dot" style="background:#748ffc"></span>
-    PROJECT — IoT-X 캡스톤디자인 경진대회 2026 · M.AX 트랙
-  </p>
-
-  <!-- 프로젝트 배너 -->
-  <div class="project-banner">
-    <div class="pb-badge">Aero<span>-</span>Flow<br>AX</div>
-    <div class="pb-text">
-      <div class="pb-title">지능형 실내 공기 기류 최적화 가전</div>
-      <div class="pb-sub">단순 필터링이 아닌 실내 기류 자체를 설계해 오염물을 가장 빠르게 배출하고 깨끗한 공기를 구석구석 전달하는 AI 기반 가전 시스템</div>
-      <div class="pb-tags">
-        <span class="pb-tag">CFD 기류 시뮬레이션</span>
-        <span class="pb-tag">LQR 최적 제어</span>
-        <span class="pb-tag">IoT 센서 퓨전</span>
-        <span class="pb-tag">가변형 노즐 설계</span>
-        <span class="pb-tag">예측 제어(MPC)</span>
-        <span class="pb-tag">나노 코팅 필터</span>
-      </div>
+    <div class="meta">
+      <span class="badge deadline">마감 04. 28</span>
+      <span class="badge prize">지원금 최대 100만원</span>
     </div>
-    <div class="pb-meta">
-      <span class="pb-deadline">마감 04. 28</span>
-      <span class="pb-prize">지원금 최대 100만원</span>
-    </div>
-  </div>
-
-  <!-- 학과별 가이드 카드 -->
-  <div class="dept-grid">
-
-    <!-- 항공우주 -->
-    <a href="aeroflow.html" class="dept-card dc-aero" target="_blank">
-      <div class="dc-icon">AE</div>
-      <div class="dc-dept">항공우주공학과</div>
-      <div class="dc-title">CFD 유동 해석 &amp;<br>기류 최적 제어</div>
-      <div class="dc-desc">실내 CFD 시뮬레이션, 드론 LQR 제어 알고리즘 응용, 데드존 정량화, OpenFOAM 실습</div>
-      <div class="dc-topics">
-        <span class="dc-topic">OpenFOAM</span>
-        <span class="dc-topic">LQR / MPC</span>
-        <span class="dc-topic">k-ε 난류</span>
-        <span class="dc-topic">공기 연령</span>
-      </div>
-      <span class="dc-arrow">학습 가이드 열기</span>
-    </a>
-
-    <!-- 기계공학 -->
-    <a href="mech.html" class="dept-card dc-mech" target="_blank">
-      <div class="dc-icon">ME</div>
-      <div class="dc-dept">기계공학과</div>
-      <div class="dc-title">가변형 노즐 &amp;<br>액추에이터 설계</div>
-      <div class="dc-desc">4-bar linkage 기구, 캠 설계, 서보모터 선정, 코안다 효과, SolidWorks 모델링</div>
-      <div class="dc-topics">
-        <span class="dc-topic">4-bar Linkage</span>
-        <span class="dc-topic">캠 기구</span>
-        <span class="dc-topic">서보 제어</span>
-        <span class="dc-topic">자유도 분석</span>
-      </div>
-      <span class="dc-arrow">학습 가이드 열기</span>
-    </a>
-
-    <!-- 전기전자 -->
-    <a href="elec.html" class="dept-card dc-elec" target="_blank">
-      <div class="dc-icon">EE</div>
-      <div class="dc-dept">전기전자공학과</div>
-      <div class="dc-title">센서 퓨전 &amp;<br>예측 제어 시스템</div>
-      <div class="dc-desc">IoT 센서 네트워크, ESP32 MQTT, 예측 모델(머신러닝), PWM 서보·팬 제어 구현</div>
-      <div class="dc-topics">
-        <span class="dc-topic">ESP32 / MQTT</span>
-        <span class="dc-topic">SCD40 CO₂</span>
-        <span class="dc-topic">Node-RED</span>
-        <span class="dc-topic">예측 모델</span>
-      </div>
-      <span class="dc-arrow">학습 가이드 열기</span>
-    </a>
-
-    <!-- 유기소재 -->
-    <a href="organic.html" class="dept-card dc-org" target="_blank">
-      <div class="dc-icon">OM</div>
-      <div class="dc-dept">유기소재공학과</div>
-      <div class="dc-title">고효율 필터 &amp;<br>나노 코팅 소재</div>
-      <div class="dc-desc">정전 필터 소재 선정, Darcy 압력 손실, TiO₂ 광촉매 코팅, 나노섬유 전기방사, 수명 곡선</div>
-      <div class="dc-topics">
-        <span class="dc-topic">정전 필터</span>
-        <span class="dc-topic">TiO₂ 코팅</span>
-        <span class="dc-topic">나노섬유</span>
-        <span class="dc-topic">Darcy 법칙</span>
-      </div>
-      <span class="dc-arrow">학습 가이드 열기</span>
-    </a>
-
-  </div>
-
+  </section>
 </main>
 
 <footer>
-  <span class="copy">© 2026 AE2001018 · 부산대학교 항공우주공학과</span>
-  <div class="links">
-    <a href="https://github.com/brothrone" target="_blank">GitHub</a>
-    <a href="https://instagram.com/본인아이디" target="_blank">Instagram</a>
+  <div class="footer-wrap">
+    <span class="copy">© 2026 AE2001018 · 부산대학교 항공우주공학과</span>
+    <div class="footer-links">
+      <a href="https://github.com/brothrone" target="_blank" rel="noopener noreferrer">GitHub</a>
+      <a href="https://instagram.com/본인아이디" target="_blank" rel="noopener noreferrer">Instagram</a>
+    </div>
   </div>
 </footer>
 
-<script>
-(function () {
-  var tocList = document.getElementById("toc-list");
-  var tocPanel = document.getElementById("toc-panel");
-  var tocToggle = document.getElementById("toc-toggle");
-  if (!tocList || !tocPanel || !tocToggle) return;
-
-  // 개념설계 챕터
-  var chapLabel = document.createElement("li");
-  chapLabel.innerHTML = '<span class="toc-group">항공기 개념설계</span>';
-  tocList.appendChild(chapLabel);
-
-  var cards = document.querySelectorAll(".chapter-grid .chapter-card");
-  cards.forEach(function (card) {
-    var titleNode = card.querySelector(".card-title");
-    var numNode   = card.querySelector(".card-num");
-    var label = (numNode ? numNode.textContent.trim() + " " : "") +
-                (titleNode ? titleNode.textContent.trim() : "");
-    var li = document.createElement("li");
-    if (card.tagName.toLowerCase() === "a" && card.getAttribute("href")) {
-      var a = document.createElement("a");
-      a.href = card.getAttribute("href");
-      a.textContent = label.trim();
-      li.appendChild(a);
-    } else {
-      var span = document.createElement("span");
-      span.className = "toc-disabled";
-      span.textContent = label.trim() + " (준비중)";
-      li.appendChild(span);
-    }
-    tocList.appendChild(li);
-  });
-
-  // Aero-Flow AX
-  var axLabel = document.createElement("li");
-  axLabel.innerHTML = '<span class="toc-group">Aero-Flow AX · 캡스톤</span>';
-  tocList.appendChild(axLabel);
-
-  var deptCards = document.querySelectorAll(".dept-card");
-  deptCards.forEach(function (card) {
-    var dept  = card.querySelector(".dc-dept");
-    var title = card.querySelector(".dc-title");
-    var label = (dept  ? "[" + dept.textContent.trim() + "] " : "") +
-                (title ? title.textContent.replace(/\n/g,"").trim() : "");
-    var li = document.createElement("li");
-    var a = document.createElement("a");
-    a.href = card.getAttribute("href");
-    a.target = "_blank";
-    a.textContent = label;
-    li.appendChild(a);
-    tocList.appendChild(li);
-  });
-
-  tocToggle.addEventListener("click", function () {
-    tocPanel.classList.toggle("open");
-  });
-
-  document.addEventListener("click", function (e) {
-    if (!tocPanel.contains(e.target) && e.target !== tocToggle)
-      tocPanel.classList.remove("open");
-  });
-})();
-</script>
 </body>
 </html>
