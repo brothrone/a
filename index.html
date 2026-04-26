@@ -108,16 +108,62 @@
     transform: scaleX(1);
   }
 
-  .ch1 { --accent: #3b5bdb; }
-  .ch2 { --accent: #2f9e44; }
-  .ch3 { --accent: #e67700; }
-  .ch4 { --accent: #c2255c; }
-  .ch5 { --accent: #7048e8; }
-  .ch6 { --accent: #0c8599; }
-  .ch7 { --accent: #862e9c; }
-  .ch8 { --accent: #d63031; }
-  .ch9 { --accent: #2b8a3e; }
+  .ch1  { --accent: #3b5bdb; }
+  .ch2  { --accent: #2f9e44; }
+  .ch3  { --accent: #e67700; }
+  .ch4  { --accent: #c2255c; }
+  .ch5  { --accent: #7048e8; }
+  .ch6  { --accent: #0c8599; }
+  .ch7  { --accent: #862e9c; }
+  .ch8  { --accent: #d63031; }
+  .ch9  { --accent: #2b8a3e; }
   .ch10 { --accent: #495057; }
+
+  /* ── Aero-Flow AX 전용 카드 색상 ── */
+  .ax-card { --accent: #4da8ff; }
+  .ax-card .card-num  { color: #4da8ff; }
+  .ax-card .card-title { color: #1a1a1a; }
+  .ax-card .card-arrow { color: #4da8ff; }
+
+  /* 풀-와이드 카드 (그리드 한 줄 전체 차지) */
+  .card-wide {
+    grid-column: 1 / -1;
+  }
+
+  /* AX 카드 내부 레이아웃 */
+  .ax-inner {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .ax-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 28px;
+    font-weight: 600;
+    color: #4da8ff;
+    letter-spacing: -1px;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+  .ax-text { flex: 1; min-width: 160px; }
+  .ax-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+  }
+  .ax-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 3px;
+    border: 1px solid;
+  }
+  .ax-tag-blue   { color: #3b7de9; border-color: rgba(59,125,233,0.3); background: rgba(59,125,233,0.06); }
+  .ax-tag-teal   { color: #0c8599; border-color: rgba(12,133,153,0.3); background: rgba(12,133,153,0.06); }
+  .ax-tag-amber  { color: #e67700; border-color: rgba(230,119,0,0.3);  background: rgba(230,119,0,0.06);  }
+  .ax-tag-purple { color: #7048e8; border-color: rgba(112,72,232,0.3); background: rgba(112,72,232,0.06); }
 
   .card-num {
     font-family: 'IBM Plex Mono', monospace;
@@ -250,6 +296,7 @@
   @media (max-width: 640px) {
     .quick-nav { right: 12px; bottom: 12px; }
     #toc-panel { right: 12px; bottom: 108px; width: calc(100vw - 24px); }
+    .ax-badge { font-size: 22px; }
   }
 </style>
 </head>
@@ -336,6 +383,29 @@
       <span class="card-arrow">열기</span>
     </a>
   </div>
+
+  <!-- ── Aero-Flow AX 섹션 ── -->
+  <p class="section-heading">PROJECT — IoT-X 캡스톤디자인 경진대회 2026</p>
+
+  <div class="chapter-grid">
+    <a href="AeroFlow_AX_학습가이드.html" class="chapter-card ax-card card-wide" target="_blank">
+      <div class="ax-inner">
+        <span class="ax-badge">AX</span>
+        <div class="ax-text">
+          <span class="card-num">CAPSTONE · M.AX TRACK</span>
+          <span class="card-title" style="display:block;font-size:16px;margin-bottom:6px;">Aero-Flow AX — 지능형 실내 공기 기류 최적화 가전</span>
+          <span class="card-subtitle" style="display:block;">항공우주공학과 전공 학습 가이드 · CFD 로드맵 · LQR 제어 이론 · IoT 센서 설계 · 심사 전략</span>
+          <div class="ax-tags">
+            <span class="ax-tag ax-tag-blue">CFD / OpenFOAM</span>
+            <span class="ax-tag ax-tag-teal">LQR 최적 제어</span>
+            <span class="ax-tag ax-tag-amber">IoT 센서 퓨전</span>
+            <span class="ax-tag ax-tag-purple">가변형 노즐 설계</span>
+          </div>
+        </div>
+      </div>
+      <span class="card-arrow" style="margin-top:18px;">학습 가이드 열기</span>
+    </a>
+  </div>
 </main>
 
 <footer>
@@ -354,7 +424,7 @@
   var backButton = document.getElementById("back-button");
   if (!tocList || !tocPanel || !tocToggle || !backButton) return;
 
-  var cards = Array.prototype.slice.call(document.querySelectorAll(".chapter-grid .chapter-card"));
+  var cards = Array.prototype.slice.call(document.querySelectorAll(".chapter-card"));
   cards.forEach(function (card) {
     var titleNode = card.querySelector(".card-title");
     var numNode = card.querySelector(".card-num");
@@ -366,6 +436,7 @@
     if (card.tagName.toLowerCase() === "a" && card.getAttribute("href")) {
       var a = document.createElement("a");
       a.href = card.getAttribute("href");
+      if (card.getAttribute("target")) a.target = card.getAttribute("target");
       a.textContent = label.trim();
       li.appendChild(a);
     } else {

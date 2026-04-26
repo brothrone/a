@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aero-Flow AX | 항공우주공학과 학습 가이드</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080c14;
+    --surface: #0d1420;
+    --surface2: #111a2a;
+    --border: rgba(99,180,255,0.12);
+    --accent: #4da8ff;
+    --accent2: #00e5c3;
+    --accent3: #ff7043;
+    --accent4: #c084fc;
+    --text: #e8f0fe;
+    --muted: #7a9ab5;
+    --dim: #3a5068;
+    --teal: #00c4a7;
+    --amber: #f59e0b;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Noto Sans KR',sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    line-height:1.7;
+    overflow-x:hidden;
+  }
+
+  /* ── NOISE TEXTURE OVERLAY ── */
+  body::before{
+    content:'';
+    position:fixed;
+    inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events:none;
+    z-index:0;
+    opacity:.4;
+  }
+
+  /* ── GRID BACKGROUND ── */
+  body::after{
+    content:'';
+    position:fixed;
+    inset:0;
+    background-image:
+      linear-gradient(rgba(77,168,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(77,168,255,0.03) 1px, transparent 1px);
+    background-size:60px 60px;
+    pointer-events:none;
+    z-index:0;
+  }
+
+  /* ── NAV ── */
+  nav{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    background:rgba(8,12,20,0.85);
+    backdrop-filter:blur(20px);
+    border-bottom:1px solid var(--border);
+    padding:0 2rem;
+    display:flex;align-items:center;gap:2rem;
+    height:56px;
+  }
+  .nav-logo{
+    font-family:'Space Mono',monospace;
+    font-size:.85rem;color:var(--accent);
+    letter-spacing:.1em;white-space:nowrap;
+    text-decoration:none;
+  }
+  .nav-links{
+    display:flex;gap:1.5rem;list-style:none;
+    overflow-x:auto;
+  }
+  .nav-links a{
+    font-size:.78rem;color:var(--muted);
+    text-decoration:none;letter-spacing:.05em;
+    transition:color .2s;white-space:nowrap;
+  }
+  .nav-links a:hover{color:var(--accent)}
+  .nav-badge{
+    margin-left:auto;white-space:nowrap;
+    font-family:'Space Mono',monospace;
+    font-size:.7rem;color:var(--accent2);
+    border:1px solid rgba(0,229,195,0.3);
+    padding:.2rem .6rem;border-radius:2px;
+  }
+
+  /* ── WRAPPER ── */
+  .wrap{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:0 2rem}
+
+  /* ── HERO ── */
+  .hero{
+    min-height:100vh;display:flex;flex-direction:column;
+    justify-content:center;padding-top:80px;
+    position:relative;overflow:hidden;
+  }
+  .hero-orb{
+    position:absolute;
+    border-radius:50%;
+    filter:blur(80px);
+    pointer-events:none;
+  }
+  .orb1{width:600px;height:600px;top:-200px;right:-200px;background:rgba(77,168,255,0.06)}
+  .orb2{width:400px;height:400px;bottom:-100px;left:-100px;background:rgba(0,229,195,0.04)}
+  .hero-eyebrow{
+    font-family:'Space Mono',monospace;
+    font-size:.75rem;letter-spacing:.2em;color:var(--accent);
+    margin-bottom:1.5rem;
+    display:flex;align-items:center;gap:.75rem;
+  }
+  .hero-eyebrow::before{content:'';display:inline-block;width:32px;height:1px;background:var(--accent)}
+  .hero h1{
+    font-family:'DM Serif Display',serif;
+    font-size:clamp(3rem,8vw,7rem);
+    line-height:1;
+    letter-spacing:-.02em;
+    margin-bottom:1rem;
+  }
+  .hero h1 .accent{color:var(--accent)}
+  .hero-sub{
+    font-size:1.15rem;color:var(--muted);
+    max-width:600px;margin-bottom:2.5rem;line-height:1.8;
+  }
+  .hero-tags{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:3rem}
+  .tag{
+    font-family:'Space Mono',monospace;
+    font-size:.7rem;letter-spacing:.08em;
+    padding:.3rem .8rem;border-radius:2px;
+    border:1px solid;
+  }
+  .tag-blue{color:var(--accent);border-color:rgba(77,168,255,0.3);background:rgba(77,168,255,0.05)}
+  .tag-teal{color:var(--teal);border-color:rgba(0,196,167,0.3);background:rgba(0,196,167,0.05)}
+  .tag-amber{color:var(--amber);border-color:rgba(245,158,11,0.3);background:rgba(245,158,11,0.05)}
+  .tag-purple{color:var(--accent4);border-color:rgba(192,132,252,0.3);background:rgba(192,132,252,0.05)}
+  .hero-meta{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1px;
+    background:var(--border);border:1px solid var(--border);
+    max-width:700px;
+  }
+  .meta-cell{
+    background:var(--surface);padding:1.2rem 1.4rem;
+  }
+  .meta-label{font-family:'Space Mono',monospace;font-size:.65rem;letter-spacing:.12em;color:var(--dim);margin-bottom:.3rem}
+  .meta-value{font-size:.9rem;color:var(--text);font-weight:500}
+  .meta-value.urgent{color:var(--accent3)}
+
+  /* ── SECTION ── */
+  section{padding:5rem 0;position:relative}
+  .section-header{
+    display:flex;align-items:baseline;gap:1rem;
+    margin-bottom:3rem;
+  }
+  .section-num{
+    font-family:'Space Mono',monospace;
+    font-size:.7rem;color:var(--dim);letter-spacing:.1em;
+    border:1px solid var(--dim);padding:.2rem .5rem;border-radius:2px;
+  }
+  .section-title{
+    font-family:'DM Serif Display',serif;
+    font-size:clamp(1.8rem,4vw,2.8rem);
+    line-height:1.2;
+  }
+  .section-title .hl{
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    background-clip:text;
+  }
+
+  /* ── CALLOUT ── */
+  .callout{
+    border-left:3px solid var(--accent);
+    background:var(--surface);
+    padding:1.5rem 1.8rem;
+    margin:2rem 0;
+    position:relative;
+    overflow:hidden;
+  }
+  .callout::before{
+    content:'';position:absolute;
+    top:0;right:0;bottom:0;width:200px;
+    background:linear-gradient(90deg,transparent,rgba(77,168,255,0.03));
+    pointer-events:none;
+  }
+  .callout.teal{border-color:var(--teal)}
+  .callout.amber{border-color:var(--amber)}
+  .callout.purple{border-color:var(--accent4)}
+  .callout-title{
+    font-family:'Space Mono',monospace;
+    font-size:.78rem;letter-spacing:.1em;
+    color:var(--accent);margin-bottom:.6rem;
+  }
+  .callout.teal .callout-title{color:var(--teal)}
+  .callout.amber .callout-title{color:var(--amber)}
+  .callout.purple .callout-title{color:var(--accent4)}
+  .callout p{font-size:.9rem;color:var(--muted);line-height:1.8}
+
+  /* ── TABLE ── */
+  .tbl-wrap{overflow-x:auto;margin:1.5rem 0}
+  table{width:100%;border-collapse:collapse;font-size:.88rem}
+  thead tr{background:rgba(77,168,255,0.08)}
+  thead th{
+    font-family:'Space Mono',monospace;
+    font-size:.7rem;letter-spacing:.1em;color:var(--accent);
+    padding:.9rem 1rem;text-align:left;
+    border-bottom:1px solid rgba(77,168,255,0.2);
+    white-space:nowrap;
+  }
+  tbody tr{border-bottom:1px solid var(--border);transition:background .15s}
+  tbody tr:hover{background:rgba(77,168,255,0.03)}
+  td{padding:.8rem 1rem;color:var(--muted);vertical-align:top}
+  td:first-child{
+    font-weight:500;color:var(--text);
+    white-space:nowrap;font-size:.82rem;
+  }
+  td code{
+    font-family:'Space Mono',monospace;
+    font-size:.78rem;background:rgba(77,168,255,0.08);
+    color:var(--accent);padding:.1rem .4rem;border-radius:2px;
+  }
+
+  /* ── ROADMAP TABLE ── */
+  .roadmap-table td:first-child{
+    font-family:'Space Mono',monospace;
+    font-size:.72rem;color:var(--accent);
+    vertical-align:middle;
+  }
+  .roadmap-table td:last-child{
+    text-align:center;white-space:nowrap;
+    font-family:'Space Mono',monospace;font-size:.72rem;
+    color:var(--teal);
+  }
+
+  /* ── PROBLEM GRID ── */
+  .problem-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:1px;background:var(--border);
+    border:1px solid var(--border);
+    margin:2rem 0;
+  }
+  .problem-card{
+    background:var(--surface);padding:1.5rem;
+    position:relative;overflow:hidden;
+    transition:background .2s;
+  }
+  .problem-card:hover{background:var(--surface2)}
+  .problem-card::after{
+    content:'';position:absolute;
+    top:0;left:0;width:3px;height:100%;
+    background:linear-gradient(to bottom,var(--accent),transparent);
+    opacity:0;transition:opacity .2s;
+  }
+  .problem-card:hover::after{opacity:1}
+  .problem-icon{
+    font-family:'Space Mono',monospace;
+    font-size:1.5rem;color:var(--accent);
+    margin-bottom:.8rem;display:block;
+  }
+  .problem-label{
+    font-size:.75rem;letter-spacing:.1em;
+    color:var(--dim);font-family:'Space Mono',monospace;
+    margin-bottom:.5rem;
+  }
+  .problem-desc{font-size:.88rem;color:var(--muted);line-height:1.7}
+
+  /* ── ROLE GRID ── */
+  .role-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:1rem;margin:2rem 0;
+  }
+  .role-card{
+    border:1px solid var(--border);
+    background:var(--surface);
+    padding:1.5rem;
+    position:relative;
+    transition:transform .2s,border-color .2s;
+  }
+  .role-card:hover{transform:translateY(-3px)}
+  .role-card.blue{border-top:2px solid var(--accent)}
+  .role-card.teal{border-top:2px solid var(--teal)}
+  .role-card.amber{border-top:2px solid var(--amber)}
+  .role-card.purple{border-top:2px solid var(--accent4)}
+  .role-dept{
+    font-family:'Space Mono',monospace;
+    font-size:.65rem;letter-spacing:.15em;margin-bottom:.8rem;
+  }
+  .role-card.blue .role-dept{color:var(--accent)}
+  .role-card.teal .role-dept{color:var(--teal)}
+  .role-card.amber .role-dept{color:var(--amber)}
+  .role-card.purple .role-dept{color:var(--accent4)}
+  .role-title{font-size:.95rem;font-weight:500;margin-bottom:.6rem}
+  .role-items{list-style:none}
+  .role-items li{
+    font-size:.8rem;color:var(--muted);
+    padding:.3rem 0;border-bottom:1px solid var(--border);
+    display:flex;align-items:baseline;gap:.5rem;
+  }
+  .role-items li:last-child{border:none}
+  .role-items li::before{content:'→';color:var(--dim);font-size:.7rem;flex-shrink:0}
+
+  /* ── CFD STEPS ── */
+  .steps{position:relative;margin:2rem 0}
+  .steps::before{
+    content:'';position:absolute;left:22px;top:0;bottom:0;
+    width:1px;background:linear-gradient(to bottom,var(--accent),transparent);
+  }
+  .step{
+    display:flex;gap:1.5rem;margin-bottom:1.5rem;
+    position:relative;
+  }
+  .step-num{
+    flex-shrink:0;width:44px;height:44px;
+    border-radius:50%;
+    border:1px solid rgba(77,168,255,0.3);
+    background:var(--surface);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Space Mono',monospace;
+    font-size:.72rem;color:var(--accent);
+    position:relative;z-index:1;
+  }
+  .step-body{flex:1;padding-top:.5rem}
+  .step-title{font-size:.95rem;font-weight:500;margin-bottom:.3rem}
+  .step-desc{font-size:.85rem;color:var(--muted);line-height:1.7}
+  .step-duration{
+    display:inline-block;margin-top:.4rem;
+    font-family:'Space Mono',monospace;font-size:.68rem;
+    color:var(--teal);border:1px solid rgba(0,196,167,0.2);
+    padding:.15rem .5rem;border-radius:2px;
+  }
+
+  /* ── CODE BLOCK ── */
+  pre{
+    background:rgba(0,0,0,.4);
+    border:1px solid var(--border);
+    border-left:3px solid var(--accent);
+    padding:1.2rem 1.5rem;
+    border-radius:0;
+    overflow-x:auto;
+    font-family:'Space Mono',monospace;
+    font-size:.78rem;
+    color:#a8d8ff;
+    line-height:1.8;
+    margin:1.5rem 0;
+  }
+  pre .cm{color:var(--dim)}
+  pre .kw{color:var(--accent4)}
+  pre .fn{color:var(--accent2)}
+  pre .st{color:#ffd080}
+  pre .nb{color:var(--accent)}
+
+  /* ── FORMULA BLOCK ── */
+  .formula{
+    background:rgba(0,0,0,.3);
+    border:1px solid var(--border);
+    padding:1.2rem 1.8rem;
+    margin:1rem 0;
+    font-family:'Space Mono',monospace;
+    font-size:.85rem;
+    color:var(--accent2);
+    letter-spacing:.05em;
+  }
+  .formula-label{
+    font-size:.68rem;color:var(--dim);
+    letter-spacing:.1em;margin-bottom:.5rem;
+    font-family:'Space Mono',monospace;
+  }
+
+  /* ── SCORE TABLE ── */
+  .score-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:1rem;margin:2rem 0;
+  }
+  .score-card{
+    background:var(--surface);border:1px solid var(--border);
+    padding:1.3rem;text-align:center;
+  }
+  .score-num{
+    font-family:'DM Serif Display',serif;
+    font-size:2.5rem;color:var(--accent);
+    line-height:1;margin-bottom:.4rem;
+  }
+  .score-item{font-size:.85rem;font-weight:500;margin-bottom:.4rem}
+  .score-desc{font-size:.78rem;color:var(--muted);line-height:1.6}
+
+  /* ── RESOURCE LIST ── */
+  .resource-list{list-style:none;margin:1rem 0}
+  .resource-list li{
+    padding:.7rem 0;border-bottom:1px solid var(--border);
+    display:flex;align-items:baseline;gap:.8rem;
+    font-size:.88rem;
+  }
+  .resource-list li:last-child{border:none}
+  .res-tag{
+    font-family:'Space Mono',monospace;font-size:.62rem;
+    letter-spacing:.08em;padding:.15rem .5rem;border-radius:2px;
+    flex-shrink:0;
+  }
+  .res-blue{background:rgba(77,168,255,0.1);color:var(--accent)}
+  .res-teal{background:rgba(0,196,167,0.1);color:var(--teal)}
+  .res-amber{background:rgba(245,158,11,0.1);color:var(--amber)}
+  .res-purple{background:rgba(192,132,252,0.1);color:var(--accent4)}
+  .resource-list a{color:var(--muted);text-decoration:none;transition:color .2s}
+  .resource-list a:hover{color:var(--text)}
+
+  /* ── TIMELINE ── */
+  .timeline{margin:2rem 0}
+  .tl-item{
+    display:grid;
+    grid-template-columns:140px 1fr;
+    gap:1.5rem;
+    padding:1rem 0;
+    border-bottom:1px solid var(--border);
+  }
+  .tl-date{
+    font-family:'Space Mono',monospace;
+    font-size:.72rem;color:var(--accent);
+    line-height:1.4;padding-top:.15rem;
+  }
+  .tl-content{}
+  .tl-title{font-size:.9rem;font-weight:500;margin-bottom:.3rem}
+  .tl-desc{font-size:.82rem;color:var(--muted);line-height:1.7}
+
+  /* ── DIVIDER ── */
+  .divider{
+    border:none;
+    height:1px;
+    background:linear-gradient(90deg,var(--accent),transparent);
+    margin:3rem 0;opacity:.2;
+  }
+
+  /* ── FOOTER ── */
+  footer{
+    background:var(--surface);
+    border-top:1px solid var(--border);
+    padding:2.5rem 0;
+    margin-top:4rem;
+    position:relative;z-index:1;
+  }
+  .footer-inner{
+    display:flex;align-items:center;justify-content:space-between;
+    flex-wrap:wrap;gap:1rem;
+  }
+  .footer-logo{
+    font-family:'DM Serif Display',serif;
+    font-size:1.3rem;
+  }
+  .footer-meta{
+    font-family:'Space Mono',monospace;
+    font-size:.7rem;color:var(--dim);text-align:right;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp{
+    from{opacity:0;transform:translateY(24px)}
+    to{opacity:1;transform:translateY(0)}
+  }
+  @keyframes pulse{
+    0%,100%{opacity:.6}50%{opacity:1}
+  }
+  .fade-up{opacity:0;animation:fadeUp .7s ease forwards}
+  .delay-1{animation-delay:.1s}
+  .delay-2{animation-delay:.2s}
+  .delay-3{animation-delay:.3s}
+  .delay-4{animation-delay:.4s}
+
+  /* ── HIGHLIGHTS ── */
+  h3{font-size:1.1rem;font-weight:500;color:var(--text);margin:2rem 0 .8rem}
+  ul.bullet{list-style:none;margin:.8rem 0}
+  ul.bullet li{
+    padding:.4rem 0 .4rem 1.2rem;
+    position:relative;font-size:.88rem;color:var(--muted);
+    border-bottom:1px solid var(--border);
+  }
+  ul.bullet li:last-child{border:none}
+  ul.bullet li::before{
+    content:'—';position:absolute;left:0;
+    color:var(--accent);font-size:.7rem;
+  }
+  ul.bullet li strong{color:var(--text)}
+
+  /* ── PRINT ── */
+  @media print{
+    nav,body::before,body::after,.hero-orb{display:none}
+    body{background:#fff;color:#000}
+    section{page-break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#hero">AERO-FLOW AX</a>
+  <ul class="nav-links">
+    <li><a href="#problem">문제 정의</a></li>
+    <li><a href="#role">역할</a></li>
+    <li><a href="#cfd">CFD 학습</a></li>
+    <li><a href="#control">제어 이론</a></li>
+    <li><a href="#detail">세부 내용</a></li>
+    <li><a href="#score">심사 전략</a></li>
+    <li><a href="#timeline">타임라인</a></li>
+    <li><a href="#formula">수식</a></li>
+    <li><a href="#resource">참고 자료</a></li>
+  </ul>
+  <span class="nav-badge">IoT-X 2026</span>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="wrap">
+    <div class="hero-orb orb1"></div>
+    <div class="hero-orb orb2"></div>
+    <p class="hero-eyebrow fade-up">항공우주공학과 전공 학습 가이드</p>
+    <h1 class="fade-up delay-1">Aero-<span class="accent">Flow</span><br>AX</h1>
+    <p class="hero-sub fade-up delay-2">
+      단순히 필터로 거르는 것이 아니라 — 실내의 기류 자체를 설계해<br>
+      오염 물질을 가장 빠르게 배출하고 깨끗한 공기를 구석구석 전달하는<br>
+      <strong>지능형 기류 가전 시스템</strong>
+    </p>
+    <div class="hero-tags fade-up delay-3">
+      <span class="tag tag-blue">CFD 실내 유동 해석</span>
+      <span class="tag tag-teal">LQR 최적 제어</span>
+      <span class="tag tag-amber">IoT 센서 퓨전</span>
+      <span class="tag tag-purple">가변형 노즐 설계</span>
+      <span class="tag tag-blue">OpenFOAM</span>
+      <span class="tag tag-teal">예측 제어(MPC)</span>
+    </div>
+    <div class="hero-meta fade-up delay-4">
+      <div class="meta-cell">
+        <div class="meta-label">대회</div>
+        <div class="meta-value">IoT-X 캡스톤디자인 경진대회</div>
+      </div>
+      <div class="meta-cell">
+        <div class="meta-label">트랙</div>
+        <div class="meta-value">M.AX — Mobile &amp; Appliance AX</div>
+      </div>
+      <div class="meta-cell">
+        <div class="meta-label">접수 마감</div>
+        <div class="meta-value urgent">2026. 04. 28 (화) 23:59</div>
+      </div>
+      <div class="meta-cell">
+        <div class="meta-label">지원금</div>
+        <div class="meta-value">최대 100만원 / 팀</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 0: 문제 정의 -->
+<section id="problem">
+  <div class="wrap">
+    <div class="section-header">
+      <span class="section-num">00</span>
+      <h2 class="section-title">이 프로젝트가 <span class="hl">해결하려는 문제</span></h2>
+    </div>
+
+    <div class="callout">
+      <div class="callout-title">왜 지금 이 가전인가?</div>
+      <p>우리는 하루 약 90%를 실내에서 보냅니다. 그런데 실내 공기는 외부보다 최대 5배 오염될 수 있습니다. 시중의 공기청정기는 '필터링' 방식에 머물러 있어, 기류가 닿지 않는 구석(데드존)은 영원히 오염된 채로 남습니다.</p>
+    </div>
+
+    <div class="problem-grid">
+      <div class="problem-card">
+        <span class="problem-icon">[DZ]</span>
+        <div class="problem-label">DEAD ZONE</div>
+        <p class="problem-desc">소파 뒤, 구석, 커튼 뒤에 미세먼지가 쌓임. 필터 근처만 깨끗해지고 방 전체가 균일해지지 않음.</p>
+      </div>
+      <div class="problem-card">
+        <span class="problem-icon">[PM]</span>
+        <div class="problem-label">요리 연기 급증</div>
+        <p class="problem-desc">요리 시작 직후 PM2.5가 수백 µg/m³까지 치솟는데, 공기청정기는 이를 사후에야 감지. 선제 대응 불가.</p>
+      </div>
+      <div class="problem-card">
+        <span class="problem-icon">[CO₂]</span>
+        <div class="problem-label">CO₂ 축적</div>
+        <p class="problem-desc">밀폐 침실에서 CO₂가 1,500ppm 이상으로 상승해 수면 질 저하. 수면 중 수동 환기는 불가능.</p>
+      </div>
+      <div class="problem-card">
+        <span class="problem-icon">[FX]</span>
+        <div class="problem-label">고정된 기류</div>
+        <p class="problem-desc">에어컨·청정기는 좌우 스윙만 가능. 사람 위치와 가구 배치에 상관없이 동일한 패턴으로 바람을 보냄.</p>
+      </div>
+      <div class="problem-card">
+        <span class="problem-icon">[NRG]</span>
+        <div class="problem-label">에너지 낭비</div>
+        <p class="problem-desc">사람이 없는 공간에도 동일한 풍량 유지. 센서 기반 지능화 없어 불필요한 전력 소비.</p>
+      </div>
+      <div class="problem-card">
+        <span class="problem-icon">[SOL]</span>
+        <div class="problem-label">해결책: 기류 설계</div>
+        <p class="problem-desc">CFD + AI + 가변 노즐로 실내 유동장 자체를 지능 설계. 데드존 제거·선제 대응·균일 청정 달성.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 1: 항공우주 역할 -->
+<section id="role">
+  <div class="wrap">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2 class="section-title">항공우주공학과의 <span class="hl">핵심 역할</span></h2>
+    </div>
+
+    <div class="callout teal">
+      <div class="callout-title">항공우주공학과가 이 팀의 '두뇌'입니다</div>
+      <p>CFD(전산유체역학)와 최적 제어 알고리즘은 항공우주 분야의 핵심 역량입니다.<br>
+      <strong style="color:var(--teal)">날개 CFD → 실내 유동 CFD</strong> &nbsp;|&nbsp; <strong style="color:var(--teal)">드론 LQR 제어 → 기류 방향 최적 제어</strong></p>
+    </div>
+
+    <div class="role-grid">
+      <div class="role-card blue">
+        <div class="role-dept">항공우주 → CFD</div>
+        <div class="role-title">실내 유동 시뮬레이션</div>
+        <ul class="role-items">
+          <li>나비에-스토크스 방정식 해석</li>
+          <li>k-ε / k-ω SST 난류 모델</li>
+          <li>데드존 정량화 (공기 연령)</li>
+          <li>OpenFOAM 파라메트릭 연구</li>
+        </ul>
+      </div>
+      <div class="role-card teal">
+        <div class="role-dept">항공우주 → 제어</div>
+        <div class="role-title">드론 제어 응용</div>
+        <ul class="role-items">
+          <li>상태 공간 표현 설계</li>
+          <li>LQR 최적 피드백 게인</li>
+          <li>MPC 예측 제어 (선제 대응)</li>
+          <li>PID 기본 제어 구현</li>
+        </ul>
+      </div>
+      <div class="role-card amber">
+        <div class="role-dept">기계공학 → 기구</div>
+        <div class="role-title">가변형 노즐 설계</div>
+        <ul class="role-items">
+          <li>4-bar linkage 기구 설계</li>
+          <li>서보모터 토크 계산</li>
+          <li>코안다 효과 활용</li>
+          <li>Focus / Spread 폭 제어</li>
+        </ul>
+      </div>
+      <div class="role-card purple">
+        <div class="role-dept">전기전자 + 유기소재</div>
+        <div class="role-title">IoT 센서 + 필터</div>
+        <ul class="role-items">
+          <li>PM2.5 / CO₂ 센서 네트워크</li>
+          <li>MQTT ESP32 통신</li>
+          <li>정전 필터 소재 선정</li>
+          <li>초발수 나노 코팅</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>항공우주 역량</th><th>Aero-Flow AX 응용</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>날개 주위 CFD (외부 유동)</td><td>실내 공기 유동 CFD (내부 유동)로 직접 전환</td></tr>
+          <tr><td>풍동 실험 / 유동 가시화</td><td>PIV(입자 영상 유속계)로 실내 기류 실험 검증</td></tr>
+          <tr><td>드론 자세 제어 (LQR / PID)</td><td>노즐 방향 제어 → 실내 기류 방향 최적화</td></tr>
+          <tr><td>난류 모델 (k-ε, k-ω SST)</td><td>실내 혼합 유동 해석에 동일 모델 적용</td></tr>
+          <tr><td>열유동 해석 (열-유체 결합)</td><td>난방/냉방 시 온도 분포 + 기류 동시 해석</td></tr>
+          <tr><td>최적화 알고리즘 (최적 제어이론)</td><td>기류 경로 최적화 → 데드존 최소화 목적함수</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 2: CFD -->
+<section id="cfd">
+  <div class="wrap">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2 class="section-title">CFD <span class="hl">학습 로드맵</span></h2>
+    </div>
+
+    <h3>2.1 지배 방정식 — 반드시 이해해야 할 수식들</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>방정식</th><th>물리적 의미</th><th>비고</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>연속 방정식</td><td>∇·u = 0 (비압축성 가정)</td><td>실내 공기, 마하 &lt; 0.3 → 완전 비압축</td></tr>
+          <tr><td>나비에-스토크스</td><td>ρ(∂u/∂t + u·∇u) = −∇p + μ∇²u + f</td><td>점성력·압력·부력 포함</td></tr>
+          <tr><td>에너지 방정식</td><td>온도 분포 ∂T/∂t + u·∇T = α∇²T</td><td>난방/냉방 동시 해석 시 필요</td></tr>
+          <tr><td>k-ε 표준 모델</td><td>난류 운동 에너지 k + 소산율 ε</td><td>완전 발달 실내 난류에 가장 적합</td></tr>
+          <tr><td>RNG k-ε 모델</td><td>표준 k-ε 개선판</td><td>실내 환기 해석 정확도 우수 (OpenFOAM 권장)</td></tr>
+          <tr><td>k-ω SST 모델</td><td>벽면 + 자유 흐름 모두 정확</td><td>노즐 출구 복잡한 분리류에 유리</td></tr>
+          <tr><td>스칼라 수송 방정식</td><td>∂C/∂t + u·∇C = D∇²C</td><td>CO₂, PM2.5 오염물 농도 분포 계산</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>2.2 OpenFOAM 단계별 실습 계획</h3>
+    <div class="callout">
+      <div class="callout-title">왜 OpenFOAM인가?</div>
+      <p>무료 오픈소스 CFD 소프트웨어. 실제 연구·산업 현장에서 광범위하게 사용. HVAC·실내 환기 튜토리얼 풍부. Python으로 자동화 가능. ANSYS Fluent 대비 비용 없이 고급 기능 사용 가능.</p>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">S0</div>
+        <div class="step-body">
+          <div class="step-title">환경 설치</div>
+          <div class="step-desc">Ubuntu 22.04 LTS + OpenFOAM v2312 설치. WSL2(Windows) 또는 VirtualBox로 실행. 공식 튜토리얼 가이드(openfoam.com) 필독.</div>
+          <span class="step-duration">1주</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">S1</div>
+        <div class="step-body">
+          <div class="step-title">기본 구조 이해</div>
+          <div class="step-desc"><code>0/</code>(경계조건), <code>constant/</code>(물성·메쉬), <code>system/</code>(솔버 설정) 폴더 구조 이해. <code>icoFoam</code>으로 단순 채널 유동 첫 실습.</div>
+          <span class="step-duration">1주</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">S2</div>
+        <div class="step-body">
+          <div class="step-title">단순 방 모델링</div>
+          <div class="step-desc"><code>blockMesh</code>로 직육면체 방 형상 생성. 입구(inlet)/출구(outlet)/벽(wall) 경계조건 설정. <code>simpleFoam</code>으로 정상 상태 풀기.</div>
+          <span class="step-duration">1~2주</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">S3</div>
+        <div class="step-body">
+          <div class="step-title">난류 + 온도 해석</div>
+          <div class="step-desc"><code>buoyantBoussinesqSimpleFoam</code> 솔버로 온도 효과 포함. RNG k-ε 모델 적용. ParaView로 속도·압력·온도 등고선 시각화.</div>
+          <span class="step-duration">1~2주</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">S4</div>
+        <div class="step-body">
+          <div class="step-title">오염물 농도 해석</div>
+          <div class="step-desc">passive scalar 추가로 CO₂ 농도 분포 계산. 데드존 정량화 — 공기 연령(Mean Age of Air) 지표 계산 및 등고선 지도 작성.</div>
+          <span class="step-duration">1~2주</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">S5</div>
+        <div class="step-body">
+          <div class="step-title">가구 장애물 포함</div>
+          <div class="step-desc"><code>snappyHexMesh</code>로 소파·책상 등 복잡한 형상 메쉬 생성. STL 파일 임포트. 장애물 유무에 따른 데드존 면적 비교 → 핵심 결과 도출.</div>
+          <span class="step-duration">2주</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">S6</div>
+        <div class="step-body">
+          <div class="step-title">노즐 각도 파라메트릭 최적화</div>
+          <div class="step-desc">노즐 상하·좌우 각도를 변수로 두고 반복 시뮬레이션. 어떤 각도 조합이 데드존을 가장 줄이는지 최적각 도출 → 논문/발표의 핵심 수치.</div>
+          <span class="step-duration">2주</span>
+        </div>
+      </div>
+    </div>
+
+    <h3>2.3 핵심 OpenFOAM 솔버 정리</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>솔버</th><th>용도</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>simpleFoam</code></td><td>비압축성 정상 상태 유동. 첫 번째 실습에 적합. SIMPLE 알고리즘 기반.</td></tr>
+          <tr><td><code>buoyantBoussinesqSimpleFoam</code></td><td>온도 차에 의한 자연 대류 포함. 난방/냉방 시 필수. 실내 열유동 해석 표준.</td></tr>
+          <tr><td><code>pimpleFoam</code></td><td>비정상 상태(시간 변화) 유동. 요리 연기 확산같은 동적 상황에 사용.</td></tr>
+          <tr><td><code>scalarTransportFoam</code></td><td>CO₂, 오염물 등 스칼라 농도 수송 해석. 오염물 배출 경로 추적.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>2.4 대안 CFD 툴 비교</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>툴</th><th>특징</th><th>권장 상황</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>SimScale (클라우드)</td><td>브라우저에서 바로 사용. 학생 무료 플랜. GPU 클라우드.</td><td>초기 프로토타입 빠른 검증</td></tr>
+          <tr><td>ANSYS Fluent</td><td>산업 표준. GUI 중심으로 직관적. 학교 라이선스 활용 가능.</td><td>발표용 고품질 시각화</td></tr>
+          <tr><td>OpenFOAM</td><td>완전 무료. 최고 커스터마이징 자유도. 논문 기여 적합.</td><td>파라메트릭 연구·자동화</td></tr>
+          <tr><td>SimFlow</td><td>OpenFOAM GUI 래퍼. 진입 장벽 낮춤.</td><td>OpenFOAM 입문 단계</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 3: 제어 이론 -->
+<section id="control">
+  <div class="wrap">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2 class="section-title">드론 제어 →<br><span class="hl">기류 제어 응용</span></h2>
+    </div>
+
+    <div class="callout purple">
+      <div class="callout-title">핵심 차별점</div>
+      <p>드론 자세 제어(자세각 유지)와 Aero-Flow AX(실내 기류 방향 유지)는 동일한 수학적 프레임워크를 사용합니다. 상태 공간, 피드백 제어, 최적 제어이론이 그대로 적용됩니다.</p>
+    </div>
+
+    <h3>3.1 상태 공간 표현 (State-Space)</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>항목</th><th>Aero-Flow AX 정의</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>상태 변수 <strong>x</strong></td><td>각 구역의 [CO₂ 농도 C₁...Cₙ, PM2.5 농도 D₁...Dₙ, 유속 벡터 u₁...uₙ]</td></tr>
+          <tr><td>제어 입력 <strong>u</strong></td><td>각 노즐의 [상하 각도 θᵥ, 좌우 각도 θₕ, 팬 RPM n]</td></tr>
+          <tr><td>출력 <strong>y</strong></td><td>IoT 센서 실측값 (CO₂, PM2.5, 온도, 풍속)</td></tr>
+          <tr><td>시스템 방정식</td><td>ẋ = <strong>A</strong>x + <strong>B</strong>u &nbsp;(CFD 결과로 선형화한 A, B 행렬)</td></tr>
+          <tr><td>출력 방정식</td><td>y = <strong>C</strong>x + <strong>D</strong>u &nbsp;(센서 배치에 따른 C 행렬)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>3.2 PID 제어 (1단계 구현)</h3>
+    <ul class="bullet">
+      <li><strong>P (비례):</strong> 현재 CO₂ 농도와 목표값의 차이에 비례해 팬 RPM 증가 → 즉각 대응</li>
+      <li><strong>I (적분):</strong> 장기간 오차 누적분 보정 → 정착 상태에서 잔류 오차 제거</li>
+      <li><strong>D (미분):</strong> 농도 변화 속도 감지 → 요리 시작 같은 급격한 변화에 빠른 선제 반응</li>
+      <li>구현 도구: Arduino PID 라이브러리로 서보모터와 팬 독립 제어</li>
+    </ul>
+
+    <h3>3.3 LQR 최적 제어 (핵심 차별점)</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>LQR 구성요소</th><th>Aero-Flow AX 해석</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>상태 비용 행렬 <strong>Q</strong></td><td>Q 값이 클수록 CO₂ 농도 편차를 엄격히 규제. 건강 기준치(1000ppm) 초과에 큰 패널티 부여.</td></tr>
+          <tr><td>제어 비용 행렬 <strong>R</strong></td><td>R 값이 클수록 노즐 작동 최소화 (에너지 절약). 소음·전력 소모 trade-off 조절.</td></tr>
+          <tr><td>리카티 방정식 (ARE)</td><td>AᵀP + PA − PBR⁻¹BᵀP + Q = 0 을 풀어 최적 게인 K 도출</td></tr>
+          <tr><td>최적 제어 입력</td><td>u* = −Kx &nbsp;→ 노즐 각도·팬 RPM을 최적으로 자동 결정</td></tr>
+          <tr><td>안정성 보장</td><td>LQR은 설계상 닫힌 루프 시스템을 Lyapunov 안정성으로 보장</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Python으로 LQR 구현 (scipy)</h3>
+<pre><span class="cm"># LQR 최적 제어기 설계 — Aero-Flow AX</span>
+<span class="kw">from</span> scipy.linalg <span class="kw">import</span> solve_continuous_are
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="cm"># CFD 결과로 선형화한 시스템 행렬</span>
+A = np.array([...])  <span class="cm"># 상태 천이 행렬</span>
+B = np.array([...])  <span class="cm"># 제어 입력 행렬 (노즐·팬)</span>
+
+<span class="cm"># 비용 행렬 설계</span>
+Q = np.diag([<span class="nb">10</span>, <span class="nb">10</span>, <span class="nb">1</span>, <span class="nb">1</span>])  <span class="cm"># CO₂·PM2.5 농도 편차에 큰 가중치</span>
+R = np.diag([<span class="nb">1</span>, <span class="nb">1</span>])           <span class="cm"># 제어 비용 (소음·전력 절약)</span>
+
+<span class="cm"># 연속 Riccati 방정식 풀기</span>
+P = <span class="fn">solve_continuous_are</span>(A, B, Q, R)
+
+<span class="cm"># 최적 피드백 게인 계산</span>
+K = np.linalg.<span class="fn">inv</span>(R) @ B.T @ P
+<span class="fn">print</span>(<span class="st">'최적 게인 K:'</span>, K)
+
+<span class="cm"># 실시간 제어 루프</span>
+<span class="kw">def</span> <span class="fn">control_step</span>(sensor_readings):
+    x = <span class="fn">state_from_sensors</span>(sensor_readings)
+    u_star = -K @ x  <span class="cm"># 최적 제어 입력</span>
+    <span class="kw">return</span> <span class="fn">apply_to_nozzle</span>(u_star)</pre>
+
+    <h3>3.4 MPC 예측 제어 — 선제 대응의 핵심</h3>
+    <div class="callout teal">
+      <div class="callout-title">"요리 시작 전에 미리 기류를 형성"하는 원리</div>
+      <p>MPC(Model Predictive Control)는 N 스텝 앞을 내다보고 최적 제어 계획을 수립합니다. 드론의 경로 계획에서도 동일하게 사용되는 개념입니다. 평소 오후 6시에 요리 패턴이 있다면 → 5시 50분부터 주방 방향 기류를 사전 형성합니다.</p>
+    </div>
+
+    <ul class="bullet">
+      <li><strong>예측 지평선 (N):</strong> N 스텝 앞을 내다보고 최적 제어 계획 수립</li>
+      <li><strong>제약 조건 처리:</strong> 노즐 각도 한계 (±45°), 팬 최대 RPM, 소음 기준 등</li>
+      <li><strong>활동 패턴 학습 연동:</strong> CO₂ 상승률·온도 변화율의 시간 미분값을 특징(feature)으로 사용한 HMM/선형 회귀로 이벤트 예측</li>
+    </ul>
+  </div>
+</section>
+
+<!-- SECTION 4: 세부 내용 -->
+<section id="detail">
+  <div class="wrap">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2 class="section-title">세부 <span class="hl">전공 내용</span></h2>
+    </div>
+
+    <h3>4.1 데드존 정량화 방법</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>지표</th><th>정의 및 활용</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>공기 연령 (MAA)</td><td>외부 공기가 특정 지점에 도달하는 평균 시간. 값이 클수록 데드존. CFD에서 스칼라로 직접 풀거나 후처리 계산.</td></tr>
+          <tr><td>환기 효율 지수 (ε)</td><td>ε = τₙ/τₗ. 1보다 크면 완전 혼합 이상의 효율. 노즐 각도별 효율 비교에 사용.</td></tr>
+          <tr><td>국소 오염물 제거 효율</td><td>오염원 위치별 배출 효율 비교. 어느 위치의 오염물이 가장 빠르게 배출되는지 지도 작성.</td></tr>
+          <tr><td>CFD 트레이서 가스법</td><td>특정 지점에 가상 오염물 방출 후 농도 시간 변화 추적. 데드존 면적 지도(Heatmap) 생성 → 발표 핵심 그림.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>4.2 노즐 유체역학 설계 포인트</h3>
+    <ul class="bullet">
+      <li><strong>토출 속도 기준:</strong> 사람 방향 0.1~0.25 m/s (ASHRAE Standard 55 쾌적 기준), 데드존 방향 0.5~1.5 m/s</li>
+      <li><strong>연속 방정식 적용:</strong> 형상 변형 시 A₁v₁ = A₂v₂ 로 압력 손실 계산. 단면적 변화에 따른 출구 속도 보정</li>
+      <li><strong>코안다 효과 (Coanda Effect):</strong> 제트류가 근처 벽면을 따라 흐르는 현상. 천장 면을 이용해 기류를 멀리 보낼 수 있음</li>
+      <li><strong>자유 제트 이론:</strong> 중심선 속도 Uc ≈ 6.2Q/r. 거리에 따른 속도 감쇠를 노즐 방향 결정에 활용</li>
+    </ul>
+
+    <h3>4.3 IoT 센서 선정표</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>센서 종류</th><th>측정 대상</th><th>추천 모듈</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>PM2.5 / PM10</td><td>미세먼지 농도</td><td>Sensirion SPS30 (정밀) / GP2Y1014AU (저가)</td></tr>
+          <tr><td>CO₂</td><td>이산화탄소 농도</td><td>SCD40 (NDIR 방식, ±40ppm 정확도)</td></tr>
+          <tr><td>VOC</td><td>휘발성 유기화합물</td><td>SGP30 또는 BME688. 요리 연기, 새 가구 감지</td></tr>
+          <tr><td>온습도</td><td>온도·습도</td><td>SHT31 (±0.2°C). 절대습도 계산으로 쾌적도 산출</td></tr>
+          <tr><td>공기 속도</td><td>실내 풍속</td><td>초음파식 또는 열선식 풍속계. CFD 결과 실험 검증</td></tr>
+          <tr><td>통신</td><td>데이터 전송</td><td>ESP32 + MQTT over Wi-Fi → Raspberry Pi 허브</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 5: 심사 전략 -->
+<section id="score">
+  <div class="wrap">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2 class="section-title">심사 기준별 <span class="hl">대응 전략</span></h2>
+    </div>
+
+    <div class="score-grid">
+      <div class="score-card">
+        <div class="score-num">30</div>
+        <div class="score-item">창의·융합성</div>
+        <div class="score-desc">'필터링'이 아닌 '기류 설계'라는 크로스 도메인 혁신 강조. 드론 알고리즘 → 가전 응용</div>
+      </div>
+      <div class="score-card">
+        <div class="score-num">30</div>
+        <div class="score-item">기술성·완성도</div>
+        <div class="score-desc">CFD 데드존 감소율 X% 정량 제시. LQR 게인 수식 + 아두이노 실연. 실측 vs CFD 비교</div>
+      </div>
+      <div class="score-card">
+        <div class="score-num">30</div>
+        <div class="score-item">사회기여·사업화</div>
+        <div class="score-desc">WHO 기준 PM2.5 &lt; 15µg/m³ 달성. 호흡기 질환 예방 효과 수치 제시. 특허 전략</div>
+      </div>
+      <div class="score-card">
+        <div class="score-num">10</div>
+        <div class="score-item">기획성</div>
+        <div class="score-desc">간트 차트로 4개 전공 역할 분담. 일정 관리 시각화</div>
+      </div>
+      <div class="score-card">
+        <div class="score-num">+5</div>
+        <div class="score-item">다학제 융합 가점</div>
+        <div class="score-desc">기계·항공우주·유기소재·전기전자 4개 학과 → 자동 만점</div>
+      </div>
+      <div class="score-card">
+        <div class="score-num">+10</div>
+        <div class="score-item">AI 연계성 (최종)</div>
+        <div class="score-desc">활동 패턴 학습 → 예측 제어. ML 파이프라인 데이터 흐름 설명</div>
+      </div>
+    </div>
+
+    <div class="callout amber">
+      <div class="callout-title">발표 핵심 포인트 4가지</div>
+      <p>
+        ① CFD 시뮬레이션 영상/이미지로 데드존을 <strong style="color:var(--amber)">'보여주기'</strong><br>
+        ② 데드존 감소율을 <strong style="color:var(--amber)">숫자로</strong> 제시 (예: 기존 대비 37% 감소)<br>
+        ③ 드론 제어 알고리즘과의 연결 고리를 <strong style="color:var(--amber)">그림 한 장</strong>으로 설명<br>
+        ④ '오늘 당장 사고 싶다'는 <strong style="color:var(--amber)">사용자 공감 시나리오(페르소나)</strong> 제시
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 6: 타임라인 -->
+<section id="timeline">
+  <div class="wrap">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <h2 class="section-title">프로젝트 <span class="hl">실행 타임라인</span></h2>
+    </div>
+
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-date">2026.04.28<br>즉시</div>
+        <div class="tl-content">
+          <div class="tl-title">신청서 + 아이디어 포트폴리오 제출</div>
+          <div class="tl-desc">4개 전공 팀 구성 완료. 역할 분담 확정. picee@pusan.ac.kr 이메일 제출. 파일명: IoT-X 캡스톤디자인 신청서_00팀</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">2026.05.05<br>통과 시</div>
+        <div class="tl-content">
+          <div class="tl-title">아이디어 발표 PPT 제출</div>
+          <div class="tl-desc">서류평가 통과 후 발표 자료 준비. CFD 기초 학습 시작 (OpenFOAM 설치, 첫 실습). 발표 평가 예정일 5월 8일.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">2026.05<br>사전교육</div>
+        <div class="tl-content">
+          <div class="tl-title">사전교육 + 팀 킥오프</div>
+          <div class="tl-desc">재료비 70만원 지원 안내. 기술 멘토링 일정 확정. 단순 방 CFD 모델 첫 시뮬레이션. 아두이노 서보 모터 제어 테스트 시작.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">2026.06<br>4주</div>
+        <div class="tl-content">
+          <div class="tl-title">CFD 본격 학습 + 기구 설계 시작</div>
+          <div class="tl-desc">OpenFOAM Step 3~4 (난류 + 오염물 해석). 노즐 기구 설계 (SolidWorks/CATIA). IoT 센서 배치 계획 수립.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">2026.07<br>4주</div>
+        <div class="tl-content">
+          <div class="tl-title">가구 장애물 CFD + 최적각 도출</div>
+          <div class="tl-desc">snappyHexMesh로 실제 방 형상 적용. 노즐 3D 프린팅 시제품 1차 제작. 데드존 최적 기류 각도 도출 → 핵심 결과 확보.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">2026.08<br>4주</div>
+        <div class="tl-content">
+          <div class="tl-title">LQR 제어기 구현 + 통합 테스트</div>
+          <div class="tl-desc">Python/MATLAB으로 LQR 게인 계산 및 아두이노 연동. IoT 센서 네트워크 구축 (ESP32 + MQTT). 통합 시스템 연결 테스트.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">2026.09<br>최종평가</div>
+        <div class="tl-content">
+          <div class="tl-title">최종 시제품 완성 + 발표</div>
+          <div class="tl-desc">시제품 최종 완성. CFD 결과 vs 실측 비교 보고서 작성. 최종 발표 PPT + 과제 결과보고서 + 참가소감문 제출. 시연 준비.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">2026.11<br>전국 본선</div>
+        <div class="tl-content">
+          <div class="tl-title">IoT 가전 컨소시엄 + 전국 대회</div>
+          <div class="tl-desc">상위 2팀 부산대 대표로 전국 본선 출전. 시제품 개선 (추가 재료비 최대 30만원 지원). 특허 출원 준비. 총장상·공과대학장상 시상.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 7: 핵심 수식 -->
+<section id="formula">
+  <div class="wrap">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <h2 class="section-title">핵심 <span class="hl">수식 레퍼런스</span></h2>
+    </div>
+
+    <h3>A. 비압축성 나비에-스토크스 방정식</h3>
+    <div class="formula">
+      <div class="formula-label">연속 방정식 (질량 보존)</div>
+      ∇·u = 0
+    </div>
+    <div class="formula">
+      <div class="formula-label">운동량 방정식</div>
+      ρ(∂u/∂t + u·∇u) = −∇p + μ∇²u + f
+    </div>
+    <p style="color:var(--muted);font-size:.85rem;margin-top:.5rem">
+      u = 속도 벡터 &nbsp;|&nbsp; p = 압력 &nbsp;|&nbsp; ρ = 밀도 (공기 ≈ 1.225 kg/m³) &nbsp;|&nbsp; μ = 동점성계수 (≈ 1.8×10⁻⁵ Pa·s) &nbsp;|&nbsp; f = 외력 (부력 등)
+    </p>
+
+    <h3>B. k-ε 난류 모델</h3>
+    <div class="formula">
+      <div class="formula-label">난류 운동 에너지 k</div>
+      ∂k/∂t + u·∇k = ∇·[(ν + νₜ/σₖ)∇k] + Pₖ − ε
+    </div>
+    <div class="formula">
+      <div class="formula-label">소산율 ε</div>
+      ∂ε/∂t + u·∇ε = ∇·[(ν + νₜ/σ_ε)∇ε] + C₁ε(ε/k)Pₖ − C₂ε(ε²/k)
+    </div>
+    <p style="color:var(--muted);font-size:.85rem;margin-top:.5rem">
+      표준 상수: C_μ = 0.09, C₁_ε = 1.44, C₂_ε = 1.92, σₖ = 1.0, σ_ε = 1.3
+    </p>
+
+    <h3>C. 레이놀즈 수</h3>
+    <div class="formula">
+      <div class="formula-label">Reynolds Number</div>
+      Re = ρuL/μ = uL/ν
+    </div>
+    <p style="color:var(--muted);font-size:.85rem;margin-top:.5rem">
+      예시: 노즐 출구 u = 0.5 m/s, L = 0.05 m → Re = (0.5 × 0.05) / (1.47×10⁻⁵) ≈ 1,700 → 층류/난류 전이 영역
+    </p>
+
+    <h3>D. LQR 최적화 목적함수</h3>
+    <div class="formula">
+      <div class="formula-label">LQR 비용 함수</div>
+      J = ∫₀^∞ [xᵀQx + uᵀRu] dt → 최소화
+    </div>
+    <div class="formula">
+      <div class="formula-label">최적 피드백 게인</div>
+      K = R⁻¹BᵀP &nbsp;&nbsp;&nbsp;&nbsp; u*(t) = −Kx(t)
+    </div>
+
+    <h3>E. 공기 연령 (Mean Age of Air)</h3>
+    <div class="formula">
+      <div class="formula-label">공기 연령 수송 방정식</div>
+      ∂(ρτ)/∂t + ∇·(ρuτ) = ∇·(ρD∇τ) + ρ
+    </div>
+    <p style="color:var(--muted);font-size:.85rem;margin-top:.5rem">
+      τ = 공기 연령 [s]. 값이 클수록 오래된 공기 = 데드존. OpenFOAM에서 passive scalar로 직접 풀거나 후처리 계산.
+    </p>
+  </div>
+</section>
+
+<!-- SECTION 8: 참고 자료 -->
+<section id="resource">
+  <div class="wrap">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <h2 class="section-title">학습 <span class="hl">참고 자료</span></h2>
+    </div>
+
+    <h3>CFD / 유체역학</h3>
+    <ul class="resource-list">
+      <li><span class="res-tag res-blue">무료</span><a href="https://www.openfoam.com/documentation/tutorial-guide" target="_blank">OpenFOAM 공식 튜토리얼 가이드 — openfoam.com</a></li>
+      <li><span class="res-tag res-blue">무료</span><a href="https://www.simscale.com" target="_blank">SimScale 클라우드 CFD — 학생 무료 플랜, 브라우저에서 바로 시작</a></li>
+      <li><span class="res-tag res-teal">포럼</span><a href="https://www.cfd-online.com" target="_blank">CFD Online Forum — 전 세계 CFD 엔지니어 Q&A 커뮤니티</a></li>
+      <li><span class="res-tag res-amber">유튜브</span><span>The Efficient Engineer 채널 — 유체역학 개념 영어 해설 (자막 지원)</span></li>
+      <li><span class="res-tag res-amber">유튜브</span><span>jousefm OpenFOAM 튜토리얼 — 실내 환기 실습 시리즈</span></li>
+      <li><span class="res-tag res-purple">논문</span><span>AIVC LL-20 "CFD Analysis of Room Air Flow" — 실내 CFD 기초 리뷰 논문</span></li>
+      <li><span class="res-tag res-purple">교재</span><span>Versteeg & Malalasekera, "Introduction to CFD" — OpenFOAM 학습 전 필독</span></li>
+      <li><span class="res-tag res-purple">교재</span><span>Munson, Young, Okiishi, "Fundamentals of Fluid Mechanics" — 학부 표준 교재</span></li>
+    </ul>
+
+    <h3>제어 이론 / LQR</h3>
+    <ul class="resource-list">
+      <li><span class="res-tag res-teal">코드</span><span>Python scipy.linalg.solve_continuous_are — LQR 설계 함수 (numpy + scipy)</span></li>
+      <li><span class="res-tag res-teal">코드</span><a href="https://github.com/omerfaruktekin13/DroneControlwithRegularatorandObserverAlgorithm" target="_blank">GitHub: DroneControlwithLQR — 드론 LQR 오픈소스 코드 직접 응용 가능</a></li>
+      <li><span class="res-tag res-amber">유튜브</span><span>MATLAB Control Systems Tutorials — lqr() 함수 사용법 영상</span></li>
+      <li><span class="res-tag res-purple">교재</span><span>Ogata, "Modern Control Engineering" 5판 — PID·LQR·상태관측기 전 범위</span></li>
+      <li><span class="res-tag res-blue">한국어</span><a href="https://pinkwink.kr/361" target="_blank">pinkwink.kr — 한국어 LQR 설계 시뮬레이션 가이드</a></li>
+    </ul>
+
+    <h3>IoT / 센서</h3>
+    <ul class="resource-list">
+      <li><span class="res-tag res-blue">공식</span><a href="https://www.sensirion.com" target="_blank">Sensirion SPS30 데이터시트 — UART/I2C 인터페이스 예제 포함</a></li>
+      <li><span class="res-tag res-teal">튜토리얼</span><a href="https://randomnerdtutorials.com" target="_blank">Random Nerd Tutorials — ESP32 MQTT IoT 네트워크 구성 실습</a></li>
+      <li><span class="res-tag res-amber">도구</span><span>Node-RED — 실시간 센서 데이터 대시보드. Raspberry Pi에서 실행. 코드 없이 데이터 흐름 설계</span></li>
+    </ul>
+
+    <h3>대회 공식 정보</h3>
+    <ul class="resource-list">
+      <li><span class="res-tag res-blue">공식</span><a href="http://picee.pusan.ac.kr" target="_blank">부산대학교 공학교육혁신센터 — picee.pusan.ac.kr (신청서 다운로드)</a></li>
+      <li><span class="res-tag res-amber">연락처</span><span>이메일: picee@pusan.ac.kr &nbsp;|&nbsp; 전화: 051-510-3766 (10:00~17:00)</span></li>
+      <li><span class="res-tag res-purple">마감</span><span style="color:var(--accent3);font-weight:500">신청서 제출 마감: 2026년 4월 28일 (화) 23:59 — 이메일 제출</span></li>
+    </ul>
+  </div>
+</section>
+
+<hr class="divider" style="margin:0">
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="footer-inner">
+      <div>
+        <div class="footer-logo">Aero-Flow AX</div>
+        <div style="font-size:.82rem;color:var(--dim);margin-top:.3rem">지능형 실내 공기 기류 최적화 가전</div>
+      </div>
+      <div class="footer-meta">
+        <div>IoT-X 캡스톤디자인 경진대회 M.AX 트랙</div>
+        <div style="margin-top:.3rem">부산대학교 공학교육혁신센터</div>
+        <div style="margin-top:.3rem">접수 마감: 2026. 04. 28</div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Smooth scroll offset for fixed nav
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if(target){
+        e.preventDefault();
+        window.scrollTo({ top: target.offsetTop - 70, behavior: 'smooth' });
+      }
+    });
+  });
+
+  // Fade-in on scroll
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('section').forEach(s => {
+    s.style.opacity = '0';
+    s.style.transform = 'translateY(20px)';
+    s.style.transition = 'opacity .6s ease, transform .6s ease';
+    observer.observe(s);
+  });
+
+  // Hero section always visible
+  document.querySelector('.hero').style.opacity = '1';
+  document.querySelector('.hero').style.transform = 'none';
+</script>
+</body>
+</html>
