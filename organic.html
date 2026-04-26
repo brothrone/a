@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>유기소재공학과 · Aero-Flow AX 학습 가이드</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --bg:#f4f8f5;
+    --surface:#ffffff;
+    --border:#d8ead9;
+    --text:#1a1a1a;
+    --muted:#4a6a50;
+    --dim:#8aaa8e;
+    --accent:#2f9e44;
+    --accent-light:#ebfbee;
+    --accent-border:#69db7c;
+  }
+  body{font-family:'IBM Plex Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;line-height:1.7}
+  nav{background:#1a1a1a;padding:0 32px;height:52px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:100}
+  .nav-back{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;text-decoration:none;transition:color .15s}
+  .nav-back:hover{color:#fff}
+  .nav-back::before{content:'← '}
+  .nav-title{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#555;margin-left:8px}
+  .nav-dept{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--accent-border);border:1px solid rgba(47,158,68,.4);padding:3px 10px;border-radius:3px}
+  .hero{background:#1a1a1a;color:#fff;padding:56px 40px 48px}
+  .hero-wrap{max-width:860px;margin:0 auto}
+  .hero-eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;letter-spacing:.1em;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  .hero-eyebrow::before{content:'';display:inline-block;width:24px;height:1px;background:var(--accent)}
+  .hero h1{font-size:clamp(24px,4vw,36px);font-weight:600;letter-spacing:-.5px;margin-bottom:8px;line-height:1.2}
+  .hero h1 em{color:var(--accent-border);font-style:normal}
+  .hero-sub{font-size:13px;color:#aaa;font-weight:300;margin-bottom:24px;max-width:560px}
+  .hero-tags{display:flex;flex-wrap:wrap;gap:8px}
+  .htag{font-family:'IBM Plex Mono',monospace;font-size:10px;padding:4px 10px;border:1px solid rgba(255,255,255,.12);color:#ccc;border-radius:3px}
+  main{flex:1;max-width:860px;width:100%;margin:0 auto;padding:48px 24px}
+  .callout{border-left:3px solid var(--accent);background:var(--accent-light);padding:16px 20px;margin:16px 0 28px;border-radius:0 6px 6px 0}
+  .callout-title{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;color:var(--accent);margin-bottom:6px;font-weight:600}
+  .callout p{font-size:13px;color:#1a4a22;line-height:1.8}
+  .callout.gray{border-color:#888;background:#f4f4f4}
+  .callout.gray .callout-title{color:#555}
+  .callout.gray p{color:#444}
+  .sec-label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--dim);letter-spacing:.1em;text-transform:uppercase;padding-bottom:10px;border-bottom:1px solid var(--border);margin-bottom:24px;margin-top:48px}
+  .sec-label:first-child{margin-top:0}
+  h2{font-size:18px;font-weight:600;margin-bottom:4px}
+  h3{font-size:14px;font-weight:600;color:var(--text);margin:24px 0 10px;display:flex;align-items:center;gap:8px}
+  h3::before{content:'';display:inline-block;width:3px;height:14px;background:var(--accent);border-radius:2px;flex-shrink:0}
+  .tbl-wrap{overflow-x:auto;margin:12px 0 24px}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  thead th{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;color:var(--accent);background:var(--accent-light);padding:10px 14px;text-align:left;border-bottom:2px solid var(--accent-border)}
+  tbody tr{border-bottom:1px solid var(--border);transition:background .12s}
+  tbody tr:hover{background:#e8f5ea}
+  td{padding:10px 14px;color:var(--muted);vertical-align:top;font-size:13px}
+  td:first-child{color:var(--text);font-weight:500;white-space:nowrap}
+  .steps{margin:12px 0 28px;position:relative}
+  .steps::before{content:'';position:absolute;left:19px;top:0;bottom:0;width:1px;background:linear-gradient(to bottom,var(--accent-border),transparent)}
+  .step{display:flex;gap:16px;margin-bottom:16px}
+  .step-num{flex-shrink:0;width:38px;height:38px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;position:relative;z-index:1}
+  .step-body{padding-top:6px}
+  .step-title{font-size:14px;font-weight:600;margin-bottom:4px}
+  .step-desc{font-size:12.5px;color:var(--muted);line-height:1.7}
+  .step-badge{display:inline-block;margin-top:6px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--accent);border:1px solid var(--accent-border);padding:2px 8px;border-radius:3px;background:var(--accent-light)}
+  ul.bul{list-style:none;margin:10px 0 20px}
+  ul.bul li{padding:7px 0 7px 18px;position:relative;font-size:13px;color:var(--muted);border-bottom:1px solid var(--border)}
+  ul.bul li:last-child{border:none}
+  ul.bul li::before{content:'—';position:absolute;left:0;color:var(--accent);font-size:11px}
+  ul.bul li strong{color:var(--text)}
+  .formula{background:var(--accent-light);border:1px solid var(--accent-border);padding:14px 18px;margin:10px 0;border-radius:6px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:#1a4a22}
+  .formula-label{font-size:10px;color:var(--accent);letter-spacing:.08em;margin-bottom:6px;font-weight:600}
+  .card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin:12px 0 28px}
+  .info-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:18px;border-top:3px solid var(--accent)}
+  .info-card .ic-label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:.08em;margin-bottom:8px}
+  .info-card .ic-val{font-size:20px;font-weight:600;color:var(--text);margin-bottom:4px}
+  .info-card .ic-desc{font-size:12px;color:var(--muted);line-height:1.6}
+  .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0 24px}
+  .cmp-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px}
+  .cmp-title{font-size:13px;font-weight:600;margin-bottom:8px;color:var(--text)}
+  .cmp-pros{list-style:none}
+  .cmp-pros li{font-size:12px;color:var(--muted);padding:4px 0;border-bottom:1px dotted var(--border)}
+  .cmp-pros li:last-child{border:none}
+  .cmp-pros li::before{content:'✓ ';color:var(--accent)}
+  .cmp-cons li::before{content:'✗ ';color:#e03131}
+  footer{background:#1a1a1a;padding:24px 40px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+  footer .copy{font-family:'IBM Plex Mono',monospace;font-size:10px;color:#555}
+  footer a{font-family:'IBM Plex Mono',monospace;font-size:10px;color:#555;text-decoration:none;transition:color .15s}
+  footer a:hover{color:#fff}
+  @media(max-width:640px){.compare-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-back" href="index.html">홈으로</a>
+  <span class="nav-title">/ Aero-Flow AX</span>
+  <span class="nav-dept">유기소재공학과</span>
+</nav>
+
+<div class="hero">
+  <div class="hero-wrap">
+    <p class="hero-eyebrow">유기소재공학과 · CAPSTONE DESIGN</p>
+    <h1>고효율 필터 &amp; <em>나노 코팅</em> 소재</h1>
+    <p class="hero-sub">Aero-Flow AX — 공기 저항은 줄이고 포집률은 높이는 저압손 필터와 기능성 나노 소재 학습 가이드</p>
+    <div class="hero-tags">
+      <span class="htag">정전 필터</span>
+      <span class="htag">HEPA 소재</span>
+      <span class="htag">초발수 코팅</span>
+      <span class="htag">광촉매 TiO₂</span>
+      <span class="htag">활성탄 흡착</span>
+      <span class="htag">나노섬유</span>
+    </div>
+  </div>
+</div>
+
+<main>
+
+  <p class="sec-label">00 · 유기소재공학과의 역할</p>
+  <div class="callout">
+    <div class="callout-title">핵심 기여</div>
+    <p>기류를 아무리 잘 설계해도 공기를 걸러주는 소재가 없으면 의미가 없습니다. 유기소재는 <strong>공기 저항(압력 손실)은 최소화하면서 미세먼지 포집률은 최대화</strong>하는 필터 소재를 선정하고, 노즐 표면에 먼지가 달라붙지 않도록 기능성 코팅을 적용합니다.</p>
+  </div>
+
+  <div class="card-grid">
+    <div class="info-card">
+      <div class="ic-label">목표 포집률</div>
+      <div class="ic-val">&gt; 95%</div>
+      <div class="ic-desc">PM2.5 (2.5µm 이하) 기준</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-label">허용 압력 손실</div>
+      <div class="ic-val">&lt; 50 Pa</div>
+      <div class="ic-desc">팬 부하 최소화 기준</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-label">필터 수명 목표</div>
+      <div class="ic-val">6 개월</div>
+      <div class="ic-desc">교체 주기 기준 (연속 사용)</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-label">코팅 접촉각</div>
+      <div class="ic-val">&gt; 150°</div>
+      <div class="ic-desc">초발수 기준 — 먼지 부착 방지</div>
+    </div>
+  </div>
+
+  <!-- 1. 필터 종류 비교 -->
+  <p class="sec-label">01 · 필터 소재 비교 & 선정</p>
+
+  <h2>필터 종류별 특성</h2>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>종류</th><th>포집 원리</th><th>포집률 (PM2.5)</th><th>압력 손실</th><th>비고</th></tr></thead>
+      <tbody>
+        <tr><td>HEPA (H13)</td><td>기계적 차단 (관성·확산)</td><td>&gt; 99.95%</td><td>높음 (~150 Pa)</td><td>공기 저항 커서 팬 부하 증가</td></tr>
+        <tr><td>정전 필터 (Electret)</td><td>정전기적 포집</td><td>85 ~ 95%</td><td>낮음 (~20~40 Pa)</td><td>저압손 — Aero-Flow AX 주력 채택</td></tr>
+        <tr><td>나노섬유 필터</td><td>기계적 + 정전기</td><td>95 ~ 99%</td><td>중간</td><td>HEPA 성능 + 낮은 압력 손실 가능</td></tr>
+        <tr><td>활성탄 필터</td><td>흡착 (VOC·냄새)</td><td>낮음 (입자 미포집)</td><td>낮음</td><td>냄새·가스 제거 전용. 병렬 배치</td></tr>
+        <tr><td>UV-PCO 광촉매</td><td>산화 분해 (TiO₂ + UV)</td><td>간접 효과</td><td>없음</td><td>세균·바이러스·VOC 분해. 보조 사용</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout">
+    <div class="callout-title">Aero-Flow AX 필터 전략</div>
+    <p><strong>1차: 정전 필터</strong> — PM2.5 주 포집, 저압손으로 팬 부하 최소화<br>
+    <strong>2차: 활성탄 레이어</strong> — VOC·요리 냄새·새 가구 냄새 흡착<br>
+    <strong>보조: TiO₂ 코팅 + UV LED</strong> — 세균·바이러스 광분해 (선택 적용)</p>
+  </div>
+
+  <!-- 2. 정전 필터 -->
+  <p class="sec-label">02 · 정전 필터 (Electret Filter) 심화</p>
+
+  <h3>포집 메커니즘</h3>
+  <ul class="bul">
+    <li><strong>관성 충돌 (Inertial Impaction):</strong> 큰 입자(> 1µm)가 섬유를 회피 못하고 충돌 포집</li>
+    <li><strong>확산 (Diffusion):</strong> 초미세 입자(< 0.1µm)가 브라운 운동으로 섬유에 부착</li>
+    <li><strong>정전기력 (Electrostatic):</strong> 대전된 섬유가 중성 입자를 유도 분극시켜 포집. 이것이 낮은 압력 손실에서도 높은 효율의 핵심</li>
+    <li><strong>MPPS (Most Penetrating Particle Size):</strong> 0.1~0.3µm 구간이 포집 최저점. 필터 설계 시 이 구간 집중 검토</li>
+  </ul>
+
+  <h3>Darcy 법칙 — 압력 손실 계산</h3>
+  <div class="formula">
+    <div class="formula-label">Darcy's Law (필터 압력 손실)</div>
+    ΔP = μ × (α × w) × V_f<br><br>
+    μ = 공기 점성계수 (1.8 × 10⁻⁵ Pa·s)<br>
+    α = 섬유 저항 계수 [m⁻²] — 섬유 직경·충전율에 따라 결정<br>
+    w = 필터 두께 [m]<br>
+    V_f = 여과 속도 [m/s]
+  </div>
+
+  <h3>필터 수명 곡선 (Lifetime Curve)</h3>
+  <div class="callout gray">
+    <div class="callout-title">중요</div>
+    <p>정전 필터는 초기에 압력 손실이 낮지만 오염도가 올라갈수록 급격히 상승합니다. 이 <strong>수명 곡선(ΔP vs 사용 시간)</strong>을 실험적으로 측정하고, AI(전기전자 팀)가 이를 실시간으로 모니터링해 필터 교체 시점을 예측합니다.</p>
+  </div>
+
+  <!-- 3. 나노 코팅 -->
+  <p class="sec-label">03 · 나노 코팅 소재</p>
+
+  <h2>노즐 표면 기능성 코팅</h2>
+
+  <div class="compare-grid">
+    <div class="cmp-card">
+      <div class="cmp-title">초발수 코팅 (Superhydrophobic)</div>
+      <ul class="cmp-pros">
+        <li>접촉각 > 150° — 물방울 self-cleaning</li>
+        <li>먼지·세균 부착 억제</li>
+        <li>PTFE 또는 실리콘 계열 적용 가능</li>
+        <li>표면 거칠기(Ra) 나노 구조 설계</li>
+      </ul>
+    </div>
+    <div class="cmp-card">
+      <div class="cmp-title">TiO₂ 광촉매 코팅</div>
+      <ul class="cmp-pros">
+        <li>UV 조사 시 •OH 라디칼 생성</li>
+        <li>VOC·세균·바이러스 산화 분해</li>
+        <li>친수성 — 표면 오염 방지</li>
+        <li>졸-겔(Sol-gel) 공정으로 코팅</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>나노섬유 필터 제조</h3>
+  <ul class="bul">
+    <li><strong>전기방사 (Electrospinning):</strong> 고전압 전기장으로 고분자 용액을 나노 직경(100~500nm) 섬유로 방사. 기공이 매우 작아 초미세먼지 포집에 유리</li>
+    <li><strong>소재:</strong> PAN(폴리아크릴로니트릴), PVDF(피에조 효과 + 정전기), 나일론-6 등</li>
+    <li><strong>복합 구조:</strong> 나노섬유 레이어 + 스판본드 지지체 적층. 높은 포집률 + 기계적 강도 동시 확보</li>
+  </ul>
+
+  <div class="formula">
+    <div class="formula-label">포집 효율 이론 (단일 섬유)</div>
+    η_total = 1 − (1 − η_R)(1 − η_I)(1 − η_D)(1 − η_E)<br><br>
+    η_R: 차단 효율 / η_I: 관성 효율<br>
+    η_D: 확산 효율 / η_E: 정전기 효율
+  </div>
+
+  <!-- 4. 냄새 흡착 -->
+  <p class="sec-label">04 · 기능성 고분자 — 냄새 분자 흡착</p>
+
+  <h3>활성탄 (Activated Carbon) 흡착</h3>
+  <ul class="bul">
+    <li><strong>비표면적:</strong> 활성탄 1g당 500~1500 m² — 엄청난 흡착 면적</li>
+    <li><strong>흡착 대상:</strong> VOC(포름알데히드·벤젠·톨루엔), 요리 냄새(황화물·아민류), 새 가구 냄새</li>
+    <li><strong>재생:</strong> 고온 처리(200~400°C)로 재생 가능. 교체 주기 연장</li>
+  </ul>
+
+  <h3>기능성 고분자 선택 흡착</h3>
+  <ul class="bul">
+    <li><strong>β-사이클로덱스트린:</strong> 특정 냄새 분자를 분자 수준에서 포접(inclusion complex). 섬유 표면에 그라프팅 가능</li>
+    <li><strong>MOF(금속-유기 골격체):</strong> 초고다공성 소재. 특정 가스 분자 선택적 흡착. 폼알데히드·NO₂ 제거에 효과적</li>
+    <li><strong>키토산 코팅:</strong> 천연 고분자. 항균 효과 + 미세먼지 흡착. 생분해 가능해 환경 친화적</li>
+  </ul>
+
+  <!-- 5. AI 연동 -->
+  <p class="sec-label">05 · 전기전자 팀과 연동 — 스마트 필터 모니터링</p>
+
+  <div class="callout">
+    <div class="callout-title">소재 → 데이터 연동</div>
+    <p>필터 양단의 차압 센서(Differential Pressure Sensor)로 ΔP를 실시간 측정 → 전기전자 팀 IoT 노드로 전송 → AI가 필터 수명 예측 → 교체 알림 자동 발송.<br>
+    유기소재 팀이 측정한 <strong>수명 곡선 데이터</strong>가 AI 예측 모델의 학습 데이터가 됩니다.</p>
+  </div>
+
+  <!-- 6. 학습 로드맵 -->
+  <p class="sec-label">06 · 학습 로드맵</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">S1</div>
+      <div class="step-body">
+        <div class="step-title">필터 소재 이론 학습</div>
+        <div class="step-desc">HEPA·정전·나노섬유 필터 포집 메커니즘 이해. Darcy 법칙으로 압력 손실 계산 실습. 단일 섬유 포집 효율 이론 정리.</div>
+        <span class="step-badge">1~2주</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">S2</div>
+      <div class="step-body">
+        <div class="step-title">시중 정전 필터 성능 비교 실험</div>
+        <div class="step-desc">국내외 정전 필터 3~4종 수집. 마노미터로 압력 손실 측정. 광학 입자 계수기(OPC)로 PM2.5 포집 효율 측정 비교.</div>
+        <span class="step-badge">1~2주</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">S3</div>
+      <div class="step-body">
+        <div class="step-title">나노 코팅 적용 실험</div>
+        <div class="step-desc">TiO₂ 졸-겔 코팅 제조 + 스프레이 코팅 실습. 접촉각 측정기(CA meter)로 발수성 검증. UV 조사 후 세균 사멸률 측정.</div>
+        <span class="step-badge">2주</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">S4</div>
+      <div class="step-body">
+        <div class="step-title">필터 수명 곡선 측정</div>
+        <div class="step-desc">선정 필터를 실제 팬 시스템에 장착. 인공 먼지(Arizona Road Dust)로 가속 수명 시험. ΔP vs 시간 그래프 작성 → AI 팀 학습 데이터 제공.</div>
+        <span class="step-badge">2~3주</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">S5</div>
+      <div class="step-body">
+        <div class="step-title">통합 시스템 적용 & 최종 검증</div>
+        <div class="step-desc">선정 필터 + 나노 코팅 노즐을 실제 Aero-Flow AX 시제품에 장착. 전체 시스템 작동 중 압력 손실 실시간 모니터링. 6개월 수명 가속 예측값 보고서 작성.</div>
+        <span class="step-badge">2주</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. 참고자료 -->
+  <p class="sec-label">07 · 참고 자료</p>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>분류</th><th>자료</th></tr></thead>
+      <tbody>
+        <tr><td>필터 이론</td><td>William Hinds, "Aerosol Technology" — 입자 포집 메커니즘 표준 교재</td></tr>
+        <tr><td>나노섬유</td><td>Greiner & Wendorff, "Electrospinning" — 전기방사 기초 및 응용 리뷰</td></tr>
+        <tr><td>광촉매 코팅</td><td>Fujishima et al., "TiO₂ Photocatalysis" — 광촉매 원리와 응용 총론</td></tr>
+        <tr><td>초발수 코팅</td><td>Bhushan & Jung, "Wetting Study of Patterned Surfaces" — 표면 젖음성 이론</td></tr>
+        <tr><td>실험 장비</td><td>TSI Incorporated — 광학 입자 계수기(OPC) 사용 가이드. ASHRAE 52.2 필터 시험 규격</td></tr>
+        <tr><td>국제 규격</td><td>ISO 16890 — 에어필터 성능 시험 국제 표준. ePM1, ePM2.5 등급 기준</td></tr>
+        <tr><td>활성탄</td><td>Yang, "Adsorbents: Fundamentals and Applications" — 흡착 이론 교재</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</main>
+
+<footer>
+  <span class="copy">© 2026 AE2001018 · 부산대학교 항공우주공학과 · Aero-Flow AX</span>
+  <div style="display:flex;gap:16px">
+    <a href="index.html">← 홈</a>
+    <a href="https://github.com/brothrone" target="_blank">GitHub</a>
+  </div>
+</footer>
+</body>
+</html>
