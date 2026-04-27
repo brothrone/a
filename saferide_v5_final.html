@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SafeRide AX — 기술 정리</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f9fc;
+    --bg2: #eef3fa;
+    --bg3: #e2eaf6;
+    --accent: #1c7ed6;
+    --accent2: #e0315b;
+    --accent3: #2f9e44;
+    --accent4: #7048e8;
+    --text: #1f2937;
+    --text2: #6b7280;
+    --border: #d9e3f0;
+    --card: #ffffff;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background:
+      radial-gradient(circle at 0% 0%, rgba(28,126,214,0.09) 0%, transparent 36%),
+      radial-gradient(circle at 100% 0%, rgba(224,49,91,0.07) 0%, transparent 30%),
+      linear-gradient(180deg, #f9fbfe 0%, var(--bg) 40%, #f4f7fb 100%);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 400;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+  body::before {
+    content:''; position:fixed; inset:0; z-index:0;
+    background-image:
+      linear-gradient(rgba(28,126,214,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(28,126,214,0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events:none;
+  }
+  .wrap { position:relative; z-index:1; max-width:960px; margin:0 auto; padding:0 24px 80px; }
+
+  /* ── 헤더 ── */
+  .hero { padding:80px 0 60px; text-align:center; }
+  .hero .badge {
+    display:inline-block; font-family:'Space Mono', monospace;
+    font-size:11px; letter-spacing:3px; color:var(--accent);
+    background:#f2f7ff; border:1px solid #bfd8f4;
+    padding:4px 14px; border-radius:2px; margin-bottom:24px;
+    animation: fadeDown 0.6s ease both;
+  }
+  .hero h1 {
+    font-size:clamp(36px,6vw,64px); font-weight:900;
+    letter-spacing:-2px; line-height:1.1;
+    animation: fadeDown 0.6s 0.1s ease both;
+  }
+  .hero h1 span { color:var(--accent); }
+  .hero .sub { margin-top:16px; font-size:15px; color:var(--text2); animation: fadeDown 0.6s 0.2s ease both; }
+  .hero .tagline {
+    margin-top:32px; display:inline-block;
+    background:linear-gradient(90deg,var(--accent),#2468c8,var(--accent2));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    font-size:18px; font-weight:700;
+    animation: fadeDown 0.6s 0.3s ease both;
+  }
+
+  /* ── 섹션 ── */
+  section { margin-bottom:64px; animation: fadeUp 0.5s ease both; }
+  section:nth-child(2){animation-delay:0.05s} section:nth-child(3){animation-delay:0.1s}
+  section:nth-child(4){animation-delay:0.15s} section:nth-child(5){animation-delay:0.2s}
+  section:nth-child(6){animation-delay:0.25s} section:nth-child(7){animation-delay:0.3s}
+  section:nth-child(8){animation-delay:0.35s}
+
+  .sec-label { font-family:'Space Mono', monospace; font-size:10px; letter-spacing:4px; color:var(--accent); text-transform:uppercase; margin-bottom:8px; }
+  .sec-title { font-size:26px; font-weight:700; margin-bottom:28px; border-left:3px solid #8ab7e8; padding-left:14px; }
+
+  /* ── 카드 ── */
+  .card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:24px 28px; box-shadow:0 12px 24px rgba(20,38,64,0.06); }
+  .card + .card { margin-top:12px; }
+
+  /* ── 카메라 ── */
+  .cam-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .cam-card { border-radius:10px; padding:28px 24px; position:relative; overflow:hidden; }
+  .cam-card::before {
+    content:''; position:absolute; inset:0; border-radius:10px; padding:1px;
+    background:linear-gradient(135deg,var(--c1),transparent);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite:xor; mask-composite:exclude;
+  }
+  .cam-front { background:linear-gradient(135deg,rgba(28,126,214,0.1),rgba(28,126,214,0.03)); --c1:var(--accent); }
+  .cam-rear  { background:linear-gradient(135deg,rgba(224,49,91,0.09),rgba(224,49,91,0.03)); --c1:var(--accent2); }
+  .cam-icon { font-size:36px; margin-bottom:12px; }
+  .cam-card h3 { font-size:18px; font-weight:700; margin-bottom:4px; }
+  .cam-front h3 { color:var(--accent); } .cam-rear h3 { color:var(--accent2); }
+  .cam-card .cam-type { font-family:'Space Mono', monospace; font-size:11px; margin-bottom:16px; opacity:0.6; }
+  .cam-tasks { list-style:none; }
+  .cam-tasks li { font-size:14px; padding:6px 0; border-bottom:1px solid #e6edf7; display:flex; align-items:center; gap:8px; }
+  .cam-tasks li:last-child { border:none; }
+  .cam-tasks li::before { content:'▸'; font-size:10px; opacity:0.5; }
+
+  /* ── YOLO 클래스 ── */
+  .class-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:10px; }
+  .class-item { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:12px 14px; display:flex; flex-direction:column; gap:4px; }
+  .class-item .class-id { font-family:'Space Mono', monospace; font-size:10px; color:var(--text2); }
+  .class-item .class-name { font-family:'Space Mono', monospace; font-size:13px; font-weight:700; }
+  .class-item .class-desc { font-size:12px; color:var(--text2); }
+  .class-item.front { border-color:rgba(28,126,214,0.3); } .class-item.front .class-name { color:var(--accent); }
+  .class-item.rear  { border-color:rgba(224,49,91,0.3);  } .class-item.rear  .class-name { color:var(--accent2); }
+  .class-section-label { font-family:'Space Mono', monospace; font-size:11px; letter-spacing:2px; padding:6px 12px; border-radius:4px; display:inline-block; margin-bottom:12px; margin-top:20px; }
+  .class-section-label.front { background:rgba(28,126,214,0.1); color:var(--accent); }
+  .class-section-label.rear  { background:rgba(224,49,91,0.1); color:var(--accent2); }
+
+  /* ── 작동 과정 상세 ── */
+  .phase-wrap { display:flex; flex-direction:column; gap:0; }
+
+  .phase-block {
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow:0 4px 16px rgba(20,38,64,0.05);
+  }
+  .phase-block + .phase-block { margin-top:12px; }
+
+  .phase-header {
+    display:flex; align-items:center; gap:14px;
+    padding:16px 24px;
+    cursor:pointer;
+    user-select:none;
+  }
+  .phase-header:hover { background:var(--bg2); }
+
+  .phase-num {
+    font-family:'Space Mono', monospace; font-size:11px; font-weight:700;
+    padding:4px 10px; border-radius:20px; white-space:nowrap;
+    flex-shrink:0;
+  }
+  .ph-blue  { background:rgba(28,126,214,0.12); color:var(--accent); }
+  .ph-red   { background:rgba(224,49,91,0.12);  color:var(--accent2); }
+  .ph-green { background:rgba(47,158,68,0.12);  color:var(--accent3); }
+  .ph-purple{ background:rgba(112,72,232,0.12); color:var(--accent4); }
+  .ph-amber { background:rgba(245,159,0,0.12);  color:#e67700; }
+
+  .phase-header h3 { font-size:16px; font-weight:700; flex:1; }
+  .phase-toggle { font-size:18px; color:var(--text2); margin-left:auto; transition:transform 0.3s; }
+  .phase-block.open .phase-toggle { transform:rotate(180deg); }
+
+  .phase-body {
+    display:none;
+    padding:0 24px 24px;
+    border-top:1px solid var(--border);
+  }
+  .phase-block.open .phase-body { display:block; }
+
+  .phase-body p { font-size:14px; color:var(--text2); margin-top:16px; line-height:1.8; }
+  .phase-body p + p { margin-top:10px; }
+
+  .step-list { list-style:none; margin-top:16px; }
+  .step-list li {
+    display:flex; align-items:flex-start; gap:12px;
+    padding:10px 0; border-bottom:1px solid var(--border);
+    font-size:14px;
+  }
+  .step-list li:last-child { border:none; }
+  .step-icon { font-size:16px; flex-shrink:0; margin-top:1px; }
+  .step-list li .step-content {}
+  .step-list li .step-title { font-weight:700; margin-bottom:2px; font-size:14px; }
+  .step-list li .step-desc  { font-size:13px; color:var(--text2); }
+
+  .mini-flow {
+    display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+    margin-top:16px; padding:16px 20px;
+    background:var(--bg2); border-radius:10px;
+    border:1px solid var(--border);
+  }
+  .mini-flow .mf-node {
+    background:var(--card); border:1px solid var(--border);
+    border-radius:8px; padding:7px 14px;
+    font-size:13px; font-weight:600; white-space:nowrap;
+  }
+  .mini-flow .mf-node.blue   { border-color:rgba(28,126,214,0.4); color:var(--accent); }
+  .mini-flow .mf-node.red    { border-color:rgba(224,49,91,0.4);  color:var(--accent2); }
+  .mini-flow .mf-node.green  { border-color:rgba(47,158,68,0.4);  color:var(--accent3); }
+  .mini-flow .mf-node.purple { border-color:rgba(112,72,232,0.4); color:var(--accent4); }
+  .mini-flow .mf-node.amber  { border-color:rgba(230,119,0,0.4);  color:#e67700; }
+  .mini-flow .mf-arr { color:var(--text2); font-size:14px; flex-shrink:0; }
+
+  .result-row {
+    display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:16px;
+  }
+  .result-ok  { background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:14px 16px; }
+  .result-ng  { background:#fff1f2; border:1px solid #fecdd3; border-radius:10px; padding:14px 16px; }
+  .result-ok .r-title { color:var(--accent3); font-weight:700; font-size:13px; margin-bottom:6px; }
+  .result-ng .r-title { color:var(--accent2); font-weight:700; font-size:13px; margin-bottom:6px; }
+  .result-ok p, .result-ng p { font-size:13px; color:var(--text2); }
+
+  .info-box {
+    margin-top:16px; padding:14px 18px;
+    background:rgba(28,126,214,0.05);
+    border:1px solid rgba(28,126,214,0.2);
+    border-radius:10px; font-size:13px; color:var(--text2);
+  }
+  .info-box strong { color:var(--accent); }
+
+  .warn-box {
+    margin-top:16px; padding:14px 18px;
+    background:rgba(245,159,0,0.06);
+    border:1px solid rgba(245,159,0,0.3);
+    border-radius:10px; font-size:13px; color:#7c5200;
+  }
+
+  /* ── 간이 플로우 (03) ── */
+  .flow { display:flex; flex-direction:column; gap:0; align-items:stretch; }
+  .flow-item { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px 24px; display:flex; align-items:flex-start; gap:16px; }
+  .flow-num { font-family:'Space Mono', monospace; font-size:20px; font-weight:700; color:var(--accent); min-width:32px; line-height:1; padding-top:2px; }
+  .flow-item h4 { font-size:15px; font-weight:700; margin-bottom:4px; }
+  .flow-item p  { font-size:13px; color:var(--text2); }
+  .flow-arrow { text-align:center; color:var(--accent); font-size:20px; padding:4px 0; opacity:0.5; }
+
+  /* ── 벌점 ── */
+  .penalty-table { width:100%; border-collapse:collapse; font-size:14px; }
+  .penalty-table th { background:rgba(28,126,214,0.08); color:var(--accent); font-family:'Space Mono', monospace; font-size:11px; letter-spacing:1px; padding:12px 14px; text-align:left; border-bottom:1px solid var(--border); }
+  .penalty-table td { padding:12px 14px; border-bottom:1px solid #eef3fa; color:var(--text); }
+  .penalty-table tr:last-child td { border:none; }
+  .penalty-table tr:hover td { background:#f8faff; }
+  .pts { font-family:'Space Mono', monospace; font-weight:700; font-size:15px; color:var(--accent2); }
+  .tag-front { font-size:10px; padding:2px 8px; border-radius:3px; background:rgba(28,126,214,0.1); color:var(--accent); font-family:'Space Mono', monospace; }
+  .tag-rear  { font-size:10px; padding:2px 8px; border-radius:3px; background:rgba(224,49,91,0.1);  color:var(--accent2); font-family:'Space Mono', monospace; }
+  .tag-rpm   { font-size:10px; padding:2px 8px; border-radius:3px; background:rgba(47,158,68,0.1);  color:var(--accent3); font-family:'Space Mono', monospace; }
+  .tag-soon  { font-size:10px; padding:2px 8px; border-radius:3px; background:#fff8e1; color:#e67700; font-family:'Space Mono', monospace; }
+
+  .sanction-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+  .sanction-item { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px 14px; text-align:center; }
+  .sanction-item.s0 { border-top:3px solid var(--accent3); }
+  .sanction-item.s1 { border-top:3px solid #f59f00; }
+  .sanction-item.s2 { border-top:3px solid #e67700; }
+  .sanction-item.s3 { border-top:3px solid var(--accent2); }
+  .pts-range { font-family:'Space Mono', monospace; font-size:22px; font-weight:700; margin-bottom:6px; }
+  .s0 .pts-range{color:var(--accent3);} .s1 .pts-range{color:#f59f00;} .s2 .pts-range{color:#e67700;} .s3 .pts-range{color:var(--accent2);}
+  .sanction-item .label { font-size:13px; font-weight:700; margin-bottom:4px; }
+  .sanction-item .desc  { font-size:11px; color:var(--text2); }
+
+  /* ── Wi-Fi 아키텍처 ── */
+  .arch { display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; }
+  .arch-node { flex:1; min-width:120px; background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px 14px; text-align:center; box-shadow:0 4px 12px rgba(20,38,64,0.05); }
+  .arch-node .icon { font-size:28px; margin-bottom:8px; }
+  .arch-node h4 { font-size:13px; font-weight:700; }
+  .arch-node p  { font-size:11px; color:var(--text2); margin-top:4px; }
+  .arch-arrow { color:var(--border); font-size:22px; flex-shrink:0; }
+  .wifi-badge { display:inline-block; margin-top:8px; font-family:'Space Mono', monospace; font-size:10px; padding:3px 8px; border-radius:3px; background:rgba(28,126,214,0.1); color:var(--accent); }
+
+  /* ── AI 단계 ── */
+  .ai-steps { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .ai-step { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:24px; }
+  .ai-step.active { border-top:3px solid var(--accent); }
+  .ai-step.future { border-top:3px solid #ced4da; }
+  .step-num { font-family:'Space Mono', monospace; font-size:11px; margin-bottom:8px; }
+  .ai-step.active .step-num { color:var(--accent); }
+  .ai-step.future .step-num { color:var(--text2); }
+  .ai-step h4 { font-size:15px; font-weight:700; margin-bottom:8px; }
+  .ai-step p  { font-size:13px; color:var(--text2); }
+
+  /* ── 푸터 ── */
+  .footer { text-align:center; padding:40px 0 20px; border-top:1px solid var(--border); font-family:'Space Mono', monospace; font-size:11px; color:var(--text2); letter-spacing:2px; }
+
+  @keyframes fadeDown { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes fadeUp   { from{opacity:0;transform:translateY(20px)}  to{opacity:1;transform:translateY(0)} }
+
+  @media(max-width:640px) {
+    .cam-grid,.ai-steps,.result-row{grid-template-columns:1fr;}
+    .sanction-grid{grid-template-columns:1fr 1fr;}
+    .arch{flex-direction:column;} .arch-arrow{transform:rotate(90deg);}
+    .mini-flow{flex-direction:column; align-items:flex-start;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ── 헤더 ── -->
+  <div class="hero">
+    <div class="badge">IoT-X 캡스톤디자인 · 기술 정리</div>
+    <h1>Safe<span>Ride</span> AX</h1>
+    <p class="sub">AI-based Personal Mobility Safety Control System</p>
+    <span class="tagline">이중 카메라 YOLOv8 + 벌점 제도로 PM 안전 문제를 실시간으로 해결한다</span>
+  </div>
+
+  <!-- ── 01. 카메라 구성 ── -->
+  <section>
+    <div class="sec-label">01 / Camera</div>
+    <div class="sec-title">이중 카메라 구성</div>
+    <div class="cam-grid">
+      <div class="cam-card cam-front">
+        <div class="cam-icon">📷</div>
+        <h3>전면 카메라</h3>
+        <div class="cam-type">VISION CAM · 또는 적외선</div>
+        <ul class="cam-tasks">
+          <li>인도 / 차도 구분 (노면 패턴)</li>
+          <li>횡단보도 감지</li>
+          <li>신호등 색상 인식 (개발 예정)</li>
+        </ul>
+      </div>
+      <div class="cam-card cam-rear">
+        <div class="cam-icon">📸</div>
+        <h3>후면 카메라</h3>
+        <div class="cam-type">적외선 (IR) · 야간 대응</div>
+        <ul class="cam-tasks">
+          <li>헬멧 착용 여부 감지</li>
+          <li>탑승 인원 수 판별 (1인 / 2인 이상)</li>
+          <li>저조도 · 야간 환경 안정 감지</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 02. YOLO 클래스 ── -->
+  <section>
+    <div class="sec-label">02 / AI Model</div>
+    <div class="sec-title">YOLOv8 커스텀 클래스 (9개)</div>
+    <div class="card" style="padding:20px 24px;">
+      <p style="font-size:13px;color:var(--text2);">
+        일반 YOLOv8(COCO 80종)을 직접 데이터 수집·라벨링하여 아래 9개 커스텀 클래스로 파인튜닝.
+        TFLite 변환 후 Raspberry Pi 4B 온디바이스에서 <strong style="color:var(--accent)">10~15fps</strong> 실시간 추론.
+        전면·후면 카메라를 병렬 처리하여 단일 패스에서 모든 항목 동시 탐지.
+      </p>
+    </div>
+    <div class="class-section-label front">전면 카메라 클래스</div>
+    <div class="class-grid">
+      <div class="class-item front"><span class="class-id">Class 0</span><span class="class-name">sidewalk</span><span class="class-desc">인도 · 보도블록 패턴</span></div>
+      <div class="class-item front"><span class="class-id">Class 1</span><span class="class-name">asphalt</span><span class="class-desc">차도 · 아스팔트 패턴</span></div>
+      <div class="class-item front"><span class="class-id">Class 2</span><span class="class-name">crosswalk</span><span class="class-desc">횡단보도</span></div>
+      <div class="class-item front"><span class="class-id">Class 3</span><span class="class-name">traffic_red</span><span class="class-desc">적색 신호 (위반 감지)</span></div>
+      <div class="class-item front"><span class="class-id">Class 4</span><span class="class-name">traffic_green</span><span class="class-desc">녹색 신호</span></div>
+    </div>
+    <div class="class-section-label rear">후면 카메라 클래스</div>
+    <div class="class-grid">
+      <div class="class-item rear"><span class="class-id">Class 5</span><span class="class-name">helmet_on</span><span class="class-desc">헬멧 착용 상태</span></div>
+      <div class="class-item rear"><span class="class-id">Class 6</span><span class="class-name">helmet_off</span><span class="class-desc">헬멧 미착용 상태</span></div>
+      <div class="class-item rear"><span class="class-id">Class 7</span><span class="class-name">person_1</span><span class="class-desc">1인 탑승</span></div>
+      <div class="class-item rear"><span class="class-id">Class 8</span><span class="class-name">person_2plus</span><span class="class-desc">2인 이상 탑승</span></div>
+    </div>
+  </section>
+
+  <!-- ── 03. 전체 작동 과정 ── -->
+  <section>
+    <div class="sec-label">03 / Operation</div>
+    <div class="sec-title">전체 작동 과정 (처음 → 끝)</div>
+
+    <div class="phase-wrap">
+
+      <!-- PHASE 1 -->
+      <div class="phase-block open">
+        <div class="phase-header" onclick="toggle(this)">
+          <span class="phase-num ph-blue">PHASE 1</span>
+          <h3>사용자 앱 — 잠금 해제 요청</h3>
+          <span class="phase-toggle">▾</span>
+        </div>
+        <div class="phase-body">
+          <p>사용자가 공유 킥보드 앱에서 주변 킥보드를 선택하거나 QR 코드를 스캔하면 잠금 해제 요청이 발생합니다.</p>
+          <p>이 요청은 앱 → Wi-Fi(인터넷) → 클라우드 서버 → 킥보드 내 <strong>Raspberry Pi</strong>로 전달됩니다. Raspberry Pi가 신호를 수신하는 순간 카메라 시스템이 활성화되고 안전 검사 단계로 진입합니다.</p>
+          <div class="mini-flow">
+            <div class="mf-node blue">📱 사용자 앱</div>
+            <div class="mf-arr">→</div>
+            <div class="mf-node">🌐 Wi-Fi (인터넷)</div>
+            <div class="mf-arr">→</div>
+            <div class="mf-node">☁️ 클라우드 서버</div>
+            <div class="mf-arr">→</div>
+            <div class="mf-node blue">🛴 Raspberry Pi 수신</div>
+            <div class="mf-arr">→</div>
+            <div class="mf-node blue">📸 카메라 활성화</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PHASE 2 -->
+      <div class="phase-block open">
+        <div class="phase-header" onclick="toggle(this)">
+          <span class="phase-num ph-red">PHASE 2</span>
+          <h3>출발 전 안전 검사 — 후면 카메라</h3>
+          <span class="phase-toggle">▾</span>
+        </div>
+        <div class="phase-body">
+          <p>잠금 해제 요청이 수신되면 <strong>후면 적외선 카메라</strong>가 탑승자를 촬영합니다. Raspberry Pi에서 YOLOv8이 추론을 실행하여 두 가지 조건을 동시에 검사합니다.</p>
+          <ul class="step-list">
+            <li>
+              <span class="step-icon">⛑️</span>
+              <div class="step-content">
+                <div class="step-title">헬멧 착용 감지</div>
+                <div class="step-desc">YOLOv8이 <code>helmet_on</code> / <code>helmet_off</code> 중 하나로 분류. 3프레임 연속 <code>helmet_off</code> 감지 시 미착용으로 확정 (오탐 방지).</div>
+              </div>
+            </li>
+            <li>
+              <span class="step-icon">👥</span>
+              <div class="step-content">
+                <div class="step-title">탑승 인원 감지</div>
+                <div class="step-desc">YOLOv8이 <code>person_1</code> / <code>person_2plus</code>로 분류. 발판 위 사람 수를 바운딩 박스로 카운팅.</div>
+              </div>
+            </li>
+          </ul>
+          <div class="result-row">
+            <div class="result-ok">
+              <div class="r-title">✅ 검사 통과</div>
+              <p>헬멧 착용 확인 + 1인 탑승 확인<br>→ ESC에 <strong>잠금 해제 신호</strong> 전송<br>→ 킥보드 출발 가능 상태</p>
+            </div>
+            <div class="result-ng">
+              <div class="r-title">❌ 검사 실패</div>
+              <p>헬멧 미착용 또는 2인 이상 감지<br>→ ESC 잠금 유지<br>→ 벌점 부여 + 앱 경고 알림</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PHASE 3 -->
+      <div class="phase-block open">
+        <div class="phase-header" onclick="toggle(this)">
+          <span class="phase-num ph-blue">PHASE 3</span>
+          <h3>주행 중 실시간 감지 — 전면 + 후면 + RPM 병렬</h3>
+          <span class="phase-toggle">▾</span>
+        </div>
+        <div class="phase-body">
+          <p>킥보드가 출발하면 전면·후면 카메라와 RPM 센서가 <strong>동시에 병렬로</strong> 작동합니다. Raspberry Pi는 10~15fps 주기로 각 입력을 처리합니다.</p>
+          <ul class="step-list">
+            <li>
+              <span class="step-icon">🛣️</span>
+              <div class="step-content">
+                <div class="step-title">전면 카메라 — 노면 분류</div>
+                <div class="step-desc"><code>sidewalk</code>(보도블록)가 <strong>5프레임 이상 연속</strong> 감지되면 인도 주행으로 판정. 단일 프레임 감지는 무시하여 오탐 방지. 인도 판정 시 ESC에 최대 5km/h 속도 제한 신호 전송.</div>
+              </div>
+            </li>
+            <li>
+              <span class="step-icon">🚦</span>
+              <div class="step-content">
+                <div class="step-title">전면 카메라 — 신호 인식 (개발 예정)</div>
+                <div class="step-desc"><code>traffic_red</code> 감지 + RPM 속도 > 0 이면 신호위반으로 판정. 강제 정지 신호 전송.</div>
+              </div>
+            </li>
+            <li>
+              <span class="step-icon">👥</span>
+              <div class="step-content">
+                <div class="step-title">후면 카메라 — 주행 중 인원 모니터링</div>
+                <div class="step-desc">출발 후 뒤에 사람이 올라타는 경우를 지속 감지. <code>person_2plus</code> 감지 시 즉시 경고음 + 속도 제한 + 벌점 처리.</div>
+              </div>
+            </li>
+            <li>
+              <span class="step-icon">⚡</span>
+              <div class="step-content">
+                <div class="step-title">RPM 센서 — 속도 측정</div>
+                <div class="step-desc">BLDC 모터 RPM을 지속 측정하여 현재 속도 계산. 제한 속도 초과 시 ESC에 감속 신호 즉시 전송.</div>
+              </div>
+            </li>
+          </ul>
+          <div class="mini-flow" style="margin-top:16px;">
+            <div class="mf-node blue">전면 CAM<br>노면·신호</div>
+            <div class="mf-arr">+</div>
+            <div class="mf-node red">후면 IR CAM<br>인원·헬멧</div>
+            <div class="mf-arr">+</div>
+            <div class="mf-node green">RPM 센서<br>속도</div>
+            <div class="mf-arr">→</div>
+            <div class="mf-node purple">Raspberry Pi<br>YOLOv8 추론</div>
+            <div class="mf-arr">→</div>
+            <div class="mf-node amber">ESC 제어<br>속도·잠금</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PHASE 4 -->
+      <div class="phase-block open">
+        <div class="phase-header" onclick="toggle(this)">
+          <span class="phase-num ph-green">PHASE 4</span>
+          <h3>위반 이벤트 생성 → Wi-Fi 전송 → 벌점 반영</h3>
+          <span class="phase-toggle">▾</span>
+        </div>
+        <div class="phase-body">
+          <p>위반이 감지되면 Raspberry Pi가 즉시 <strong>위반 이벤트 패킷</strong>을 생성합니다. 패킷에는 위반 종류, 발생 시각, 사용자 ID, 감지 카메라 정보가 포함됩니다.</p>
+          <ul class="step-list">
+            <li>
+              <span class="step-icon">📦</span>
+              <div class="step-content">
+                <div class="step-title">이벤트 패킷 생성</div>
+                <div class="step-desc">{ type: "helmet_off", timestamp: "2026-04-27T20:15:00", user_id: "user_123", camera: "rear_IR" }</div>
+              </div>
+            </li>
+            <li>
+              <span class="step-icon">📶</span>
+              <div class="step-content">
+                <div class="step-title">Wi-Fi 전송 (프로토타입)</div>
+                <div class="step-desc">Raspberry Pi 4B 내장 Wi-Fi (802.11ac)로 근거리 네트워크를 통해 클라우드 서버로 전송. 시험 환경에서는 Wi-Fi 커버리지 내에서 동작. 상용화 시 LTE로 교체 예정.</div>
+              </div>
+            </li>
+            <li>
+              <span class="step-icon">☁️</span>
+              <div class="step-content">
+                <div class="step-title">클라우드 서버 처리</div>
+                <div class="step-desc">서버가 사용자 벌점 DB를 조회하고 해당 위반 벌점을 누적. 제재 기준 도달 시 제재 로직 자동 실행.</div>
+              </div>
+            </li>
+            <li>
+              <span class="step-icon">📱</span>
+              <div class="step-content">
+                <div class="step-title">앱 푸시 알림</div>
+                <div class="step-desc">사용자 스마트폰에 위반 내용 + 현재 누적 벌점을 실시간 알림. 제재 단계 도달 시 이용 제한 안내.</div>
+              </div>
+            </li>
+          </ul>
+          <div class="mini-flow">
+            <div class="mf-node purple">위반 감지</div>
+            <div class="mf-arr">→</div>
+            <div class="mf-node purple">패킷 생성</div>
+            <div class="mf-arr">→</div>
+            <div class="mf-node blue">📶 Wi-Fi 전송</div>
+            <div class="mf-arr">→</div>
+            <div class="mf-node">☁️ 서버</div>
+            <div class="mf-arr">→</div>
+            <div class="mf-node green">벌점 DB 누적</div>
+            <div class="mf-arr">→</div>
+            <div class="mf-node blue">📱 앱 알림</div>
+          </div>
+          <div class="warn-box">
+            ⚠️ <strong>프로토타입 제약사항:</strong> Wi-Fi 커버리지 밖에서는 이벤트가 로컬 큐에 저장되고, Wi-Fi 재연결 시 일괄 전송됩니다. 상용화 단계에서는 LTE 모듈로 교체하여 이동 중 실시간 전송을 구현합니다.
+          </div>
+        </div>
+      </div>
+
+      <!-- PHASE 5 -->
+      <div class="phase-block open">
+        <div class="phase-header" onclick="toggle(this)">
+          <span class="phase-num ph-purple">PHASE 5</span>
+          <h3>반납 및 세션 종료</h3>
+          <span class="phase-toggle">▾</span>
+        </div>
+        <div class="phase-body">
+          <p>사용자가 앱에서 반납 처리를 완료하면 앱 → 서버 → Raspberry Pi 순으로 종료 신호가 전달됩니다.</p>
+          <ul class="step-list">
+            <li>
+              <span class="step-icon">🔒</span>
+              <div class="step-content">
+                <div class="step-title">ESC 잠금 전환</div>
+                <div class="step-desc">Raspberry Pi가 ESC에 잠금 신호를 전송하여 킥보드를 잠금 상태로 전환. 카메라 및 추론 시스템 대기 모드로 전환.</div>
+              </div>
+            </li>
+            <li>
+              <span class="step-icon">💾</span>
+              <div class="step-content">
+                <div class="step-title">세션 데이터 저장</div>
+                <div class="step-desc">해당 이용 세션의 위반 이력, 주행 시간, 감지 로그가 서버 DB에 저장. 다음 이용 시 누적 벌점이 그대로 유지.</div>
+              </div>
+            </li>
+          </ul>
+          <div class="info-box">
+            <strong>벌점 초기화 조건:</strong> &nbsp;6개월 무위반 시 전체 초기화 &nbsp;/&nbsp; 안전 교육 이수 완료 시 3점 차감
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /phase-wrap -->
+  </section>
+
+  <!-- ── 04. 벌점 제도 ── -->
+  <section>
+    <div class="sec-label">04 / Penalty</div>
+    <div class="sec-title">벌점 제도</div>
+    <div class="card">
+      <table class="penalty-table">
+        <thead>
+          <tr><th>위반 항목</th><th>감지 방법</th><th>벌점</th><th>즉시 제재</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>헬멧 미착용</td><td><span class="tag-rear">후면 IR + YOLO</span></td><td><span class="pts">3점</span></td><td>잠금 해제 차단</td></tr>
+          <tr><td>2인 이상 탑승</td><td><span class="tag-rear">후면 IR + YOLO</span></td><td><span class="pts">3점</span></td><td>출발 차단</td></tr>
+          <tr><td>신호위반 (적색)</td><td><span class="tag-front">전면 CAM + YOLO</span> <span class="tag-soon">개발 예정</span></td><td><span class="pts">3점</span></td><td>강제 정지</td></tr>
+          <tr><td>인도 주행</td><td><span class="tag-front">전면 CAM + YOLO</span></td><td><span class="pts">2점</span></td><td>속도 5 km/h 강제 제한</td></tr>
+          <tr><td>과속 (제한 초과)</td><td><span class="tag-rpm">모터 RPM 센서</span></td><td><span class="pts">1점</span></td><td>경고음 후 자동 감속</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="margin-top:20px;">
+      <div class="sanction-grid">
+        <div class="sanction-item s0"><div class="pts-range">0–4</div><div class="label">정상 이용</div><div class="desc">제재 없음</div></div>
+        <div class="sanction-item s1"><div class="pts-range">5–9</div><div class="label">경고 단계</div><div class="desc">앱 경고 + 보증금 추가</div></div>
+        <div class="sanction-item s2"><div class="pts-range">10–14</div><div class="label">7일 정지</div><div class="desc">안전 교육 이수 필요</div></div>
+        <div class="sanction-item s3"><div class="pts-range">15+</div><div class="label">30일 정지</div><div class="desc">운영사 신고 전송</div></div>
+      </div>
+      <div class="card" style="margin-top:12px;font-size:13px;color:var(--text2);">
+        <strong style="color:var(--accent3)">벌점 초기화:</strong> &nbsp;6개월 무위반 시 전체 초기화 &nbsp;/&nbsp; 안전 교육 이수 시 3점 차감
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 05. Wi-Fi 통신 구조 ── -->
+  <section>
+    <div class="sec-label">05 / Network</div>
+    <div class="sec-title">Wi-Fi 통신 구조 (프로토타입)</div>
+    <div class="card" style="margin-bottom:16px;font-size:13px;color:var(--text2);">
+      시험 단계에서는 <strong style="color:var(--accent)">Raspberry Pi 4B 내장 Wi-Fi (802.11ac, 2.4/5GHz)</strong>를 활용하여
+      근거리 네트워크 환경에서 위반 이벤트 전송 및 벌점 시스템을 검증합니다.
+      상용화 단계에서는 LTE 모듈로 교체하여 이동 중 실시간 통신을 구현합니다.
+    </div>
+    <div class="arch">
+      <div class="arch-node">
+        <div class="icon">🛴</div>
+        <h4>킥보드</h4>
+        <p>Raspberry Pi 4B<br>YOLOv8 추론<br>위반 이벤트 생성</p>
+        <div class="wifi-badge">내장 Wi-Fi</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node">
+        <div class="icon">📶</div>
+        <h4>Wi-Fi 라우터</h4>
+        <p>802.11ac<br>2.4GHz / 5GHz<br>별도 모듈 불필요</p>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node">
+        <div class="icon">☁️</div>
+        <h4>클라우드 서버</h4>
+        <p>벌점 DB<br>이벤트 처리<br>푸시 알림 발송</p>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node">
+        <div class="icon">📱</div>
+        <h4>사용자 앱</h4>
+        <p>실시간 벌점 확인<br>위반 내역 열람<br>제재 안내</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 06. AI 연계 단계 ── -->
+  <section>
+    <div class="sec-label">06 / AI Layer</div>
+    <div class="sec-title">AI 연계 단계</div>
+    <div class="ai-steps">
+      <div class="ai-step active">
+        <div class="step-num">1단계 — 현재 구현</div>
+        <h4>실시간 감지 + 즉시 제재</h4>
+        <p>YOLOv8 커스텀 파인튜닝으로 헬멧·인원·노면·신호를 단일 패스 탐지. 위반 즉시 잠금·속도 제어 + 벌점 부여.</p>
+      </div>
+      <div class="ai-step future">
+        <div class="step-num">2단계 — 확장 방향</div>
+        <h4>위반 패턴 학습 → 예측 제어</h4>
+        <p>사용자별 위반 이력 누적 학습(LSTM). 고위험 사용자 선제 경고, 구역별 히트맵 생성, 보험사 연계 할인 모델.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="footer">SAFERIDE AX · IoT-X CAPSTONE DESIGN · 부산대학교 공학교육혁신센터</div>
+</div>
+
+<script>
+  function toggle(header) {
+    const block = header.parentElement;
+    block.classList.toggle('open');
+  }
+</script>
+</body>
+</html>
