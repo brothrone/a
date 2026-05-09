@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>CleanBot AI — 데이터 분석</title>
+<title>CleanAI Monitor — 데이터 분석</title>
 <link rel="stylesheet" href="style.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </head>
 <body>
 
 <nav>
-  <a href="index.html" class="logo">🤖 CleanBot <span>AI</span></a>
+  <a href="index.html" class="logo">🧹 CleanAI <span>Monitor</span></a>
   <ul>
     <li><a href="index.html">홈</a></li>
     <li><a href="data.html" class="active">데이터 분석</a></li>
@@ -31,7 +31,7 @@
       <span class="lbl">총 세션 수</span>
     </div>
     <div class="card stat">
-      <span class="val" style="color:#81c784;">28.4분</span>
+      <span class="val" style="color:#81c784;">22.4분</span>
       <span class="lbl">평균 청소 시간</span>
     </div>
     <div class="card stat">
@@ -53,7 +53,7 @@
 
     <!-- 모드별 소모율 비교 -->
     <div class="card">
-      <div class="card-title">모드별 평균 소모율 (분당 %)</div>
+      <div class="card-title">흡입 모드별 평균 소모율 (분당 %)</div>
       <div style="height:220px;"><canvas id="mode-chart"></canvas></div>
     </div>
   </div>
@@ -81,14 +81,16 @@
         <div style="font-size:13px;color:#1a1a2e;line-height:1.6;">
           Li-ion 방전 곡선 기반 기초 파라미터 정의.<br>
           온도 계수(±0.5%/°C), 열화 계수 적용.<br>
+          흡입 모드별 소모율 차별화<br>
           <code style="background:#e3f2fd;padding:2px 6px;border-radius:4px;font-size:12px;">numpy</code> 기반 수식 구현
         </div>
       </div>
       <div style="padding:16px;background:#f1f8f1;border-radius:12px;border-left:4px solid #66bb6a;">
         <div style="font-weight:700;margin-bottom:8px;color:#2e7d32;">② 랜덤 시뮬레이션</div>
         <div style="font-size:13px;color:#1a1a2e;line-height:1.6;">
-          정규분포로 청소 시간·공간 크기 샘플링.<br>
-          모드 선택 확률 설정 (에코 30%, 표준 50%, 터보 20%).<br>
+          정규분포로 청소 시간·장소 유형 샘플링.<br>
+          모드 선택 확률 설정<br>
+          (절전 30%, 표준 50%, 강력 20%).<br>
           <code style="background:#e8f5e9;padding:2px 6px;border-radius:4px;font-size:12px;">numpy.random</code> 활용
         </div>
       </div>
@@ -112,12 +114,12 @@
       </thead>
       <tbody>
         <tr><td>현재 배터리 잔량 (%)</td><td><span class="badge badge-blue">수치</span></td><td>시뮬레이션</td><td>게이지, 예측 계산 입력값</td><td><span class="badge badge-red">필수</span></td></tr>
-        <tr><td>청소 모드</td><td><span class="badge badge-green">범주</span></td><td>사용자 선택</td><td>소모율 계산 기준</td><td><span class="badge badge-red">필수</span></td></tr>
+        <tr><td>흡입 모드 (절전/표준/강력)</td><td><span class="badge badge-green">범주</span></td><td>사용자 선택</td><td>소모율 계산 기준</td><td><span class="badge badge-red">필수</span></td></tr>
         <tr><td>세션별 소모량 (%)</td><td><span class="badge badge-blue">수치</span></td><td>가상 생성</td><td>소모 패턴 차트</td><td><span class="badge badge-red">필수</span></td></tr>
         <tr><td>청소 소요 시간 (분)</td><td><span class="badge badge-blue">수치</span></td><td>가상 생성</td><td>세션 이력 표시</td><td><span class="badge badge-red">필수</span></td></tr>
-        <tr><td>청소 면적 (㎡)</td><td><span class="badge badge-blue">수치</span></td><td>가상 생성</td><td>청소 가능 면적 예측</td><td><span class="badge badge-amber">권장</span></td></tr>
+        <tr><td>청소 장소 유형</td><td><span class="badge badge-green">범주</span></td><td>가상 생성</td><td>장소별 소모 패턴 분석</td><td><span class="badge badge-amber">권장</span></td></tr>
         <tr><td>충전 이력 (횟수/주기)</td><td><span class="badge badge-blue">수치</span></td><td>가상 생성</td><td>배터리 수명 상태 표시</td><td><span class="badge badge-amber">권장</span></td></tr>
-        <tr><td>주변 온도 (°C)</td><td><span class="badge badge-blue">수치</span></td><td>랜덤 + 계절 보정</td><td>소모율 보정 계수</td><td><span class="badge badge-amber">권장</span></td></tr>
+        <tr><td>주변 온도 (°C)</td><td><span class="badge badge-blue">수치</span></td><td>랜덤 + 계절 보정</td><td>소모율 보정 계수 적용</td><td><span class="badge badge-amber">권장</span></td></tr>
         <tr><td>사용자 선호 모드</td><td><span class="badge badge-green">범주</span></td><td>설문 + 이력</td><td>개인화 추천 알림</td><td><span class="badge badge-blue">선택</span></td></tr>
         <tr><td>충전 완료 시각</td><td><span class="badge badge-green">시간</span></td><td>가상 생성</td><td>충전 예약 UI</td><td><span class="badge badge-blue">선택</span></td></tr>
       </tbody>
@@ -131,12 +133,13 @@
   </div>
 </main>
 
-<footer>CleanBot AI — 부산대학교 캡스톤 프로젝트 | 가상 데이터 기반 프로토타입</footer>
+<footer>CleanAI Monitor — 부산대학교 캡스톤 프로젝트 | 가상 데이터 기반 프로토타입</footer>
 
 <script>
+var rand = function(min,max){ return Math.round(Math.random()*(max-min)+min); };
+
 // 30일 추이
 var days30 = Array.from({length:30}, function(_,i){ return (i+1)+'일'; });
-var rand = function(min,max){ return Math.round(Math.random()*(max-min)+min); };
 var drainData = days30.map(function(){ return rand(18,55); });
 var ctx1 = document.getElementById('trend-chart').getContext('2d');
 new Chart(ctx1,{
@@ -166,7 +169,7 @@ var ctx2 = document.getElementById('mode-chart').getContext('2d');
 new Chart(ctx2,{
   type:'bar',
   data:{
-    labels:['에코','표준','터보'],
+    labels:['절전','표준','강력'],
     datasets:[{
       label:'소모율(%/분)',
       data:[0.25,0.33,0.58],
@@ -184,7 +187,7 @@ new Chart(ctx2,{
   }
 });
 
-// 분포 (히스토그램처럼)
+// 잔량 분포
 var bins = ['0-20%','20-40%','40-60%','60-80%','80-100%'];
 var binData = [12, 28, 45, 38, 17];
 var ctx3 = document.getElementById('dist-chart').getContext('2d');
@@ -205,7 +208,7 @@ new Chart(ctx3,{
   }
 });
 
-// 온도 vs 소모율 (scatter)
+// 온도 vs 소모율 scatter
 var tempPoints = Array.from({length:40},function(){
   var t = rand(5,40);
   var base = 0.33;

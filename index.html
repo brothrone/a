@@ -10,7 +10,7 @@
 <body>
 
 <nav>
-  <a href="index.html" class="logo">🤖 CleanBot <span>AI</span></a>
+  <a href="index.html" class="logo">🧹 CleanAI <span>Monitor</span></a>
   <ul>
     <li><a href="index.html" class="active">홈</a></li>
     <li><a href="data.html">데이터 분석</a></li>
@@ -20,7 +20,7 @@
 
 <main>
   <div class="page-header">
-    <h1>배터리 대시보드</h1>
+    <h1>무선 청소기 배터리 대시보드</h1>
     <p>사용 이력 기반 AI 예측 — 실시간 청소 가능 시간 안내</p>
   </div>
 
@@ -35,8 +35,8 @@
       <span class="lbl">예상 사용 시간</span>
     </div>
     <div class="card stat">
-      <span class="val" id="stat-area" style="color:#ffa726;">25㎡</span>
-      <span class="lbl">청소 가능 면적</span>
+      <span class="val" id="stat-sessions" style="color:#ffa726;">3회</span>
+      <span class="lbl">예상 청소 가능 횟수</span>
     </div>
     <div class="card stat">
       <span class="val" id="stat-cycles" style="color:#ef5350;">142회</span>
@@ -72,10 +72,10 @@
 
     <!-- MODE SELECTOR -->
     <div class="card">
-      <div class="card-title">청소 모드 선택</div>
-      <div class="grid-3" style="margin-bottom:16px;" id="mode-grid">
+      <div class="card-title">흡입 모드 선택</div>
+      <div class="grid-3" style="margin-bottom:16px;">
         <button class="mode-btn" id="btn-eco" onclick="setMode('eco')">
-          <span class="icon">🌿</span>에코
+          <span class="icon">🌿</span>절전
           <span class="badge badge-green" style="font-size:10px;">+절약</span>
         </button>
         <button class="mode-btn active-std" id="btn-std" onclick="setMode('std')">
@@ -83,14 +83,14 @@
           <span class="badge badge-blue" style="font-size:10px;">권장</span>
         </button>
         <button class="mode-btn" id="btn-turbo" onclick="setMode('turbo')">
-          <span class="icon">⚡</span>터보
+          <span class="icon">⚡</span>강력
           <span class="badge badge-red" style="font-size:10px;">고출력</span>
         </button>
       </div>
 
       <div id="mode-info" style="background:#f0f9ff;border-radius:12px;padding:14px;margin-bottom:16px;">
         <div style="font-weight:700;font-size:14px;color:#0277bd;margin-bottom:6px;" id="mode-name">🧹 표준 모드</div>
-        <div style="font-size:13px;color:#1a1a2e;margin-bottom:8px;" id="mode-desc">일반 청소에 최적화. 소음과 흡입력의 균형.</div>
+        <div style="font-size:13px;color:#1a1a2e;margin-bottom:8px;" id="mode-desc">일상 청소에 최적화. 소음과 흡입력의 균형.</div>
         <div style="display:flex;gap:16px;font-size:13px;">
           <span>소모율: <b id="mode-rate">0.33%/분</b></span>
           <span>예상: <b id="mode-time" style="color:#0277bd;">21분</b></span>
@@ -98,11 +98,11 @@
       </div>
 
       <div>
-        <div style="font-size:13px;color:#64748b;margin-bottom:8px;">모드별 예상 가능 시간</div>
-        <div style="display:flex;flex-direction:column;gap:8px;" id="mode-compare">
+        <div style="font-size:13px;color:#64748b;margin-bottom:8px;">모드별 예상 사용 시간</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
           <div>
             <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
-              <span>🌿 에코</span><span id="bar-eco-lbl">28분</span>
+              <span>🌿 절전</span><span id="bar-eco-lbl">28분</span>
             </div>
             <div class="progress-bar"><div class="progress-fill" id="bar-eco" style="width:42%;background:#81c784;"></div></div>
           </div>
@@ -114,7 +114,7 @@
           </div>
           <div>
             <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
-              <span>⚡ 터보</span><span id="bar-turbo-lbl">12분</span>
+              <span>⚡ 강력</span><span id="bar-turbo-lbl">12분</span>
             </div>
             <div class="progress-bar"><div class="progress-fill" id="bar-turbo" style="width:18%;background:#ef5350;"></div></div>
           </div>
@@ -137,7 +137,7 @@
     <table>
       <thead>
         <tr>
-          <th>날짜</th><th>모드</th><th>청소 시간</th><th>배터리 소모</th><th>청소 면적</th><th>상태</th>
+          <th>날짜</th><th>모드</th><th>청소 시간</th><th>배터리 소모</th><th>장소</th><th>상태</th>
         </tr>
       </thead>
       <tbody id="session-table"></tbody>
@@ -151,53 +151,50 @@
   </div>
 </main>
 
-<footer>CleanBot AI — 부산대학교 캡스톤 프로젝트 | 가상 데이터 기반 프로토타입</footer>
+<footer>CleanAI Monitor — 부산대학교 캡스톤 프로젝트 | 가상 데이터 기반 프로토타입</footer>
 
 <script>
 var currentBattery = 70;
 var currentMode = 'std';
 
 var modes = {
-  eco:   { name:'🌿 에코 모드',   rate:0.25, desc:'저전력 운행. 조용하고 배터리 오래 지속.', color:'#66bb6a', bgClass:'#f1f8f1', textColor:'#2e7d32' },
-  std:   { name:'🧹 표준 모드',   rate:0.33, desc:'일반 청소에 최적화. 소음과 흡입력의 균형.', color:'#4fc3f7', bgClass:'#f0f9ff', textColor:'#0277bd' },
-  turbo: { name:'⚡ 터보 모드',   rate:0.58, desc:'강력한 흡입력. 배터리 소모가 빠름.', color:'#ef5350', bgClass:'#fff0f0', textColor:'#b71c1c' }
+  eco:   { name:'🌿 절전 모드',  rate:0.25, desc:'저전력 운행. 조용하고 배터리 오래 지속.', color:'#66bb6a', bgClass:'#f1f8f1', textColor:'#2e7d32' },
+  std:   { name:'🧹 표준 모드',  rate:0.33, desc:'일상 청소에 최적화. 소음과 흡입력의 균형.',  color:'#4fc3f7', bgClass:'#f0f9ff', textColor:'#0277bd' },
+  turbo: { name:'⚡ 강력 모드',  rate:0.58, desc:'강력한 흡입력. 먼지·카펫에 효과적. 배터리 소모 빠름.', color:'#ef5350', bgClass:'#fff0f0', textColor:'#b71c1c' }
 };
 
 function calcTime(pct, mode) { return Math.round(pct / modes[mode].rate); }
-function calcArea(pct, mode) { return Math.round(pct * (mode==='eco'?0.45:mode==='std'?0.36:0.27)); }
+function calcSessions(pct, mode) { return Math.max(1, Math.floor(calcTime(pct, mode) / 10)); }
 
 function updateAll(val) {
   currentBattery = parseInt(val);
   var pct = currentBattery;
 
-  // gauge
   var maxDash = 283;
   var offset = Math.round(maxDash * (1 - pct/100));
   document.getElementById('gauge-arc').setAttribute('stroke-dashoffset', offset);
   document.getElementById('gauge-arc').setAttribute('stroke', pct>50?'#4fc3f7':pct>20?'#ffa726':'#ef5350');
   document.getElementById('gauge-text').textContent = pct + '%';
 
-  // stats
   var t = calcTime(pct, currentMode);
-  var a = calcArea(pct, currentMode);
+  var s = calcSessions(pct, currentMode);
   document.getElementById('stat-pct').textContent = pct + '%';
   document.getElementById('stat-time').textContent = t + '분';
-  document.getElementById('stat-area').textContent = a + '㎡';
+  document.getElementById('stat-sessions').textContent = s + '회';
 
-  // warning
   document.getElementById('warning-msg').style.display = pct <= 20 ? 'block' : 'none';
 
-  // bars
-  var ecoT = calcTime(pct,'eco'), stdT = calcTime(pct,'std'), turboT = calcTime(pct,'turbo');
-  var maxT = ecoT;
-  document.getElementById('bar-eco').style.width = Math.round(ecoT/maxT*100)+'%';
-  document.getElementById('bar-std').style.width = Math.round(stdT/maxT*100)+'%';
+  var ecoT  = calcTime(pct,'eco');
+  var stdT  = calcTime(pct,'std');
+  var turboT= calcTime(pct,'turbo');
+  var maxT  = ecoT;
+  document.getElementById('bar-eco').style.width   = Math.round(ecoT/maxT*100)+'%';
+  document.getElementById('bar-std').style.width   = Math.round(stdT/maxT*100)+'%';
   document.getElementById('bar-turbo').style.width = Math.round(turboT/maxT*100)+'%';
-  document.getElementById('bar-eco-lbl').textContent = ecoT+'분';
-  document.getElementById('bar-std-lbl').textContent = stdT+'분';
+  document.getElementById('bar-eco-lbl').textContent   = ecoT+'분';
+  document.getElementById('bar-std-lbl').textContent   = stdT+'분';
   document.getElementById('bar-turbo-lbl').textContent = turboT+'분';
 
-  // mode info
   document.getElementById('mode-time').textContent = t+'분';
   document.getElementById('mode-rate').textContent = modes[currentMode].rate+'%/분';
 }
@@ -229,7 +226,7 @@ new Chart(ctx, {
       { label:'배터리 소모(%)', data: histData.map(function(v){return 100-v;}),
         backgroundColor:'rgba(79,195,247,0.7)', borderRadius:6, borderSkipped:false },
       { label:'잔량(%)', data: histData,
-        backgroundColor:'rgba(129,199,132,0.5)', borderRadius:6, borderSkipped:false, type:'line',
+        backgroundColor:'rgba(129,199,132,0.5)', type:'line',
         borderColor:'#81c784', pointBackgroundColor:'#81c784', tension:0.4, fill:false }
     ]
   },
@@ -237,22 +234,21 @@ new Chart(ctx, {
     responsive:true, maintainAspectRatio:false,
     plugins:{ legend:{ position:'top', labels:{font:{size:12}} } },
     scales:{
-      y:{ min:0, max:100, ticks:{ callback:function(v){return v+'%';}, font:{size:11} },
-          grid:{ color:'#f1f5f9' } },
-      x:{ ticks:{ font:{size:12} }, grid:{ display:false } }
+      y:{ min:0, max:100, ticks:{ callback:function(v){return v+'%';}, font:{size:11} }, grid:{color:'#f1f5f9'} },
+      x:{ ticks:{ font:{size:12} }, grid:{display:false} }
     }
   }
 });
 
 // Session table
 var sessions = [
-  { date:'2026-05-09', mode:'표준', time:'23분', drain:'31%', area:'27㎡', status:'완료' },
-  { date:'2026-05-08', mode:'에코', time:'38분', drain:'44%', area:'35㎡', status:'완료' },
-  { date:'2026-05-07', mode:'터보', time:'14분', drain:'28%', area:'21㎡', status:'완료' },
-  { date:'2026-05-06', mode:'표준', time:'19분', drain:'25%', area:'22㎡', status:'완료' },
-  { date:'2026-05-05', mode:'에코', time:'41분', drain:'47%', area:'38㎡', status:'배터리부족' },
+  { date:'2026-05-09', mode:'표준', time:'23분', drain:'31%', place:'거실·침실', status:'완료' },
+  { date:'2026-05-08', mode:'절전', time:'38분', drain:'44%', place:'전체',     status:'완료' },
+  { date:'2026-05-07', mode:'강력', time:'14분', drain:'28%', place:'카펫 집중', status:'완료' },
+  { date:'2026-05-06', mode:'표준', time:'19분', drain:'25%', place:'주방·화장실', status:'완료' },
+  { date:'2026-05-05', mode:'절전', time:'41분', drain:'47%', place:'전체',     status:'배터리부족' },
 ];
-var modeColor = {표준:'badge-blue',에코:'badge-green',터보:'badge-red'};
+var modeColor = {표준:'badge-blue',절전:'badge-green',강력:'badge-red'};
 var statusColor = {완료:'badge-green','배터리부족':'badge-amber'};
 var tbody = document.getElementById('session-table');
 sessions.forEach(function(s){
@@ -261,7 +257,7 @@ sessions.forEach(function(s){
     +'<td><span class="badge '+modeColor[s.mode]+'">'+s.mode+'</span></td>'
     +'<td>'+s.time+'</td>'
     +'<td>'+s.drain+'</td>'
-    +'<td>'+s.area+'</td>'
+    +'<td>'+s.place+'</td>'
     +'<td><span class="badge '+statusColor[s.status]+'">'+s.status+'</span></td>';
   tbody.appendChild(tr);
 });

@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>CleanBot AI — AI 예측 시뮬레이터</title>
+<title>CleanAI Monitor — AI 예측 시뮬레이터</title>
 <link rel="stylesheet" href="style.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </head>
 <body>
 
 <nav>
-  <a href="index.html" class="logo">🤖 CleanBot <span>AI</span></a>
+  <a href="index.html" class="logo">🧹 CleanAI <span>Monitor</span></a>
   <ul>
     <li><a href="index.html">홈</a></li>
     <li><a href="data.html">데이터 분석</a></li>
@@ -28,8 +28,8 @@
     <!-- INPUT PANEL -->
     <div class="card">
       <div class="card-title">입력 조건 설정</div>
-
       <div style="display:flex;flex-direction:column;gap:20px;">
+
         <!-- 배터리 -->
         <div>
           <label style="font-size:13px;font-weight:600;color:#64748b;display:flex;justify-content:space-between;margin-bottom:8px;">
@@ -38,20 +38,20 @@
           <input type="range" min="5" max="100" step="1" value="70" id="inp-battery" oninput="syncLabel('battery',this.value,'%');runPredict()"/>
         </div>
 
-        <!-- 모드 -->
+        <!-- 흡입 모드 -->
         <div>
-          <label style="font-size:13px;font-weight:600;color:#64748b;display:block;margin-bottom:10px;">청소 모드</label>
+          <label style="font-size:13px;font-weight:600;color:#64748b;display:block;margin-bottom:10px;">흡입 모드</label>
           <div style="display:flex;gap:8px;">
-            <button class="mode-btn" id="p-btn-eco" onclick="setPMode('eco')" style="flex:1;">🌿 에코</button>
-            <button class="mode-btn active-std" id="p-btn-std" onclick="setPMode('std')" style="flex:1;">🧹 표준</button>
-            <button class="mode-btn" id="p-btn-turbo" onclick="setPMode('turbo')" style="flex:1;">⚡ 터보</button>
+            <button class="mode-btn" id="p-btn-eco"   onclick="setPMode('eco')"   style="flex:1;">🌿 절전</button>
+            <button class="mode-btn active-std" id="p-btn-std"   onclick="setPMode('std')"   style="flex:1;">🧹 표준</button>
+            <button class="mode-btn" id="p-btn-turbo" onclick="setPMode('turbo')" style="flex:1;">⚡ 강력</button>
           </div>
         </div>
 
         <!-- 온도 -->
         <div>
           <label style="font-size:13px;font-weight:600;color:#64748b;display:flex;justify-content:space-between;margin-bottom:8px;">
-            주변 온도 (보정 계수) <span id="lbl-temp" style="color:#1a1a2e;">20°C</span>
+            주변 온도 <span id="lbl-temp" style="color:#1a1a2e;">20°C</span>
           </label>
           <input type="range" min="0" max="40" step="1" value="20" id="inp-temp" oninput="syncLabel('temp',this.value,'°C');runPredict()"/>
           <div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;margin-top:4px;">
@@ -70,12 +70,16 @@
           </div>
         </div>
 
-        <!-- 공간 크기 -->
+        <!-- 청소 장소 -->
         <div>
-          <label style="font-size:13px;font-weight:600;color:#64748b;display:flex;justify-content:space-between;margin-bottom:8px;">
-            청소 공간 <span id="lbl-area" style="color:#1a1a2e;">30㎡</span>
-          </label>
-          <input type="range" min="5" max="100" step="5" value="30" id="inp-area" oninput="syncLabel('area',this.value,'㎡');runPredict()"/>
+          <label style="font-size:13px;font-weight:600;color:#64748b;display:block;margin-bottom:8px;">청소 장소 유형</label>
+          <select id="inp-place" onchange="runPredict()" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid #e2e8f0;font-size:14px;background:#fff;color:#1a1a2e;">
+            <option value="1.0">🛋️ 거실 (일반 바닥)</option>
+            <option value="1.15">🛏️ 침실 (카펫/러그)</option>
+            <option value="0.9">🍳 주방 (타일)</option>
+            <option value="1.2">🏠 전체 (혼합)</option>
+          </select>
+          <div style="font-size:11px;color:#94a3b8;margin-top:4px;">카펫·러그는 흡입 부하가 높아 소모율이 증가합니다.</div>
         </div>
 
         <button class="btn btn-primary" onclick="runPredict()" style="width:100%;justify-content:center;font-size:15px;padding:14px;">
@@ -89,7 +93,6 @@
       <!-- 주요 예측 결과 -->
       <div class="card" style="background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);border:none;">
         <div class="card-title" style="color:rgba(255,255,255,0.5);">AI 예측 결과</div>
-
         <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:4px;">
           <span id="result-time" style="font-size:52px;font-weight:700;color:#4fc3f7;">21</span>
           <span style="font-size:20px;color:rgba(255,255,255,0.7);">분</span>
@@ -97,26 +100,24 @@
         <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:20px;" id="result-conf">
           신뢰 구간: 18 ~ 24분
         </div>
-
         <div class="grid-2" style="gap:12px;margin-bottom:16px;">
           <div style="background:rgba(255,255,255,0.08);border-radius:12px;padding:12px;">
-            <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:4px;">청소 가능 면적</div>
-            <div id="result-area" style="font-size:22px;font-weight:700;color:#81c784;">25㎡</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:4px;">예상 청소 가능 횟수</div>
+            <div id="result-sessions" style="font-size:22px;font-weight:700;color:#81c784;">2회</div>
           </div>
           <div style="background:rgba(255,255,255,0.08);border-radius:12px;padding:12px;">
             <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:4px;">예측 소모율</div>
             <div id="result-rate" style="font-size:22px;font-weight:700;color:#ffa726;">0.33%/분</div>
           </div>
         </div>
-
         <div id="ai-message" style="background:rgba(79,195,247,0.15);border-radius:10px;padding:12px;font-size:13px;color:#b3e5fc;line-height:1.6;">
-          💬 표준 모드로 약 21분 청소 가능합니다. 에코 모드 전환 시 8분 더 사용할 수 있습니다.
+          💬 표준 모드로 약 21분 청소 가능합니다. 절전 모드 전환 시 8분 더 사용할 수 있습니다.
         </div>
       </div>
 
       <!-- 모드 비교 결과 -->
       <div class="card">
-        <div class="card-title">모드별 예측 비교</div>
+        <div class="card-title">흡입 모드별 예측 비교</div>
         <div style="height:160px;"><canvas id="compare-chart"></canvas></div>
       </div>
 
@@ -137,15 +138,15 @@
         <div style="font-weight:700;margin-bottom:6px;color:#0277bd;">규칙 기반 베이스라인</div>
         <div style="font-size:13px;color:#64748b;line-height:1.6;">
           배터리% ÷ 소모율(모드별)<br>
-          = 예측 시간<br>
-          온도·수명 계수 보정 적용
+          온도·수명·장소 계수 보정 적용<br>
+          = 예측 시간
         </div>
       </div>
       <div style="text-align:center;padding:20px 16px;background:#f8fafc;border-radius:12px;">
         <div style="font-size:32px;margin-bottom:8px;">🌲</div>
         <div style="font-weight:700;margin-bottom:6px;color:#2e7d32;">랜덤 포레스트 회귀</div>
         <div style="font-size:13px;color:#64748b;line-height:1.6;">
-          피처: 배터리%, 모드, 온도, 수명<br>
+          피처: 배터리%, 모드, 온도, 수명, 장소<br>
           가상 240세션으로 학습<br>
           sklearn RandomForestRegressor
         </div>
@@ -169,14 +170,14 @@
   </div>
 </main>
 
-<footer>CleanBot AI — 부산대학교 캡스톤 프로젝트 | 가상 데이터 기반 프로토타입</footer>
+<footer>CleanAI Monitor — 부산대학교 캡스톤 프로젝트 | 가상 데이터 기반 프로토타입</footer>
 
 <script>
 var pMode = 'std';
 var modes = {
-  eco:   { rate:0.25, areaRate:0.45, color:'#66bb6a', name:'에코' },
-  std:   { rate:0.33, areaRate:0.36, color:'#4fc3f7', name:'표준' },
-  turbo: { rate:0.58, areaRate:0.27, color:'#ef5350', name:'터보' }
+  eco:   { rate:0.25, color:'#66bb6a', name:'절전' },
+  std:   { rate:0.33, color:'#4fc3f7', name:'표준' },
+  turbo: { rate:0.58, color:'#ef5350', name:'강력' }
 };
 
 function syncLabel(id, val, unit) {
@@ -195,46 +196,42 @@ function setPMode(m) {
 var compareChart = null;
 
 function runPredict() {
-  var battery = parseInt(document.getElementById('inp-battery').value);
-  var temp    = parseInt(document.getElementById('inp-temp').value);
-  var health  = parseInt(document.getElementById('inp-health').value);
-  var area    = parseInt(document.getElementById('inp-area').value);
+  var battery     = parseInt(document.getElementById('inp-battery').value);
+  var temp        = parseInt(document.getElementById('inp-temp').value);
+  var health      = parseInt(document.getElementById('inp-health').value);
+  var placeCoeff  = parseFloat(document.getElementById('inp-place').value);
   var m = modes[pMode];
 
   var tempCoeff   = 1 + (20 - temp) * 0.005;
   var healthCoeff = health / 100;
-  var effectiveRate = m.rate / (tempCoeff * healthCoeff);
+  var effectiveRate = m.rate * placeCoeff / (tempCoeff * healthCoeff);
   effectiveRate = Math.max(0.1, effectiveRate);
 
   var predicted = Math.round(battery / effectiveRate);
   var margin    = Math.round(predicted * 0.12);
-  var low       = predicted - margin;
-  var high      = predicted + margin;
-  var areaResult = Math.round(Math.min(battery * m.areaRate * healthCoeff, area));
+  var sessions  = Math.max(1, Math.floor(predicted / 10));
 
   document.getElementById('result-time').textContent = predicted;
-  document.getElementById('result-conf').textContent = '신뢰 구간: ' + low + ' ~ ' + high + '분';
-  document.getElementById('result-area').textContent = areaResult + '㎡';
+  document.getElementById('result-conf').textContent = '신뢰 구간: '+(predicted-margin)+' ~ '+(predicted+margin)+'분';
+  document.getElementById('result-sessions').textContent = sessions + '회';
   document.getElementById('result-rate').textContent = effectiveRate.toFixed(2) + '%/분';
 
-  var eco   = Math.round(battery / (modes.eco.rate   / (tempCoeff * healthCoeff)));
-  var std   = Math.round(battery / (modes.std.rate   / (tempCoeff * healthCoeff)));
-  var turbo = Math.round(battery / (modes.turbo.rate / (tempCoeff * healthCoeff)));
+  var ecoT   = Math.round(battery / (modes.eco.rate   * placeCoeff / (tempCoeff * healthCoeff)));
+  var stdT   = Math.round(battery / (modes.std.rate   * placeCoeff / (tempCoeff * healthCoeff)));
+  var turboT = Math.round(battery / (modes.turbo.rate * placeCoeff / (tempCoeff * healthCoeff)));
 
-  var msgs = [];
-  msgs.push(modes[pMode].name + ' 모드로 약 ' + predicted + '분 청소 가능합니다.');
-  if (pMode !== 'eco') msgs.push('에코 모드 전환 시 ' + (eco - predicted) + '분 더 사용할 수 있습니다.');
-  if (battery < 30) msgs.push('⚠️ 배터리가 부족합니다. 충전 후 사용을 권장합니다.');
-  else if (battery < 50) msgs.push('배터리가 50% 이하입니다. 청소 후 충전을 권장합니다.');
+  var msgs = [modes[pMode].name + ' 모드로 약 ' + predicted + '분 청소 가능합니다.'];
+  if (pMode !== 'eco') msgs.push('절전 모드 전환 시 ' + (ecoT - predicted) + '분 더 사용할 수 있습니다.');
+  if (battery < 30)    msgs.push('⚠️ 배터리가 부족합니다. 충전 후 사용을 권장합니다.');
+  else if (battery < 50) msgs.push('배터리 50% 이하입니다. 청소 후 충전을 권장합니다.');
   document.getElementById('ai-message').textContent = '💬 ' + msgs.join(' ');
 
-  // charge card
   var chargeHtml = '';
   if (battery < 20) {
     chargeHtml = '<div style="color:#b71c1c;font-weight:700;margin-bottom:8px;">🔴 즉시 충전 필요</div><div style="color:#64748b;">현재 잔량으로는 기본 청소도 어렵습니다. 충전 후 사용하세요.</div>';
     document.getElementById('charge-card').style.borderLeft = '4px solid #ef5350';
   } else if (battery < 50) {
-    chargeHtml = '<div style="color:#e65100;font-weight:700;margin-bottom:8px;">🟠 청소 후 충전 권장</div><div style="color:#64748b;">한 번의 청소 후 충전을 권장합니다. 에코 모드로 청소하면 더 오래 사용할 수 있습니다.</div>';
+    chargeHtml = '<div style="color:#e65100;font-weight:700;margin-bottom:8px;">🟠 청소 후 충전 권장</div><div style="color:#64748b;">한 번의 청소 후 충전을 권장합니다. 절전 모드로 청소하면 더 오래 사용할 수 있습니다.</div>';
     document.getElementById('charge-card').style.borderLeft = '4px solid #ffa726';
   } else {
     chargeHtml = '<div style="color:#2e7d32;font-weight:700;margin-bottom:8px;">🟢 충전 여유 있음</div><div style="color:#64748b;">현재 배터리로 충분한 청소가 가능합니다. 20% 이하로 내려가면 충전하세요.</div>';
@@ -242,15 +239,14 @@ function runPredict() {
   }
   document.getElementById('charge-content').innerHTML = chargeHtml;
 
-  // compare chart
   if (compareChart) compareChart.destroy();
   var ctx = document.getElementById('compare-chart').getContext('2d');
   compareChart = new Chart(ctx, {
     type:'bar',
     data:{
-      labels:['🌿 에코','🧹 표준','⚡ 터보'],
+      labels:['🌿 절전','🧹 표준','⚡ 강력'],
       datasets:[{
-        data:[eco, std, turbo],
+        data:[ecoT, stdT, turboT],
         backgroundColor:['rgba(102,187,106,0.8)','rgba(79,195,247,0.8)','rgba(239,83,80,0.8)'],
         borderRadius:8, borderSkipped:false
       }]
