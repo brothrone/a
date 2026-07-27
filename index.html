@@ -3,266 +3,922 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>CleanBot AI — 배터리 모니터</title>
-<link rel="stylesheet" href="style.css"/>
+<title>파라써블 · 배터리 라이프 코칭 대시보드</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --ink:#111827; --ink2:#374151; --mut:#6b7280; --mut2:#9ca3af;
+  --line:#e5e7eb; --line2:#f3f4f6; --bg:#f7f8fa; --card:#fff;
+  --brand:#a50034;           /* LG Active Red */
+  --blue:#1e6fd9; --green:#0f9d58; --amber:#e08600; --red:#d93025;
+  --radius:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  background:var(--bg);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+
+/* ── header ─────────────────────────────── */
+header{background:#fff;border-bottom:1px solid var(--line);padding:18px 28px;
+  position:sticky;top:0;z-index:50}
+.hd-in{max-width:1240px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.hd-t{font-size:17px;font-weight:700;letter-spacing:-.01em}
+.hd-t b{color:var(--brand)}
+.hd-s{font-size:12px;color:var(--mut);margin-top:2px}
+.hd-meta{display:flex;gap:8px;flex-wrap:wrap}
+.pill{font-size:11px;padding:5px 11px;border-radius:99px;background:var(--line2);
+  color:var(--ink2);font-weight:600;border:1px solid var(--line)}
+.pill.on{background:#fdf2f5;color:var(--brand);border-color:#f3d3dc}
+
+/* ── layout ─────────────────────────────── */
+main{max-width:1240px;margin:0 auto;padding:26px 28px 70px}
+section{margin-bottom:34px}
+.sec-h{display:flex;align-items:baseline;gap:12px;margin-bottom:6px}
+.sec-n{font-size:11px;font-weight:700;color:var(--brand);letter-spacing:.1em}
+.sec-t{font-size:19px;font-weight:700;letter-spacing:-.01em}
+.sec-d{font-size:13px;color:var(--mut);margin-bottom:16px;max-width:760px}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+.card h4{font-size:12px;font-weight:700;color:var(--mut);letter-spacing:.06em;
+  text-transform:uppercase;margin-bottom:14px}
+.row{display:grid;gap:16px}
+.c-2{grid-template-columns:1fr 1fr}
+.c-3{grid-template-columns:repeat(3,1fr)}
+.c-4{grid-template-columns:repeat(4,1fr)}
+.c-in{grid-template-columns:400px 1fr}
+
+/* ── controls ───────────────────────────── */
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:12px;font-weight:600;padding:7px 11px;border-radius:9px;
+  border:1px solid var(--line);background:#fff;color:var(--mut);cursor:pointer;
+  transition:.12s;font-family:inherit}
+.chip:hover{border-color:var(--mut2);color:var(--ink2)}
+.chip.sel{background:var(--brand);border-color:var(--brand);color:#fff}
+.fld{margin-bottom:16px}
+.fld-l{display:flex;justify-content:space-between;align-items:baseline;
+  font-size:12px;font-weight:600;color:var(--mut);margin-bottom:7px}
+.fld-l b{font-size:14px;color:var(--ink);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--brand);height:4px;cursor:pointer}
+.hint{font-size:11px;color:var(--mut2);margin-top:5px}
+.togs{display:flex;flex-wrap:wrap;gap:6px}
+.tog{font-size:12px;padding:7px 11px;border-radius:9px;border:1px solid var(--line);
+  background:#fff;color:var(--mut);cursor:pointer;font-weight:600;font-family:inherit;transition:.12s}
+.tog.on{background:#fff5e8;border-color:#f0c48a;color:#9a5b00}
+
+/* ── result ─────────────────────────────── */
+.res{background:linear-gradient(160deg,#16181d 0%,#22252d 100%);color:#fff;
+  border-radius:var(--radius);padding:22px;border:none}
+.res h4{color:rgba(255,255,255,.45)}
+.big{display:flex;align-items:baseline;gap:9px}
+.big .n{font-size:60px;font-weight:800;line-height:1;letter-spacing:-.03em;
+  font-variant-numeric:tabular-nums}
+.big .u{font-size:19px;color:rgba(255,255,255,.6);font-weight:600}
+.verdict{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:700;
+  padding:6px 13px;border-radius:99px;margin-top:13px}
+.kv{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:18px}
+.kv>div{background:rgba(255,255,255,.07);border-radius:10px;padding:11px 12px}
+.kv .k{font-size:10.5px;color:rgba(255,255,255,.5);margin-bottom:4px}
+.kv .v{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums}
+
+/* ── calc trace ─────────────────────────── */
+.trace{font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:12px;line-height:1.85}
+.trace .ln{display:flex;justify-content:space-between;gap:14px;padding:5px 0;
+  border-bottom:1px dashed var(--line2)}
+.trace .ln:last-child{border:none}
+.trace .lbl{color:var(--mut)}
+.trace .val{color:var(--ink);font-weight:600;text-align:right;white-space:nowrap}
+.trace .eq{color:var(--brand);font-weight:700;margin-right:5px}
+
+/* ── device LCD ─────────────────────────── */
+.device{width:300px;background:linear-gradient(165deg,#4a4540 0%,#2b2926 45%,#3d3934 100%);
+  border-radius:26px;padding:16px 15px 13px;box-shadow:0 14px 32px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.18)}
+.dev-brand{text-align:center;color:#e8e4de;font-size:11.5px;font-weight:700;letter-spacing:.04em;
+  margin-bottom:10px;font-family:Arial,sans-serif}
+.dev-brand span{font-weight:400}
+.dev-brand sup{font-size:8px}
+.dev-screen{background:#0a0c0e;border-radius:15px;padding:15px 14px 13px;min-height:262px;
+  box-shadow:inset 0 0 0 2px rgba(0,0,0,.6),inset 0 2px 14px rgba(0,0,0,.9);
+  display:flex;flex-direction:column;position:relative;overflow:hidden}
+.dev-btns{display:flex;justify-content:center;align-items:center;gap:26px;margin-top:12px;
+  color:#b9b3ab;font-size:13px}
+.dev-btns .pw{font-size:16px;width:28px;height:28px;border-radius:50%;
+  border:1px solid rgba(255,255,255,.22);display:grid;place-items:center}
+
+.lcd-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
+.batt{display:flex;align-items:center;gap:5px}
+.batt-b{width:26px;height:13px;border-radius:3px;border:1.6px solid currentColor;padding:1.6px;position:relative}
+.batt-b::after{content:'';position:absolute;right:-4px;top:3.4px;width:2px;height:4px;
+  background:currentColor;border-radius:0 1px 1px 0}
+.batt-f{height:100%;border-radius:1px;background:currentColor}
+.batt-t{font-size:11.5px;font-weight:700;font-variant-numeric:tabular-nums}
+.lcd-motif{font-size:11px;letter-spacing:2px;opacity:.75}
+.lcd-msg{font-size:12.5px;color:#cfd4d8;line-height:1.5;margin-bottom:9px;min-height:36px;word-break:keep-all}
+.lcd-vd{font-size:31px;font-weight:800;letter-spacing:-.02em;line-height:1;margin-bottom:4px}
+.lcd-sub{font-size:11px;color:#8b939b;margin-bottom:11px;font-variant-numeric:tabular-nums}
+.lcd-prog{height:9px;border-radius:3px;background:rgba(255,255,255,.1);overflow:hidden;margin-bottom:12px}
+.lcd-prog>i{display:block;height:100%;transition:width .4s}
+.lcd-map{flex:1;display:grid;place-items:center;min-height:96px}
+.lcd-dots{display:flex;justify-content:center;gap:4px;margin-top:9px}
+.lcd-dots i{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.24)}
+.lcd-dots i.on{background:rgba(255,255,255,.75)}
+tr.hl td{background:#fdf2f5 !important;font-weight:600}
+
+/* ── coaching ───────────────────────────── */
+.coach{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:#fff;height:100%}
+.coach-h{padding:12px 16px;border-bottom:1px solid var(--line);display:flex;
+  align-items:center;justify-content:space-between;background:var(--line2)}
+.coach-h .t{font-size:13px;font-weight:700}
+.coach-h .s{font-size:11px;color:var(--mut)}
+.coach-b{padding:18px 16px}
+
+/* A안 */
+.a-num{font-size:44px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums;
+  letter-spacing:-.03em;margin-bottom:4px}
+.a-sub{font-size:12.5px;color:var(--mut);margin-bottom:14px}
+.a-bars{display:flex;flex-direction:column;gap:9px;margin-bottom:14px}
+.a-bar-l{display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:4px;color:var(--ink2)}
+.bar{height:7px;border-radius:99px;background:var(--line);overflow:hidden}
+.bar>i{display:block;height:100%;border-radius:99px;transition:width .35s}
+.a-note{font-size:12px;color:var(--ink2);background:var(--line2);border-radius:9px;
+  padding:10px 12px;line-height:1.6}
+
+/* B안 */
+.b-card{border-radius:12px;padding:15px;margin-bottom:11px;font-size:13.5px;line-height:1.65}
+.b-card .ttl{font-weight:700;font-size:12px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.b-act{display:flex;gap:7px;margin-top:11px;flex-wrap:wrap}
+.b-btn{font-size:12px;font-weight:600;padding:7px 13px;border-radius:8px;border:none;
+  cursor:pointer;font-family:inherit;background:var(--ink);color:#fff}
+.b-btn.g{background:#fff;color:var(--ink2);border:1px solid var(--line)}
+.b-mini{display:flex;gap:16px;font-size:11.5px;color:var(--mut);
+  padding-top:11px;border-top:1px solid var(--line2);margin-top:3px}
+.b-mini b{color:var(--ink);font-variant-numeric:tabular-nums}
+
+/* ── table ──────────────────────────────── */
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12.5px;white-space:nowrap}
+th{text-align:left;padding:9px 11px;background:var(--line2);color:var(--mut);
+  font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+  border-bottom:1px solid var(--line);position:sticky;top:0}
+td{padding:9px 11px;border-bottom:1px solid var(--line2);font-variant-numeric:tabular-nums}
+tbody tr:hover td{background:#fbfbfc}
+td.l,th.l{white-space:normal}
+.tag{display:inline-block;padding:2px 8px;border-radius:99px;font-size:10.5px;font-weight:700}
+.t-b{background:#e8f0fe;color:#1a5fb4}
+.t-g{background:#e6f4ea;color:#0d652d}
+.t-a{background:#fef7e0;color:#8a5300}
+.t-r{background:#fce8e6;color:#a50e0e}
+.t-n{background:var(--line2);color:var(--mut)}
+.num-p{color:var(--red);font-weight:600}
+.num-n{color:var(--blue);font-weight:600}
+
+.note{font-size:12px;color:var(--mut);line-height:1.7;background:#fff;
+  border:1px solid var(--line);border-left:3px solid var(--brand);
+  border-radius:0 10px 10px 0;padding:14px 16px}
+.note b{color:var(--ink)}
+footer{border-top:1px solid var(--line);padding:22px 28px;text-align:center;
+  font-size:11.5px;color:var(--mut2)}
+.chart{position:relative;height:250px}
+.chart.sm{height:190px}
+
+@media(max-width:1000px){
+  .c-in,.c-2,.c-3,.c-4{grid-template-columns:1fr}
+}
+</style>
 </head>
 <body>
 
-<nav>
-  <a href="index.html" class="logo">🧹 CleanAI <span>Monitor</span></a>
-  <ul>
-    <li><a href="index.html" class="active">홈</a></li>
-    <li><a href="data.html">데이터 분석</a></li>
-    <li><a href="predict.html">AI 예측</a></li>
-  </ul>
-</nav>
+<header>
+  <div class="hd-in">
+    <div>
+      <div class="hd-t">파라써블 · <b>배터리 라이프 코칭</b> 대시보드</div>
+      <div class="hd-s">사용 이력 기반 청소기 배터리 사용 가능 시간 예측 및 사용자 안내 UI — 과제2</div>
+    </div>
+    <div class="hd-meta">
+      <span class="pill on">무선 스틱형 · 탈착식 팩</span>
+      <span class="pill">3차 보정식 적용</span>
+      <span class="pill">10개 모델 · 5개 페르소나</span>
+    </div>
+  </div>
+</header>
 
 <main>
-  <div class="page-header">
-    <h1>무선 청소기 배터리 대시보드</h1>
-    <p>사용 이력 기반 AI 예측 — 실시간 청소 가능 시간 안내</p>
+
+<!-- ══════════ 1. 실시간 예측 ══════════ -->
+<section>
+  <div class="sec-h"><span class="sec-n">01</span><span class="sec-t">실시간 예측 — 3차 보정식</span></div>
+  <p class="sec-d">3차 시뮬레이션 결과보고에서 지적된 세 항(기동 전력 · 저잔량 가중 · 온도 보정 위치)을 반영한 보정식으로 계산합니다. 사용자 모델을 바꾸면 파라미터(pᵢ · k · μ_T)가 자동 로드되고, 정의서 원문식과의 차이도 함께 표시됩니다.</p>
+
+  <div class="fld">
+    <div class="fld-l"><span>사용자 모델 (정의서 3장)</span><b id="mdl-nm"></b></div>
+    <div class="chips" id="mdl-chips"></div>
+    <div class="hint" id="mdl-desc"></div>
   </div>
 
-  <!-- TOP STATS -->
-  <div class="grid-4" style="margin-bottom:24px;">
-    <div class="card stat">
-      <span class="val" id="stat-pct">70%</span>
-      <span class="lbl">현재 배터리</span>
-    </div>
-    <div class="card stat">
-      <span class="val" id="stat-time" style="color:#81c784;">21분</span>
-      <span class="lbl">예상 사용 시간</span>
-    </div>
-    <div class="card stat">
-      <span class="val" id="stat-sessions" style="color:#ffa726;">3회</span>
-      <span class="lbl">예상 청소 가능 횟수</span>
-    </div>
-    <div class="card stat">
-      <span class="val" id="stat-cycles" style="color:#ef5350;">142회</span>
-      <span class="lbl">누적 충방전</span>
-    </div>
-  </div>
-
-  <div class="grid-2" style="margin-bottom:24px;">
-    <!-- BATTERY GAUGE -->
+  <div class="row c-in">
+    <!-- 입력 -->
     <div class="card">
-      <div class="card-title">배터리 잔량</div>
-      <div style="display:flex;flex-direction:column;align-items:center;gap:16px;">
-        <div style="position:relative;width:200px;height:100px;">
-          <svg viewBox="0 0 200 100" width="200" height="100">
-            <path d="M10 95 A 90 90 0 0 1 190 95" fill="none" stroke="#e2e8f0" stroke-width="18" stroke-linecap="round"/>
-            <path id="gauge-arc" d="M10 95 A 90 90 0 0 1 190 95" fill="none" stroke="#4fc3f7" stroke-width="18" stroke-linecap="round"
-              stroke-dasharray="283" stroke-dashoffset="85"/>
-            <text x="100" y="88" text-anchor="middle" font-size="32" font-weight="700" fill="#1a1a2e" id="gauge-text">70%</text>
-          </svg>
-        </div>
-        <div style="width:100%;">
-          <label style="font-size:13px;color:#64748b;display:block;margin-bottom:8px;">배터리 시뮬레이션</label>
-          <input type="range" min="5" max="100" step="1" value="70" id="battery-slider" oninput="updateAll(this.value)"/>
-          <div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;margin-top:4px;">
-            <span>5%</span><span>50%</span><span>100%</span>
-          </div>
-        </div>
-        <div id="warning-msg" style="display:none;padding:10px 14px;background:#fff0f0;border-radius:10px;border-left:3px solid #ef5350;font-size:13px;color:#b71c1c;width:100%;">
-          ⚠️ 배터리 부족 — 충전 후 사용을 권장합니다.
-        </div>
+      <h4>입력 조건</h4>
+
+      <div class="fld">
+        <div class="fld-l"><span>현재 잔량 SOC</span><b><span id="v-soc">100</span>%</b></div>
+        <input type="range" id="i-soc" min="5" max="100" step="1" value="100">
+      </div>
+
+      <div class="fld">
+        <div class="fld-l"><span>배터리 건강도 SOH</span><b><span id="v-soh">100</span>%</b></div>
+        <input type="range" id="i-soh" min="60" max="100" step="1" value="100">
+        <div class="hint">신품 = 100%. 등가 사이클 누적에 따라 하락합니다.</div>
+      </div>
+
+      <div class="fld">
+        <div class="fld-l"><span>주변 온도</span><b><span id="v-tmp">22</span>°C · f_temp <span id="v-ft">1.00</span></b></div>
+        <input type="range" id="i-tmp" min="-5" max="45" step="1" value="22">
+        <div class="hint">10℃ 미만 0.85 / 10~35℃ 1.00 / 35℃ 초과 0.90</div>
+      </div>
+
+      <div class="fld">
+        <div class="fld-l"><span>흡입 부하 조건 (L축)</span><b>k = <span id="v-k">1.00</span></b></div>
+        <div class="togs" id="load-togs"></div>
+        <div class="hint">보정치를 합산하며 상한은 1.40입니다.</div>
+      </div>
+
+      <div class="fld">
+        <div class="fld-l"><span>필요 청소 시간 T_req</span><b><span id="v-req">8</span>분</b></div>
+        <input type="range" id="i-req" min="3" max="60" step="1" value="8">
+        <div class="hint">기본값은 모델별 평균 세션 시간 μ_T입니다.</div>
+      </div>
+
+      <div class="fld" style="margin-bottom:0">
+        <div class="fld-l"><span>모드 구성 pᵢ</span><b id="v-p"></b></div>
+        <div class="chips" id="p-chips"></div>
+        <div class="hint">모델 기본값 외에 대안 구성을 즉시 비교할 수 있습니다.</div>
       </div>
     </div>
 
-    <!-- MODE SELECTOR -->
+    <!-- 결과 -->
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="res">
+        <h4>예상 사용 가능 시간 T_avail</h4>
+        <div class="big"><span class="n" id="r-t">40.6</span><span class="u">분</span></div>
+        <div class="verdict" id="r-vd"></div>
+        <div class="kv">
+          <div><div class="k">여유 시간 margin</div><div class="v" id="r-mg"></div></div>
+          <div><div class="k">실효 소모율 r_eff</div><div class="v" id="r-re"></div></div>
+          <div><div class="k">종료 예상 잔량</div><div class="v" id="r-end"></div></div>
+        </div>
+        <div id="r-cmp" style="margin-top:14px;padding-top:13px;border-top:1px solid rgba(255,255,255,.12);
+          font-size:12px;color:rgba(255,255,255,.6);line-height:1.6"></div>
+      </div>
+
+      <div class="card">
+        <h4>계산 과정</h4>
+        <div class="trace" id="r-tr"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 2. 기기 LCD ══════════ -->
+<section>
+  <div class="sec-h"><span class="sec-n">02</span><span class="sec-t">기기 LCD 화면</span></div>
+  <p class="sec-d">위 입력이 실제 제품 화면에 어떻게 보이는지입니다. 잔량·판정·페르소나별 문구·청소 경로가 모두 계산 결과를 따라 실시간으로 바뀝니다.</p>
+
+  <div class="row" style="grid-template-columns:340px 1fr;gap:22px">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:14px">
+      <div class="device">
+        <div class="dev-brand">LG <span>CodeZero</span><sup>+</sup></div>
+        <div class="dev-screen" id="lcd"></div>
+        <div class="dev-btns"><span>−</span><span class="pw">⏻</span><span>+</span></div>
+      </div>
+      <div class="fld" style="width:100%;margin:0">
+        <div class="fld-l"><span>호칭</span><b id="v-name">준우</b></div>
+        <input type="text" id="i-name" value="준우" maxlength="6"
+          style="width:100%;padding:8px 11px;border:1px solid var(--line);border-radius:9px;
+                 font-family:inherit;font-size:13px;color:var(--ink)">
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="card">
+        <h4>페르소나별 문구 — 판정 3분류</h4>
+        <div class="tw"><table id="tbl-msg"></table></div>
+        <div class="hint" style="margin-top:9px">현재 선택된 모델의 행이 강조됩니다. 문구는 팀에서 작성한 원문 그대로입니다.</div>
+      </div>
+      <div class="note">
+        <b>확인이 필요한 부분</b> — ① 문구 표가 A·B·C·D·<b>F</b> 로 되어 있는데 일반가정은 E 계열(E-1·E-2)이라 <b>F는 E의 오기</b>로 보입니다.
+        ② 페르소나가 5개인데 제어 모델은 10개입니다. 지금은 두 서브타입이 같은 문구를 쓰는데,
+        충전 습관(C축)이 다른 A-1/A-2는 <b>수명 코칭 문구를 나눠야</b> 합니다.
+        ③ B의 "부족" 문구 "배고파, 밥줘"는 다른 페르소나의 톤과 어긋납니다.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 3. 모델 비교 ══════════ -->
+<section>
+  <div class="sec-h"><span class="sec-n">03</span><span class="sec-t">계산식 검증 — 원문식 · 보정식 · 회귀</span></div>
+  <p class="sec-d">3차 결과보고에서 지적된 세 항을 반영한 보정식이 실제로 오차를 줄이는지 확인했습니다. 보정 계수는 생성기 값을 읽지 않고 <b>학습셋에서 직접 적합</b>했으며, 회귀 feature는 멘토 제시 5개를 그대로 썼습니다.</p>
+
+  <div class="row c-4" style="margin-bottom:16px" id="score-cards"></div>
+
+  <div class="row c-2">
     <div class="card">
-      <div class="card-title">흡입 모드 선택</div>
-      <div class="grid-3" style="margin-bottom:16px;">
-        <button class="mode-btn" id="btn-eco" onclick="setMode('eco')">
-          <span class="icon">🌿</span>절전
-          <span class="badge badge-green" style="font-size:10px;">+절약</span>
-        </button>
-        <button class="mode-btn active-std" id="btn-std" onclick="setMode('std')">
-          <span class="icon">🧹</span>표준
-          <span class="badge badge-blue" style="font-size:10px;">권장</span>
-        </button>
-        <button class="mode-btn" id="btn-turbo" onclick="setMode('turbo')">
-          <span class="icon">⚡</span>강력
-          <span class="badge badge-red" style="font-size:10px;">고출력</span>
-        </button>
-      </div>
-
-      <div id="mode-info" style="background:#f0f9ff;border-radius:12px;padding:14px;margin-bottom:16px;">
-        <div style="font-weight:700;font-size:14px;color:#0277bd;margin-bottom:6px;" id="mode-name">🧹 표준 모드</div>
-        <div style="font-size:13px;color:#1a1a2e;margin-bottom:8px;" id="mode-desc">일상 청소에 최적화. 소음과 흡입력의 균형.</div>
-        <div style="display:flex;gap:16px;font-size:13px;">
-          <span>소모율: <b id="mode-rate">0.33%/분</b></span>
-          <span>예상: <b id="mode-time" style="color:#0277bd;">21분</b></span>
-        </div>
-      </div>
-
-      <div>
-        <div style="font-size:13px;color:#64748b;margin-bottom:8px;">모드별 예상 사용 시간</div>
-        <div style="display:flex;flex-direction:column;gap:8px;">
-          <div>
-            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
-              <span>🌿 절전</span><span id="bar-eco-lbl">28분</span>
-            </div>
-            <div class="progress-bar"><div class="progress-fill" id="bar-eco" style="width:42%;background:#81c784;"></div></div>
-          </div>
-          <div>
-            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
-              <span>🧹 표준</span><span id="bar-std-lbl">21분</span>
-            </div>
-            <div class="progress-bar"><div class="progress-fill" id="bar-std" style="width:32%;background:#4fc3f7;"></div></div>
-          </div>
-          <div>
-            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
-              <span>⚡ 강력</span><span id="bar-turbo-lbl">12분</span>
-            </div>
-            <div class="progress-bar"><div class="progress-fill" id="bar-turbo" style="width:18%;background:#ef5350;"></div></div>
-          </div>
-        </div>
-      </div>
+      <h4>예측값 vs 실측값 (검증 데이터)</h4>
+      <div class="chart"><canvas id="ch-scatter"></canvas></div>
+      <div class="hint" style="margin-top:8px">원문식(회색)은 대각선 <b>위쪽</b>에 몰려 있습니다 — 실제보다 오래 쓸 수 있다고 안내한다는 뜻입니다.</div>
+    </div>
+    <div class="card">
+      <h4>사용자 모델별 예측 편향 (분)</h4>
+      <div class="chart"><canvas id="ch-bias"></canvas></div>
+      <div class="hint" style="margin-top:8px">10개 모델 전부 원문식이 양의 편향입니다. 특정 모델이 아니라 계산식 자체의 문제입니다.</div>
     </div>
   </div>
 
-  <!-- HISTORY CHART -->
-  <div class="card" style="margin-bottom:24px;">
-    <div class="card-title">최근 7일 배터리 소모 패턴 (가상 데이터)</div>
-    <div style="height:220px;">
-      <canvas id="history-chart"></canvas>
+  <div class="row c-2" style="margin-top:16px">
+    <div class="card">
+      <h4>적합된 보정 계수</h4>
+      <div class="trace" id="corr-eq"></div>
+    </div>
+    <div class="card">
+      <h4>학습된 회귀식</h4>
+      <div class="trace" id="reg-eq"></div>
     </div>
   </div>
 
-  <!-- RECENT SESSIONS TABLE -->
-  <div class="card" style="margin-bottom:32px;">
-    <div class="card-title">최근 청소 세션 이력</div>
-    <table>
-      <thead>
-        <tr>
-          <th>날짜</th><th>모드</th><th>청소 시간</th><th>배터리 소모</th><th>장소</th><th>상태</th>
-        </tr>
-      </thead>
-      <tbody id="session-table"></tbody>
-    </table>
+  <div class="card" style="margin-top:16px">
+    <h4>모델별 상세</h4>
+    <div class="tw"><table id="tbl-perf"></table></div>
+  </div>
+</section>
+
+<!-- ══════════ 4. 데이터셋 ══════════ -->
+<section>
+  <div class="sec-h"><span class="sec-n">04</span><span class="sec-t">가상 데이터셋 · 모델 파라미터</span></div>
+  <p class="sec-d">10개 사용자 모델 × 3명 × 45세션으로 생성했습니다. 온도 변동·SOH 열화·브러시 엉킴 누적 등 <b>규칙식에 없는 잠재 요인</b>을 함께 주입해, 회귀 모델이 규칙식을 그대로 복원하지 않도록 설계했습니다.</p>
+
+  <div class="row c-4" style="margin-bottom:16px" id="ds-cards"></div>
+
+  <div class="card" style="margin-bottom:16px">
+    <h4>모델별 설계값 vs 실측값</h4>
+    <div class="tw"><table id="tbl-mdl"></table></div>
+    <div class="hint" style="margin-top:9px">설계 r_eff가 실측보다 일관되게 낮습니다 — 정의서 6장 "잠정치를 실측으로 대체" 항목의 근거입니다.</div>
   </div>
 
-  <div style="text-align:center;margin-bottom:32px;">
-    <a href="predict.html" class="btn btn-primary">🔮 AI 예측 시뮬레이터 열기</a>
-    &nbsp;
-    <a href="data.html" class="btn btn-secondary">📊 상세 데이터 분석</a>
+  <div class="card">
+    <h4>세션 로그 샘플 <span style="font-weight:500;color:var(--mut2);text-transform:none;letter-spacing:0">— battery_sessions.csv</span></h4>
+    <div class="tw" style="max-height:340px;overflow-y:auto"><table id="tbl-sess"></table></div>
   </div>
+</section>
+
+<!-- ══════════ 5. 연계 ══════════ -->
+<section>
+  <div class="sec-h"><span class="sec-n">05</span><span class="sec-t">확인이 필요한 항목</span></div>
+  <div class="row c-2">
+    <div class="card">
+      <h4>멘토 확인 요청</h4>
+      <div style="font-size:13px;line-height:1.85;color:var(--ink2)" id="ask-list"></div>
+    </div>
+    <div class="card">
+      <h4>다음 단계</h4>
+      <div style="font-size:13px;line-height:1.85;color:var(--ink2)" id="next-list"></div>
+    </div>
+  </div>
+</section>
+
 </main>
 
-<footer>CleanAI Monitor — 부산대학교 캡스톤 프로젝트 | 가상 데이터 기반 프로토타입</footer>
+<footer>파라써블 · 부산대학교 — 미래 AX 생활가전 리빙 솔루션+ 프로젝트 | 가상 데이터 기반 프로토타입</footer>
 
 <script>
-var currentBattery = 70;
-var currentMode = 'std';
+/* ═══════════ 데이터 (build_dashboard.py 주입) ═══════════ */
+const DATA = {"params":{"r_mode":{"eco":1.7,"std":2.5,"turbo":5.0},"soc_res":5.0,"truth":{"e_start":0.8,"soc_low":25.0,"beta":0.35,"dt":0.25},"models":{"A-1":{"name":"가끔·방치형","persona":"1인 가구","risk":"저SOC 장기 보관 → 자가방전 열화","F":"F1","D":"D1","M":"M2","L":"L0","C":"C3","p":{"std":0.8,"eco":0.2},"k":1.0,"mu_T":8,"r_base":2.34,"r_eff":2.34,"t_avail":40.6,"margin":32.6,"n_sessions":132,"measured_rate":2.641,"measured_time":7.8,"abort_rate":1.5},"A-2":{"name":"가끔·상시거치형","persona":"1인 가구","risk":"만충 상시 유지 → 고SOC 스트레스","F":"F1","D":"D1","M":"M2","L":"L0","C":"C1","p":{"std":0.8,"eco":0.2},"k":1.0,"mu_T":8,"r_base":2.34,"r_eff":2.34,"t_avail":40.6,"margin":32.6,"n_sessions":132,"measured_rate":2.646,"measured_time":8.4,"abort_rate":0.0},"B-1":{"name":"짧고 잦은 터보 상시형","persona":"장모 환경","risk":"고전류 방전 및 발열 누적","F":"F2","D":"D1","M":"M3","L":"L1","C":"C2","p":{"turbo":0.7,"std":0.3},"k":1.08,"mu_T":8,"r_base":4.25,"r_eff":4.59,"t_avail":20.7,"margin":12.7,"n_sessions":132,"measured_rate":5.033,"measured_time":8.1,"abort_rate":0.0},"B-2":{"name":"짧고 잦은 스팟터보형","persona":"장모 환경","risk":"특이 리스크 없음 (기준 그룹)","F":"F2","D":"D1","M":"M2→M3","L":"L1","C":"C2","p":{"std":0.7,"turbo":0.3},"k":1.08,"mu_T":8,"r_base":3.25,"r_eff":3.51,"t_avail":27.1,"margin":19.1,"n_sessions":132,"measured_rate":3.671,"measured_time":8.1,"abort_rate":0.8},"C-1":{"name":"장시간 완주형","persona":"영유아 가정","risk":"1회 방전 심도(DoD) 과다","F":"F3","D":"D3","M":"M1","L":"L0","C":"C2","p":{"eco":0.7,"std":0.3},"k":1.0,"mu_T":35,"r_base":1.94,"r_eff":1.94,"t_avail":49.0,"margin":14.0,"n_sessions":132,"measured_rate":2.077,"measured_time":33.3,"abort_rate":11.4},"C-2":{"name":"장시간 분할형","persona":"영유아 가정","risk":"등가 사이클 카운트 급증","F":"F3","D":"D2","M":"M1","L":"L0","C":"C1","p":{"eco":0.7,"std":0.3},"k":1.0,"mu_T":20,"r_base":1.94,"r_eff":1.94,"t_avail":49.0,"margin":29.0,"n_sessions":132,"measured_rate":2.207,"measured_time":20.8,"abort_rate":0.0},"D-1":{"name":"고빈도 다중세션형","persona":"반려동물","risk":"완주 불가 + 급속충전 발열","F":"F3","D":"D2","M":"M3","L":"L2","C":"C2","p":{"turbo":0.6,"std":0.4},"k":1.25,"mu_T":20,"r_base":4.0,"r_eff":5.0,"t_avail":19.0,"margin":-1.0,"n_sessions":132,"measured_rate":5.601,"measured_time":13.6,"abort_rate":12.9},"D-2":{"name":"고빈도 배터리 교체형","persona":"반려동물","risk":"팩별 사용 불균형","F":"F3","D":"D2","M":"M3","L":"L2","C":"C1","p":{"turbo":0.6,"std":0.4},"k":1.25,"mu_T":20,"r_base":4.0,"r_eff":5.0,"t_avail":19.0,"margin":-1.0,"n_sessions":132,"measured_rate":5.594,"measured_time":14.8,"abort_rate":16.7},"E-1":{"name":"주말 집중형","persona":"일반 가정","risk":"주중 방전 방치 + 여유 시간 부족","F":"F2","D":"D3","M":"M2","L":"L0","C":"C3","p":{"std":0.9,"eco":0.1},"k":1.0,"mu_T":35,"r_base":2.42,"r_eff":2.42,"t_avail":39.3,"margin":4.3,"n_sessions":132,"measured_rate":2.858,"measured_time":18.1,"abort_rate":18.2},"E-2":{"name":"균등 분산형","persona":"일반 가정","risk":"특이 리스크 없음 (기준 그룹)","F":"F2","D":"D2","M":"M2","L":"L0","C":"C2","p":{"std":0.8,"eco":0.2},"k":1.0,"mu_T":18,"r_base":2.34,"r_eff":2.34,"t_avail":40.6,"margin":22.6,"n_sessions":132,"measured_rate":2.547,"measured_time":18.1,"abort_rate":0.8}}},"reg":{"features":["current_battery_pct","cleaning_mode_encoded","recent_avg_consumption_rate","last_session_time_min","last_battery_drop_pct"],"coef":{"current_battery_pct":0.38075,"cleaning_mode_encoded":-13.42472,"recent_avg_consumption_rate":-1.11687,"last_session_time_min":0.05756,"last_battery_drop_pct":-0.03741,"intercept":12.57661},"n_train":990,"n_test":330,"correction":{"e0":1.76,"beta":0.8,"soc_low":25.0,"dt":0.25,"truth":{"e_start":0.8,"soc_low":25.0,"beta":0.35,"dt":0.25}},"results":[{"name":"① 정의서 원문식","note":"온도·SOH를 가용 용량에 적용","mae":2.49,"rmse":3.04,"r2":0.9376,"bias":2.34,"acc":92.7},{"name":"② 보정식","note":"기동 전력 1.76% · 저잔량 가중 β=0.8 · 온도를 소모 속도에 적용","mae":1.23,"rmse":1.71,"r2":0.9803,"bias":0.03,"acc":94.2},{"name":"③ 간단 회귀","note":"멘토 제시 feature 5개 선형회귀","mae":1.87,"rmse":2.45,"r2":0.9596,"bias":-0.13,"acc":92.4}],"per_model":{"A-1":{"n":28,"design_mae":2.41,"design_bias":2.22,"corr_mae":1.13,"corr_bias":-0.63,"reg_mae":2.46,"reg_bias":0.21,"improve":53.0,"acc":96.0,"acc_design":93.0,"fail":4.0},"A-2":{"n":33,"design_mae":2.96,"design_bias":2.85,"corr_mae":1.7,"corr_bias":0.22,"reg_mae":2.04,"reg_bias":-0.42,"improve":43.0,"acc":100.0,"acc_design":100.0,"fail":0.0},"B-1":{"n":39,"design_mae":1.64,"design_bias":1.64,"corr_mae":0.68,"corr_bias":0.26,"reg_mae":1.88,"reg_bias":-1.0,"improve":59.0,"acc":92.0,"acc_design":87.0,"fail":0.0},"B-2":{"n":33,"design_mae":2.37,"design_bias":2.24,"corr_mae":1.03,"corr_bias":0.21,"reg_mae":1.32,"reg_bias":0.62,"improve":57.0,"acc":97.0,"acc_design":97.0,"fail":0.0},"C-1":{"n":35,"design_mae":3.64,"design_bias":3.41,"corr_mae":2.13,"corr_bias":-0.04,"reg_mae":1.95,"reg_bias":-0.4,"improve":41.0,"acc":83.0,"acc_design":77.0,"fail":3.0},"C-2":{"n":31,"design_mae":3.42,"design_bias":3.18,"corr_mae":1.55,"corr_bias":0.0,"reg_mae":2.01,"reg_bias":-1.21,"improve":55.0,"acc":100.0,"acc_design":100.0,"fail":0.0},"D-1":{"n":35,"design_mae":1.29,"design_bias":1.16,"corr_mae":0.7,"corr_bias":-0.1,"reg_mae":1.73,"reg_bias":0.06,"improve":46.0,"acc":89.0,"acc_design":89.0,"fail":11.0},"D-2":{"n":27,"design_mae":1.48,"design_bias":1.24,"corr_mae":0.83,"corr_bias":-0.13,"reg_mae":2.21,"reg_bias":1.74,"improve":44.0,"acc":85.0,"acc_design":85.0,"fail":19.0},"E-1":{"n":34,"design_mae":2.13,"design_bias":2.13,"corr_mae":0.9,"corr_bias":-0.27,"reg_mae":1.63,"reg_bias":-0.03,"improve":58.0,"acc":100.0,"acc_design":100.0,"fail":18.0},"E-2":{"n":35,"design_mae":3.5,"design_bias":3.26,"corr_mae":1.6,"corr_bias":0.59,"reg_mae":1.63,"reg_bias":-0.34,"improve":54.0,"acc":100.0,"acc_design":100.0,"fail":0.0}},"scatter":[{"actual":46.6,"design":49.3,"corr":45.9,"reg":44.5,"m":"C-2"},{"actual":23.7,"design":26.5,"corr":24.5,"reg":25.9,"m":"B-1"},{"actual":31.3,"design":33.7,"corr":31.5,"reg":29.8,"m":"B-1"},{"actual":45.8,"design":46.4,"corr":42.9,"reg":43.4,"m":"C-1"},{"actual":46.9,"design":51.1,"corr":47.6,"reg":45.8,"m":"C-1"},{"actual":9.5,"design":10.9,"corr":10.0,"reg":7.8,"m":"D-1"},{"actual":37.2,"design":48.0,"corr":44.4,"reg":42.6,"m":"C-1"},{"actual":21.6,"design":24.6,"corr":22.1,"reg":21.0,"m":"A-1"},{"actual":37.6,"design":41.3,"corr":37.7,"reg":39.1,"m":"C-1"},{"actual":14.2,"design":16.0,"corr":15.0,"reg":14.0,"m":"B-1"},{"actual":15.0,"design":15.5,"corr":14.5,"reg":14.9,"m":"B-1"},{"actual":37.8,"design":36.9,"corr":34.4,"reg":33.9,"m":"C-2"},{"actual":25.4,"design":27.7,"corr":25.9,"reg":28.5,"m":"D-2"},{"actual":12.0,"design":13.3,"corr":12.2,"reg":11.2,"m":"B-1"},{"actual":12.1,"design":14.0,"corr":13.2,"reg":15.4,"m":"D-2"},{"actual":27.6,"design":27.9,"corr":26.1,"reg":28.2,"m":"D-2"},{"actual":32.1,"design":31.1,"corr":28.9,"reg":30.2,"m":"B-2"},{"actual":30.1,"design":32.8,"corr":30.4,"reg":29.9,"m":"A-1"},{"actual":25.0,"design":28.6,"corr":26.2,"reg":25.7,"m":"E-2"},{"actual":14.4,"design":16.1,"corr":13.6,"reg":13.4,"m":"A-1"},{"actual":26.5,"design":29.6,"corr":27.4,"reg":26.7,"m":"B-1"},{"actual":24.5,"design":26.4,"corr":24.6,"reg":27.3,"m":"D-1"},{"actual":32.2,"design":34.7,"corr":32.4,"reg":32.0,"m":"A-2"},{"actual":27.4,"design":26.3,"corr":24.4,"reg":25.6,"m":"D-1"},{"actual":34.0,"design":35.8,"corr":33.5,"reg":34.3,"m":"A-2"},{"actual":29.7,"design":32.4,"corr":30.0,"reg":30.4,"m":"A-1"},{"actual":16.5,"design":18.2,"corr":15.9,"reg":15.0,"m":"E-1"},{"actual":33.0,"design":36.6,"corr":34.2,"reg":33.6,"m":"A-2"},{"actual":30.6,"design":32.8,"corr":30.4,"reg":29.2,"m":"E-2"},{"actual":13.2,"design":13.4,"corr":12.3,"reg":9.9,"m":"B-1"},{"actual":23.1,"design":24.6,"corr":22.3,"reg":22.3,"m":"E-1"},{"actual":13.0,"design":13.8,"corr":11.5,"reg":10.7,"m":"E-1"},{"actual":24.3,"design":27.7,"corr":24.2,"reg":29.6,"m":"A-1"},{"actual":12.6,"design":14.2,"corr":13.3,"reg":16.5,"m":"D-2"},{"actual":24.3,"design":28.4,"corr":25.9,"reg":25.2,"m":"E-2"},{"actual":12.5,"design":13.7,"corr":12.8,"reg":15.7,"m":"D-2"},{"actual":45.4,"design":50.7,"corr":47.3,"reg":45.8,"m":"C-1"},{"actual":32.2,"design":36.1,"corr":33.7,"reg":33.1,"m":"C-2"},{"actual":23.0,"design":24.7,"corr":22.4,"reg":22.5,"m":"E-1"},{"actual":53.3,"design":53.1,"corr":49.6,"reg":47.1,"m":"A-2"},{"actual":15.5,"design":15.8,"corr":14.7,"reg":14.4,"m":"B-1"},{"actual":14.1,"design":16.4,"corr":12.8,"reg":22.4,"m":"A-1"},{"actual":12.8,"design":13.4,"corr":12.5,"reg":14.7,"m":"D-1"},{"actual":24.0,"design":27.8,"corr":25.5,"reg":25.2,"m":"E-1"},{"actual":49.4,"design":51.3,"corr":47.7,"reg":45.2,"m":"C-1"},{"actual":29.9,"design":31.7,"corr":29.3,"reg":28.5,"m":"E-2"},{"actual":13.6,"design":14.6,"corr":12.3,"reg":11.5,"m":"E-1"},{"actual":43.4,"design":49.8,"corr":46.3,"reg":45.8,"m":"C-1"},{"actual":47.3,"design":51.1,"corr":47.7,"reg":46.7,"m":"C-1"},{"actual":21.7,"design":22.6,"corr":20.3,"reg":20.5,"m":"E-1"},{"actual":29.5,"design":33.3,"corr":31.1,"reg":31.7,"m":"B-2"},{"actual":28.3,"design":32.1,"corr":28.7,"reg":32.8,"m":"E-1"},{"actual":39.2,"design":43.7,"corr":40.3,"reg":41.7,"m":"C-1"},{"actual":13.4,"design":14.5,"corr":13.4,"reg":10.6,"m":"B-1"},{"actual":13.5,"design":13.6,"corr":12.7,"reg":13.2,"m":"D-1"},{"actual":31.9,"design":34.9,"corr":32.6,"reg":32.7,"m":"A-2"},{"actual":28.0,"design":31.4,"corr":29.1,"reg":28.8,"m":"E-1"},{"actual":14.5,"design":15.0,"corr":14.0,"reg":14.3,"m":"B-2"},{"actual":13.2,"design":15.0,"corr":13.9,"reg":14.8,"m":"B-1"},{"actual":9.4,"design":10.6,"corr":8.3,"reg":8.2,"m":"A-1"},{"actual":32.2,"design":35.6,"corr":33.3,"reg":33.1,"m":"A-2"},{"actual":33.7,"design":36.7,"corr":34.3,"reg":33.8,"m":"C-2"},{"actual":39.1,"design":35.8,"corr":33.4,"reg":32.2,"m":"E-2"},{"actual":34.6,"design":36.7,"corr":34.3,"reg":33.7,"m":"C-1"},{"actual":16.9,"design":18.5,"corr":16.1,"reg":15.6,"m":"A-1"},{"actual":32.0,"design":34.8,"corr":32.4,"reg":31.4,"m":"E-2"},{"actual":26.0,"design":30.5,"corr":28.3,"reg":25.3,"m":"B-1"},{"actual":30.6,"design":28.3,"corr":26.5,"reg":28.6,"m":"D-2"},{"actual":30.3,"design":33.6,"corr":31.4,"reg":30.1,"m":"B-2"},{"actual":16.0,"design":19.0,"corr":15.6,"reg":23.7,"m":"E-1"},{"actual":31.9,"design":33.8,"corr":31.5,"reg":31.2,"m":"C-2"},{"actual":44.2,"design":48.8,"corr":45.3,"reg":44.7,"m":"C-1"},{"actual":30.9,"design":33.1,"corr":30.8,"reg":31.9,"m":"C-2"},{"actual":28.4,"design":31.6,"corr":29.2,"reg":28.2,"m":"E-2"},{"actual":26.6,"design":28.3,"corr":26.4,"reg":29.8,"m":"D-2"},{"actual":30.2,"design":32.8,"corr":30.6,"reg":30.9,"m":"B-1"},{"actual":49.4,"design":51.7,"corr":48.2,"reg":47.3,"m":"C-2"},{"actual":28.1,"design":30.8,"corr":28.4,"reg":27.3,"m":"E-2"},{"actual":12.2,"design":14.3,"corr":13.2,"reg":12.0,"m":"B-2"},{"actual":13.9,"design":13.9,"corr":12.8,"reg":12.0,"m":"B-1"},{"actual":13.3,"design":13.6,"corr":12.7,"reg":11.8,"m":"D-1"},{"actual":34.8,"design":33.8,"corr":31.5,"reg":31.7,"m":"A-2"},{"actual":25.1,"design":25.9,"corr":24.1,"reg":25.2,"m":"D-1"},{"actual":50.7,"design":52.3,"corr":48.7,"reg":45.9,"m":"C-2"},{"actual":28.1,"design":28.2,"corr":26.4,"reg":27.0,"m":"D-2"},{"actual":14.4,"design":17.6,"corr":15.3,"reg":15.5,"m":"E-1"},{"actual":24.2,"design":26.9,"corr":24.7,"reg":25.0,"m":"B-2"},{"actual":18.0,"design":21.1,"corr":18.8,"reg":18.2,"m":"E-1"},{"actual":30.8,"design":30.7,"corr":28.4,"reg":27.8,"m":"E-2"},{"actual":33.9,"design":36.9,"corr":34.5,"reg":33.1,"m":"E-2"},{"actual":44.2,"design":48.1,"corr":44.5,"reg":43.4,"m":"C-1"},{"actual":35.7,"design":37.3,"corr":34.9,"reg":34.2,"m":"A-2"},{"actual":13.1,"design":13.8,"corr":12.9,"reg":14.9,"m":"D-2"},{"actual":12.7,"design":13.0,"corr":12.1,"reg":12.1,"m":"D-1"},{"actual":41.1,"design":46.8,"corr":43.2,"reg":41.8,"m":"C-1"},{"actual":14.0,"design":15.8,"corr":14.7,"reg":14.0,"m":"B-1"},{"actual":30.3,"design":35.6,"corr":32.0,"reg":34.7,"m":"A-1"},{"actual":8.9,"design":10.7,"corr":8.3,"reg":7.8,"m":"E-1"},{"actual":11.4,"design":11.8,"corr":10.9,"reg":7.6,"m":"D-1"},{"actual":11.7,"design":13.5,"corr":12.6,"reg":12.8,"m":"D-1"},{"actual":13.9,"design":15.2,"corr":14.1,"reg":16.0,"m":"B-1"},{"actual":15.1,"design":16.9,"corr":15.8,"reg":17.0,"m":"B-1"},{"actual":33.5,"design":42.6,"corr":39.0,"reg":38.8,"m":"E-2"},{"actual":25.9,"design":28.5,"corr":26.3,"reg":26.7,"m":"B-2"},{"actual":32.0,"design":32.7,"corr":30.4,"reg":30.4,"m":"E-1"},{"actual":44.1,"design":46.6,"corr":43.2,"reg":42.3,"m":"C-1"},{"actual":34.2,"design":31.5,"corr":29.1,"reg":28.5,"m":"A-1"},{"actual":24.8,"design":27.9,"corr":26.0,"reg":27.0,"m":"D-2"},{"actual":25.2,"design":28.6,"corr":26.3,"reg":25.4,"m":"E-2"},{"actual":29.3,"design":29.3,"corr":27.0,"reg":26.2,"m":"E-2"},{"actual":25.0,"design":26.1,"corr":23.9,"reg":23.5,"m":"B-2"},{"actual":23.1,"design":28.2,"corr":25.8,"reg":25.5,"m":"E-2"},{"actual":44.0,"design":45.2,"corr":41.6,"reg":40.6,"m":"A-1"},{"actual":25.3,"design":26.7,"corr":24.8,"reg":28.0,"m":"D-2"},{"actual":30.0,"design":33.8,"corr":31.5,"reg":31.5,"m":"A-2"},{"actual":54.1,"design":52.8,"corr":49.3,"reg":47.6,"m":"C-1"},{"actual":31.1,"design":35.6,"corr":33.1,"reg":32.5,"m":"E-2"},{"actual":28.7,"design":31.8,"corr":29.6,"reg":29.4,"m":"B-2"},{"actual":40.5,"design":44.1,"corr":40.6,"reg":40.7,"m":"A-1"},{"actual":26.7,"design":28.3,"corr":25.8,"reg":25.2,"m":"A-1"},{"actual":31.7,"design":33.7,"corr":31.4,"reg":31.3,"m":"A-2"},{"actual":24.8,"design":27.4,"corr":25.5,"reg":25.1,"m":"D-1"},{"actual":32.1,"design":36.0,"corr":33.7,"reg":33.5,"m":"E-2"},{"actual":20.6,"design":23.6,"corr":21.6,"reg":25.2,"m":"B-2"},{"actual":47.2,"design":50.5,"corr":46.9,"reg":44.3,"m":"E-2"},{"actual":9.3,"design":10.5,"corr":9.6,"reg":6.6,"m":"D-1"},{"actual":24.8,"design":27.4,"corr":25.1,"reg":25.3,"m":"E-2"},{"actual":12.1,"design":13.4,"corr":12.5,"reg":12.8,"m":"D-2"},{"actual":36.6,"design":35.8,"corr":33.5,"reg":33.2,"m":"E-2"},{"actual":27.9,"design":30.0,"corr":27.8,"reg":26.1,"m":"B-2"},{"actual":33.4,"design":34.4,"corr":32.1,"reg":31.5,"m":"A-2"},{"actual":12.1,"design":14.1,"corr":13.1,"reg":10.2,"m":"B-1"},{"actual":9.0,"design":10.7,"corr":8.3,"reg":8.8,"m":"A-1"},{"actual":12.3,"design":13.1,"corr":12.2,"reg":12.5,"m":"D-2"},{"actual":22.1,"design":24.0,"corr":22.2,"reg":23.6,"m":"D-1"},{"actual":46.2,"design":51.0,"corr":47.4,"reg":44.6,"m":"A-2"},{"actual":30.2,"design":33.3,"corr":30.9,"reg":29.9,"m":"E-2"},{"actual":9.8,"design":11.3,"corr":10.4,"reg":6.8,"m":"D-1"},{"actual":49.3,"design":53.9,"corr":50.4,"reg":47.7,"m":"A-1"},{"actual":46.8,"design":49.9,"corr":46.5,"reg":46.4,"m":"C-2"},{"actual":12.5,"design":13.2,"corr":10.8,"reg":11.1,"m":"A-1"},{"actual":24.4,"design":27.6,"corr":25.8,"reg":28.6,"m":"D-2"},{"actual":24.1,"design":26.0,"corr":24.2,"reg":23.5,"m":"D-2"},{"actual":25.0,"design":28.9,"corr":26.7,"reg":25.5,"m":"B-1"},{"actual":10.7,"design":11.9,"corr":9.5,"reg":10.0,"m":"A-1"},{"actual":29.4,"design":31.8,"corr":29.5,"reg":29.4,"m":"E-1"},{"actual":44.6,"design":50.9,"corr":47.4,"reg":45.9,"m":"C-1"},{"actual":6.6,"design":8.1,"corr":5.7,"reg":5.3,"m":"A-1"},{"actual":31.3,"design":33.5,"corr":31.0,"reg":29.2,"m":"E-2"},{"actual":13.2,"design":14.2,"corr":13.2,"reg":11.0,"m":"B-1"},{"actual":47.6,"design":50.7,"corr":47.2,"reg":46.5,"m":"C-2"},{"actual":26.7,"design":29.5,"corr":27.3,"reg":27.6,"m":"B-2"},{"actual":50.2,"design":52.7,"corr":49.2,"reg":46.5,"m":"A-1"},{"actual":34.7,"design":34.8,"corr":32.4,"reg":33.4,"m":"C-2"},{"actual":15.8,"design":15.9,"corr":13.5,"reg":13.6,"m":"A-1"},{"actual":13.5,"design":14.6,"corr":13.5,"reg":12.7,"m":"B-1"},{"actual":37.9,"design":43.6,"corr":40.2,"reg":40.4,"m":"C-1"},{"actual":44.7,"design":48.6,"corr":45.2,"reg":44.3,"m":"C-2"},{"actual":14.6,"design":14.1,"corr":13.2,"reg":16.1,"m":"D-1"},{"actual":27.0,"design":30.5,"corr":28.3,"reg":28.9,"m":"B-2"},{"actual":29.7,"design":33.1,"corr":30.8,"reg":29.2,"m":"B-2"},{"actual":49.3,"design":52.2,"corr":48.6,"reg":45.4,"m":"A-2"},{"actual":52.3,"design":52.0,"corr":48.6,"reg":46.3,"m":"A-2"},{"actual":28.0,"design":31.2,"corr":29.0,"reg":29.6,"m":"B-2"},{"actual":22.5,"design":25.9,"corr":22.4,"reg":28.1,"m":"A-1"},{"actual":15.1,"design":16.3,"corr":15.3,"reg":15.7,"m":"B-1"},{"actual":26.6,"design":31.9,"corr":29.5,"reg":28.0,"m":"E-2"},{"actual":37.3,"design":37.6,"corr":35.2,"reg":34.0,"m":"A-2"},{"actual":13.2,"design":14.6,"corr":13.5,"reg":10.7,"m":"B-1"},{"actual":31.6,"design":35.7,"corr":33.4,"reg":33.6,"m":"A-2"},{"actual":19.5,"design":21.8,"corr":19.4,"reg":18.9,"m":"E-1"},{"actual":20.5,"design":22.3,"corr":20.5,"reg":21.5,"m":"D-1"},{"actual":23.1,"design":26.4,"corr":24.1,"reg":23.9,"m":"B-2"},{"actual":49.7,"design":54.5,"corr":50.9,"reg":46.6,"m":"C-2"},{"actual":46.3,"design":52.7,"corr":49.1,"reg":45.7,"m":"C-2"},{"actual":10.6,"design":11.0,"corr":10.0,"reg":7.7,"m":"D-1"},{"actual":12.5,"design":12.4,"corr":11.5,"reg":13.0,"m":"B-2"},{"actual":11.8,"design":13.0,"corr":12.1,"reg":14.0,"m":"D-2"},{"actual":45.2,"design":48.7,"corr":45.2,"reg":44.5,"m":"E-2"},{"actual":10.7,"design":11.5,"corr":10.6,"reg":7.9,"m":"D-1"},{"actual":32.3,"design":35.8,"corr":33.5,"reg":33.0,"m":"A-2"},{"actual":25.6,"design":27.3,"corr":25.5,"reg":27.3,"m":"D-2"},{"actual":49.2,"design":52.8,"corr":49.2,"reg":46.8,"m":"C-2"},{"actual":12.8,"design":13.2,"corr":12.1,"reg":8.2,"m":"B-1"},{"actual":12.3,"design":13.6,"corr":12.6,"reg":8.5,"m":"B-1"},{"actual":6.0,"design":7.3,"corr":5.2,"reg":5.1,"m":"E-1"},{"actual":19.0,"design":22.3,"corr":20.0,"reg":19.4,"m":"E-1"},{"actual":29.7,"design":33.6,"corr":31.4,"reg":28.9,"m":"B-1"},{"actual":13.1,"design":13.5,"corr":12.6,"reg":12.8,"m":"D-1"},{"actual":28.7,"design":32.4,"corr":30.3,"reg":33.3,"m":"A-2"},{"actual":41.3,"design":44.0,"corr":40.4,"reg":40.9,"m":"C-1"},{"actual":20.9,"design":22.3,"corr":20.4,"reg":21.7,"m":"D-1"},{"actual":29.1,"design":28.6,"corr":26.7,"reg":30.4,"m":"D-2"},{"actual":12.4,"design":14.2,"corr":13.3,"reg":17.8,"m":"D-2"},{"actual":14.9,"design":16.8,"corr":15.7,"reg":18.3,"m":"B-2"},{"actual":14.2,"design":16.9,"corr":13.4,"reg":22.3,"m":"E-1"},{"actual":16.0,"design":16.5,"corr":15.4,"reg":14.9,"m":"B-1"},{"actual":33.1,"design":34.7,"corr":32.3,"reg":31.7,"m":"A-2"},{"actual":14.3,"design":16.3,"corr":15.2,"reg":17.4,"m":"B-2"},{"actual":11.9,"design":13.6,"corr":11.2,"reg":11.3,"m":"E-1"},{"actual":12.0,"design":12.8,"corr":11.9,"reg":11.9,"m":"D-1"},{"actual":10.4,"design":12.4,"corr":11.5,"reg":12.4,"m":"D-1"},{"actual":14.8,"design":15.6,"corr":14.5,"reg":13.8,"m":"B-1"},{"actual":41.1,"design":44.4,"corr":40.8,"reg":39.7,"m":"E-2"},{"actual":53.1,"design":50.3,"corr":46.8,"reg":46.2,"m":"C-2"},{"actual":23.2,"design":26.7,"corr":24.9,"reg":27.9,"m":"D-1"},{"actual":30.7,"design":33.8,"corr":31.5,"reg":31.5,"m":"A-2"},{"actual":28.2,"design":35.4,"corr":33.0,"reg":32.2,"m":"C-2"},{"actual":14.4,"design":16.0,"corr":14.9,"reg":15.3,"m":"B-1"},{"actual":14.0,"design":14.6,"corr":13.6,"reg":11.6,"m":"B-1"},{"actual":26.0,"design":28.4,"corr":26.0,"reg":25.7,"m":"E-1"},{"actual":47.5,"design":51.1,"corr":47.7,"reg":45.2,"m":"C-2"},{"actual":27.4,"design":28.6,"corr":26.2,"reg":26.2,"m":"A-1"},{"actual":27.5,"design":32.2,"corr":28.6,"reg":32.4,"m":"A-1"},{"actual":22.7,"design":26.1,"corr":23.9,"reg":23.7,"m":"B-2"},{"actual":34.3,"design":34.7,"corr":32.4,"reg":31.9,"m":"A-1"},{"actual":28.1,"design":30.0,"corr":27.8,"reg":28.5,"m":"B-2"},{"actual":50.4,"design":52.0,"corr":48.5,"reg":47.0,"m":"C-2"},{"actual":25.2,"design":28.6,"corr":26.7,"reg":28.5,"m":"D-1"},{"actual":28.7,"design":33.7,"corr":31.5,"reg":30.6,"m":"B-2"}]},"sessions":[{"session_id":"S0008","model_id":"A-1","cleaning_mode":"표준","cleaning_time_min":12.2,"start_battery_pct":76.1,"end_battery_pct":42.2,"battery_drop_pct":33.8,"consumption_rate":2.761,"ambient_temp_c":27.3,"soh":0.998,"aborted":0},{"session_id":"S0027","model_id":"A-1","cleaning_mode":"표준","cleaning_time_min":7.8,"start_battery_pct":78.3,"end_battery_pct":55.7,"battery_drop_pct":22.6,"consumption_rate":2.915,"ambient_temp_c":29.1,"soh":0.9969,"aborted":0},{"session_id":"S0102","model_id":"A-1","cleaning_mode":"표준","cleaning_time_min":8.2,"start_battery_pct":32.4,"end_battery_pct":8.8,"battery_drop_pct":23.6,"consumption_rate":2.861,"ambient_temp_c":34.3,"soh":0.9583,"aborted":0},{"session_id":"S0118","model_id":"A-1","cleaning_mode":"표준","cleaning_time_min":7.8,"start_battery_pct":68.0,"end_battery_pct":45.8,"battery_drop_pct":22.2,"consumption_rate":2.867,"ambient_temp_c":26.5,"soh":0.9574,"aborted":0},{"session_id":"S0126","model_id":"A-1","cleaning_mode":"표준","cleaning_time_min":11.5,"start_battery_pct":61.8,"end_battery_pct":30.7,"battery_drop_pct":31.1,"consumption_rate":2.706,"ambient_temp_c":23.3,"soh":0.9568,"aborted":0},{"session_id":"S0130","model_id":"A-1","cleaning_mode":"표준","cleaning_time_min":8.0,"start_battery_pct":36.8,"end_battery_pct":11.2,"battery_drop_pct":25.6,"consumption_rate":3.198,"ambient_temp_c":22.8,"soh":0.9565,"aborted":0},{"session_id":"S0143","model_id":"A-2","cleaning_mode":"저소음","cleaning_time_min":6.2,"start_battery_pct":93.8,"end_battery_pct":81.3,"battery_drop_pct":12.5,"consumption_rate":1.998,"ambient_temp_c":24.8,"soh":0.9515,"aborted":0},{"session_id":"S0162","model_id":"A-2","cleaning_mode":"표준","cleaning_time_min":8.5,"start_battery_pct":98.7,"end_battery_pct":76.8,"battery_drop_pct":22.0,"consumption_rate":2.584,"ambient_temp_c":29.2,"soh":0.9504,"aborted":0},{"session_id":"S0237","model_id":"A-2","cleaning_mode":"표준","cleaning_time_min":4.2,"start_battery_pct":99.5,"end_battery_pct":87.0,"battery_drop_pct":12.5,"consumption_rate":2.939,"ambient_temp_c":22.8,"soh":0.9497,"aborted":0},{"session_id":"S0253","model_id":"A-2","cleaning_mode":"표준","cleaning_time_min":11.2,"start_battery_pct":95.1,"end_battery_pct":64.3,"battery_drop_pct":30.8,"consumption_rate":2.735,"ambient_temp_c":22.1,"soh":0.9487,"aborted":0},{"session_id":"S0261","model_id":"A-2","cleaning_mode":"저소음","cleaning_time_min":9.0,"start_battery_pct":94.1,"end_battery_pct":74.6,"battery_drop_pct":19.4,"consumption_rate":2.157,"ambient_temp_c":23.0,"soh":0.9481,"aborted":0},{"session_id":"S0265","model_id":"A-2","cleaning_mode":"표준","cleaning_time_min":10.0,"start_battery_pct":99.0,"end_battery_pct":65.5,"battery_drop_pct":33.5,"consumption_rate":3.354,"ambient_temp_c":9.8,"soh":0.9478,"aborted":0},{"session_id":"S0278","model_id":"B-1","cleaning_mode":"표준","cleaning_time_min":6.8,"start_battery_pct":95.2,"end_battery_pct":75.1,"battery_drop_pct":20.1,"consumption_rate":2.972,"ambient_temp_c":21.1,"soh":0.978,"aborted":0},{"session_id":"S0297","model_id":"B-1","cleaning_mode":"강력","cleaning_time_min":8.0,"start_battery_pct":85.0,"end_battery_pct":38.3,"battery_drop_pct":46.7,"consumption_rate":5.835,"ambient_temp_c":22.3,"soh":0.9759,"aborted":0},{"session_id":"S0372","model_id":"B-1","cleaning_mode":"강력","cleaning_time_min":7.8,"start_battery_pct":84.7,"end_battery_pct":39.9,"battery_drop_pct":44.9,"consumption_rate":5.788,"ambient_temp_c":22.4,"soh":0.959,"aborted":0},{"session_id":"S0388","model_id":"B-1","cleaning_mode":"강력","cleaning_time_min":6.2,"start_battery_pct":79.5,"end_battery_pct":41.3,"battery_drop_pct":38.2,"consumption_rate":6.11,"ambient_temp_c":24.8,"soh":0.9573,"aborted":0},{"session_id":"S0396","model_id":"B-1","cleaning_mode":"강력","cleaning_time_min":6.2,"start_battery_pct":91.6,"end_battery_pct":51.5,"battery_drop_pct":40.1,"consumption_rate":6.409,"ambient_temp_c":31.3,"soh":0.9563,"aborted":0},{"session_id":"S0400","model_id":"B-1","cleaning_mode":"강력","cleaning_time_min":7.0,"start_battery_pct":81.5,"end_battery_pct":35.2,"battery_drop_pct":46.3,"consumption_rate":6.619,"ambient_temp_c":37.7,"soh":0.9558,"aborted":0},{"session_id":"S0413","model_id":"B-2","cleaning_mode":"표준","cleaning_time_min":10.0,"start_battery_pct":91.8,"end_battery_pct":62.2,"battery_drop_pct":29.5,"consumption_rate":2.954,"ambient_temp_c":20.3,"soh":0.9704,"aborted":0},{"session_id":"S0432","model_id":"B-2","cleaning_mode":"강력","cleaning_time_min":6.8,"start_battery_pct":92.8,"end_battery_pct":52.8,"battery_drop_pct":40.0,"consumption_rate":5.928,"ambient_temp_c":22.8,"soh":0.9688,"aborted":0},{"session_id":"S0507","model_id":"B-2","cleaning_mode":"강력","cleaning_time_min":9.0,"start_battery_pct":89.6,"end_battery_pct":39.7,"battery_drop_pct":49.9,"consumption_rate":5.539,"ambient_temp_c":21.0,"soh":0.9954,"aborted":0},{"session_id":"S0523","model_id":"B-2","cleaning_mode":"표준","cleaning_time_min":6.5,"start_battery_pct":98.7,"end_battery_pct":79.0,"battery_drop_pct":19.7,"consumption_rate":3.035,"ambient_temp_c":26.9,"soh":0.9941,"aborted":0},{"session_id":"S0531","model_id":"B-2","cleaning_mode":"표준","cleaning_time_min":6.8,"start_battery_pct":81.6,"end_battery_pct":59.2,"battery_drop_pct":22.4,"consumption_rate":3.321,"ambient_temp_c":36.4,"soh":0.9934,"aborted":0},{"session_id":"S0535","model_id":"B-2","cleaning_mode":"강력","cleaning_time_min":8.0,"start_battery_pct":93.5,"end_battery_pct":44.9,"battery_drop_pct":48.5,"consumption_rate":6.067,"ambient_temp_c":26.5,"soh":0.9931,"aborted":0},{"session_id":"S0548","model_id":"C-1","cleaning_mode":"저소음","cleaning_time_min":28.8,"start_battery_pct":88.5,"end_battery_pct":37.1,"battery_drop_pct":51.4,"consumption_rate":1.789,"ambient_temp_c":24.3,"soh":0.9897,"aborted":0},{"session_id":"S0567","model_id":"C-1","cleaning_mode":"저소음","cleaning_time_min":36.8,"start_battery_pct":85.7,"end_battery_pct":14.9,"battery_drop_pct":70.8,"consumption_rate":1.926,"ambient_temp_c":25.3,"soh":0.9861,"aborted":0},{"session_id":"S0642","model_id":"C-1","cleaning_mode":"저소음","cleaning_time_min":33.5,"start_battery_pct":98.4,"end_battery_pct":41.7,"battery_drop_pct":56.7,"consumption_rate":1.693,"ambient_temp_c":25.6,"soh":0.9616,"aborted":0},{"session_id":"S0658","model_id":"C-1","cleaning_mode":"저소음","cleaning_time_min":34.5,"start_battery_pct":95.7,"end_battery_pct":31.6,"battery_drop_pct":64.2,"consumption_rate":1.86,"ambient_temp_c":28.9,"soh":0.9587,"aborted":0},{"session_id":"S0666","model_id":"C-1","cleaning_mode":"저소음","cleaning_time_min":29.5,"start_battery_pct":91.0,"end_battery_pct":35.3,"battery_drop_pct":55.7,"consumption_rate":1.888,"ambient_temp_c":24.9,"soh":0.9572,"aborted":0},{"session_id":"S0670","model_id":"C-1","cleaning_mode":"저소음","cleaning_time_min":42.8,"start_battery_pct":86.2,"end_battery_pct":8.2,"battery_drop_pct":78.0,"consumption_rate":1.824,"ambient_temp_c":30.5,"soh":0.9564,"aborted":0},{"session_id":"S0683","model_id":"C-2","cleaning_mode":"표준","cleaning_time_min":22.5,"start_battery_pct":94.2,"end_battery_pct":32.0,"battery_drop_pct":62.2,"consumption_rate":2.762,"ambient_temp_c":22.1,"soh":0.941,"aborted":0},{"session_id":"S0702","model_id":"C-2","cleaning_mode":"표준","cleaning_time_min":18.5,"start_battery_pct":97.6,"end_battery_pct":47.1,"battery_drop_pct":50.4,"consumption_rate":2.725,"ambient_temp_c":28.1,"soh":0.9385,"aborted":0},{"session_id":"S0777","model_id":"C-2","cleaning_mode":"저소음","cleaning_time_min":20.5,"start_battery_pct":95.7,"end_battery_pct":57.7,"battery_drop_pct":38.0,"consumption_rate":1.853,"ambient_temp_c":11.3,"soh":0.9916,"aborted":0},{"session_id":"S0793","model_id":"C-2","cleaning_mode":"저소음","cleaning_time_min":26.0,"start_battery_pct":94.3,"end_battery_pct":45.4,"battery_drop_pct":48.8,"consumption_rate":1.879,"ambient_temp_c":22.3,"soh":0.9896,"aborted":0},{"session_id":"S0801","model_id":"C-2","cleaning_mode":"표준","cleaning_time_min":19.0,"start_battery_pct":95.7,"end_battery_pct":45.3,"battery_drop_pct":50.4,"consumption_rate":2.654,"ambient_temp_c":21.2,"soh":0.9885,"aborted":0},{"session_id":"S0805","model_id":"C-2","cleaning_mode":"저소음","cleaning_time_min":20.8,"start_battery_pct":95.0,"end_battery_pct":53.1,"battery_drop_pct":41.9,"consumption_rate":2.021,"ambient_temp_c":30.3,"soh":0.9879,"aborted":0},{"session_id":"S0818","model_id":"D-1","cleaning_mode":"강력","cleaning_time_min":12.5,"start_battery_pct":96.3,"end_battery_pct":12.5,"battery_drop_pct":83.8,"consumption_rate":6.702,"ambient_temp_c":15.6,"soh":0.9433,"aborted":0},{"session_id":"S0837","model_id":"D-1","cleaning_mode":"강력","cleaning_time_min":11.0,"start_battery_pct":95.0,"end_battery_pct":11.0,"battery_drop_pct":84.0,"consumption_rate":7.637,"ambient_temp_c":28.5,"soh":0.9395,"aborted":0},{"session_id":"S0912","model_id":"D-1","cleaning_mode":"강력","cleaning_time_min":12.0,"start_battery_pct":89.5,"end_battery_pct":10.6,"battery_drop_pct":78.9,"consumption_rate":6.572,"ambient_temp_c":17.1,"soh":0.9634,"aborted":0},{"session_id":"S0928","model_id":"D-1","cleaning_mode":"표준","cleaning_time_min":16.5,"start_battery_pct":84.8,"end_battery_pct":14.9,"battery_drop_pct":69.9,"consumption_rate":4.237,"ambient_temp_c":9.5,"soh":0.9602,"aborted":0},{"session_id":"S0936","model_id":"D-1","cleaning_mode":"표준","cleaning_time_min":10.5,"start_battery_pct":79.4,"end_battery_pct":38.0,"battery_drop_pct":41.5,"consumption_rate":3.95,"ambient_temp_c":24.9,"soh":0.9589,"aborted":0},{"session_id":"S0940","model_id":"D-1","cleaning_mode":"표준","cleaning_time_min":17.2,"start_battery_pct":77.0,"end_battery_pct":15.4,"battery_drop_pct":61.6,"consumption_rate":3.57,"ambient_temp_c":23.5,"soh":0.9581,"aborted":0},{"session_id":"S0953","model_id":"D-2","cleaning_mode":"표준","cleaning_time_min":16.2,"start_battery_pct":97.7,"end_battery_pct":39.7,"battery_drop_pct":58.1,"consumption_rate":3.573,"ambient_temp_c":13.1,"soh":0.9352,"aborted":0},{"session_id":"S0972","model_id":"D-2","cleaning_mode":"표준","cleaning_time_min":24.7,"start_battery_pct":95.9,"end_battery_pct":5.0,"battery_drop_pct":90.9,"consumption_rate":3.674,"ambient_temp_c":21.7,"soh":0.931,"aborted":1},{"session_id":"S1047","model_id":"D-2","cleaning_mode":"표준","cleaning_time_min":19.5,"start_battery_pct":94.8,"end_battery_pct":30.4,"battery_drop_pct":64.4,"consumption_rate":3.302,"ambient_temp_c":30.2,"soh":0.9406,"aborted":0},{"session_id":"S1063","model_id":"D-2","cleaning_mode":"표준","cleaning_time_min":24.5,"start_battery_pct":99.1,"end_battery_pct":9.3,"battery_drop_pct":89.8,"consumption_rate":3.666,"ambient_temp_c":26.3,"soh":0.9373,"aborted":0},{"session_id":"S1071","model_id":"D-2","cleaning_mode":"강력","cleaning_time_min":10.0,"start_battery_pct":92.6,"end_battery_pct":14.7,"battery_drop_pct":77.9,"consumption_rate":7.786,"ambient_temp_c":18.4,"soh":0.9356,"aborted":0},{"session_id":"S1075","model_id":"D-2","cleaning_mode":"표준","cleaning_time_min":17.5,"start_battery_pct":96.4,"end_battery_pct":35.2,"battery_drop_pct":61.2,"consumption_rate":3.498,"ambient_temp_c":24.2,"soh":0.9348,"aborted":0},{"session_id":"S1088","model_id":"E-1","cleaning_mode":"저소음","cleaning_time_min":21.2,"start_battery_pct":55.9,"end_battery_pct":15.8,"battery_drop_pct":40.1,"consumption_rate":1.886,"ambient_temp_c":25.5,"soh":0.9644,"aborted":0},{"session_id":"S1107","model_id":"E-1","cleaning_mode":"표준","cleaning_time_min":21.8,"start_battery_pct":78.3,"end_battery_pct":7.9,"battery_drop_pct":70.4,"consumption_rate":3.239,"ambient_temp_c":35.0,"soh":0.9618,"aborted":0},{"session_id":"S1182","model_id":"E-1","cleaning_mode":"표준","cleaning_time_min":13.0,"start_battery_pct":49.4,"end_battery_pct":12.3,"battery_drop_pct":37.1,"consumption_rate":2.854,"ambient_temp_c":15.4,"soh":0.9283,"aborted":0},{"session_id":"S1198","model_id":"E-1","cleaning_mode":"표준","cleaning_time_min":13.2,"start_battery_pct":49.8,"end_battery_pct":11.7,"battery_drop_pct":38.2,"consumption_rate":2.88,"ambient_temp_c":30.0,"soh":0.9259,"aborted":0},{"session_id":"S1206","model_id":"E-1","cleaning_mode":"표준","cleaning_time_min":12.8,"start_battery_pct":49.4,"end_battery_pct":11.3,"battery_drop_pct":38.1,"consumption_rate":2.988,"ambient_temp_c":27.2,"soh":0.925,"aborted":0},{"session_id":"S1210","model_id":"E-1","cleaning_mode":"표준","cleaning_time_min":11.0,"start_battery_pct":39.4,"end_battery_pct":5.0,"battery_drop_pct":34.4,"consumption_rate":3.134,"ambient_temp_c":35.9,"soh":0.9244,"aborted":1},{"session_id":"S1223","model_id":"E-2","cleaning_mode":"표준","cleaning_time_min":16.5,"start_battery_pct":98.7,"end_battery_pct":57.1,"battery_drop_pct":41.6,"consumption_rate":2.523,"ambient_temp_c":19.0,"soh":0.9552,"aborted":0},{"session_id":"S1242","model_id":"E-2","cleaning_mode":"표준","cleaning_time_min":24.2,"start_battery_pct":99.7,"end_battery_pct":33.5,"battery_drop_pct":66.2,"consumption_rate":2.73,"ambient_temp_c":24.4,"soh":0.9529,"aborted":0},{"session_id":"S1317","model_id":"E-2","cleaning_mode":"표준","cleaning_time_min":24.2,"start_battery_pct":88.3,"end_battery_pct":21.0,"battery_drop_pct":67.3,"consumption_rate":2.774,"ambient_temp_c":22.8,"soh":0.9945,"aborted":0},{"session_id":"S1333","model_id":"E-2","cleaning_mode":"저소음","cleaning_time_min":23.5,"start_battery_pct":83.1,"end_battery_pct":35.4,"battery_drop_pct":47.7,"consumption_rate":2.03,"ambient_temp_c":30.7,"soh":0.9926,"aborted":0},{"session_id":"S1341","model_id":"E-2","cleaning_mode":"표준","cleaning_time_min":17.5,"start_battery_pct":98.8,"end_battery_pct":47.1,"battery_drop_pct":51.7,"consumption_rate":2.955,"ambient_temp_c":26.9,"soh":0.9916,"aborted":0},{"session_id":"S1345","model_id":"E-2","cleaning_mode":"표준","cleaning_time_min":17.5,"start_battery_pct":93.6,"end_battery_pct":43.2,"battery_drop_pct":50.4,"consumption_rate":2.881,"ambient_temp_c":30.7,"soh":0.9911,"aborted":0}],"ds":{"n":1320,"users":30,"avg_time":15.1,"avg_drop":46.9,"avg_rate":3.49,"abort":6.2}};
 
-var modes = {
-  eco:   { name:'🌿 절전 모드',  rate:0.25, desc:'저전력 운행. 조용하고 배터리 오래 지속.', color:'#66bb6a', bgClass:'#f1f8f1', textColor:'#2e7d32' },
-  std:   { name:'🧹 표준 모드',  rate:0.33, desc:'일상 청소에 최적화. 소음과 흡입력의 균형.',  color:'#4fc3f7', bgClass:'#f0f9ff', textColor:'#0277bd' },
-  turbo: { name:'⚡ 강력 모드',  rate:0.58, desc:'강력한 흡입력. 먼지·카펫에 효과적. 배터리 소모 빠름.', color:'#ef5350', bgClass:'#fff0f0', textColor:'#b71c1c' }
+const P   = DATA.params, REG = DATA.reg, SESS = DATA.sessions;
+const R   = P.r_mode, RES = P.soc_res, M = P.models;
+const KO  = {eco:'저소음', std:'표준', turbo:'강력'};
+const COL = {eco:'#0f9d58', std:'#1e6fd9', turbo:'#d93025'};
+
+const LOADS = [
+  {id:'carpet', label:'카펫 · 러그',  v:0.15},
+  {id:'pet',    label:'반려동물 털',  v:0.10},
+  {id:'long',   label:'장모 엉킴',    v:0.08},
+];
+
+/* 정의서 5장 — 모델별 수명 코칭 메시지 */
+const LIFE = {
+  'A-1':{t:'보관 충전 안내', m:'2주간 사용 기록이 없습니다. 배터리 수명을 위해 55% 정도만 충전해 보관해 주세요.', act:['55%로 보관 충전','나중에']},
+  'A-2':{t:'만충 유지 경고', m:'항상 100%를 유지하면 배터리가 빨리 늙습니다. 사용 전에만 채우도록 설정할까요?', act:['80% 상한 켜기','유지할게요']},
+  'B-1':{t:'모드 다이어트',  m:'터보로 8분 = 표준으로 15분입니다. 오늘은 표준 모드로 시작해 볼까요?', act:['표준으로 시작','터보 유지']},
+  'B-2':{t:'주간 효율 점수', m:'필요한 곳에만 터보를 쓰고 계시네요. 이번 주 배터리 효율 점수 92점입니다.', act:['자세히 보기']},
+  'C-1':{t:'방전 심도 관리', m:'35분 완주 후 잔량은 약 32%입니다. 한 번에 끝내셔도 좋습니다.', act:['그대로 진행']},
+  'C-2':{t:'등가 사이클 안내', m:'오늘 두 번의 청소로 배터리 0.9사이클을 사용했습니다. 한 번에 하시면 0.7사이클입니다.', act:['통합 청소로 변경','분할 유지']},
+  'D-1':{t:'발열 누적 주의', m:'급속충전 직후 재사용이 반복되고 있습니다. 5분만 식힌 뒤 시작하면 수명에 도움이 됩니다.', act:['5분 뒤 알림','바로 시작']},
+  'D-2':{t:'팩 사용 불균형', m:'1번 팩이 2번보다 34사이클 많이 사용됐습니다. 다음 청소는 2번 팩으로 시작하세요.', act:['2번 팩으로 전환','그대로']},
+  'E-1':{t:'사전 충전 제안', m:'토요일 청소까지 12시간 남았습니다. 지금 충전하면 여유 있게 끝낼 수 있습니다.', act:['지금 충전 예약','나중에']},
+  'E-2':{t:'예상 수명 요약', m:'현재 사용 패턴을 유지하면 배터리 수명은 약 4년 2개월로 예상됩니다.', act:['리포트 보기']},
 };
 
-function calcTime(pct, mode) { return Math.round(pct / modes[mode].rate); }
-function calcSessions(pct, mode) { return Math.max(1, Math.floor(calcTime(pct, mode) / 10)); }
+/* ═══════════ 상태 ═══════════ */
+let S = {mid:'A-1', soc:100, soh:100, tmp:22, req:8, loads:new Set(), p:null, pKey:'기본', name:'준우'};
 
-function updateAll(val) {
-  currentBattery = parseInt(val);
-  var pct = currentBattery;
+const $  = id => document.getElementById(id);
+const fTemp = t => t < 10 ? 0.85 : (t > 35 ? 0.90 : 1.00);
+const calcK = () => Math.min(1.00 + [...S.loads].reduce((a,id)=>a+LOADS.find(l=>l.id===id).v, 0), 1.40);
+const pStr  = p => Object.entries(p).map(([k,v]) => `${KO[k]} ${v.toFixed(1)}`).join(' / ');
 
-  var maxDash = 283;
-  var offset = Math.round(maxDash * (1 - pct/100));
-  document.getElementById('gauge-arc').setAttribute('stroke-dashoffset', offset);
-  document.getElementById('gauge-arc').setAttribute('stroke', pct>50?'#4fc3f7':pct>20?'#ffa726':'#ef5350');
-  document.getElementById('gauge-text').textContent = pct + '%';
+/* ═══════════ 계산 ═══════════
+   ① 정의서 원문식 — 온도·SOH를 가용 '용량'에 곱한다
+   ② 보정식       — 3차 결과보고 지적사항 반영
+        · 온도·SOH를 '소모 속도'에 적용
+        · 기동 전력 e0 를 세션 시작 시 차감
+        · 저잔량 구간(SOC_low 미만) 소모 가중 β
+        · DT 간격으로 방전 재현
+   보정 계수는 train_model.py 가 학습셋에서 적합한 값이다. */
+const C = DATA.reg.correction;
 
-  var t = calcTime(pct, currentMode);
-  var s = calcSessions(pct, currentMode);
-  document.getElementById('stat-pct').textContent = pct + '%';
-  document.getElementById('stat-time').textContent = t + '분';
-  document.getElementById('stat-sessions').textContent = s + '회';
-
-  document.getElementById('warning-msg').style.display = pct <= 20 ? 'block' : 'none';
-
-  var ecoT  = calcTime(pct,'eco');
-  var stdT  = calcTime(pct,'std');
-  var turboT= calcTime(pct,'turbo');
-  var maxT  = ecoT;
-  document.getElementById('bar-eco').style.width   = Math.round(ecoT/maxT*100)+'%';
-  document.getElementById('bar-std').style.width   = Math.round(stdT/maxT*100)+'%';
-  document.getElementById('bar-turbo').style.width = Math.round(turboT/maxT*100)+'%';
-  document.getElementById('bar-eco-lbl').textContent   = ecoT+'분';
-  document.getElementById('bar-std-lbl').textContent   = stdT+'분';
-  document.getElementById('bar-turbo-lbl').textContent = turboT+'분';
-
-  document.getElementById('mode-time').textContent = t+'분';
-  document.getElementById('mode-rate').textContent = modes[currentMode].rate+'%/분';
+function simulate(soc, rBase, limit){          /* 예약 잔량까지 걸리는 시간(분) */
+  let s = soc - C.e0, t = 0;
+  if (s <= RES) return 0;
+  const cap = limit == null ? 400 : limit;
+  while (t < cap){
+    const g = 1 + C.beta * Math.max(0, (C.soc_low - s) / C.soc_low);
+    const step = rBase * g * C.dt;
+    if (s - step <= RES) return t + (s - RES) / (rBase * g);
+    s -= step; t += C.dt;
+  }
+  return cap;
+}
+function socAfter(soc, rBase, mins){           /* mins 분 청소 후 남는 잔량(%) */
+  let s = soc - C.e0, t = 0;
+  if (s <= RES) return RES;
+  while (t < mins){
+    const g = 1 + C.beta * Math.max(0, (C.soc_low - s) / C.soc_low);
+    const step = rBase * g * C.dt;
+    if (s - step <= RES) return RES;
+    s -= step; t += C.dt;
+  }
+  return s;
+}
+function socNeededFor(rBase, mins){            /* mins 분을 채우는 데 필요한 최소 SOC */
+  let lo = RES, hi = 100;
+  for (let i = 0; i < 40; i++){
+    const mid = (lo + hi) / 2;
+    if (simulate(mid, rBase) >= mins) hi = mid; else lo = mid;
+  }
+  return hi;
 }
 
-function setMode(mode) {
-  currentMode = mode;
-  ['eco','std','turbo'].forEach(function(m){
-    var btn = document.getElementById('btn-'+m);
-    btn.className = 'mode-btn' + (m===mode?' active-'+(m==='std'?'std':m==='eco'?'eco':'turbo'):'');
-  });
-  var cfg = modes[mode];
-  document.getElementById('mode-info').style.background = cfg.bgClass;
-  document.getElementById('mode-name').style.color = cfg.textColor;
-  document.getElementById('mode-name').textContent = cfg.name;
-  document.getElementById('mode-desc').textContent = cfg.desc;
-  document.getElementById('mode-time').style.color = cfg.textColor;
-  updateAll(currentBattery);
+function compute(){
+  const m = M[S.mid], p = S.p || m.p;
+  const base = Object.entries(p).reduce((a,[k,v]) => a + v * R[k], 0);   // ① Σ(pᵢ×rᵢ)
+  const k    = calcK();
+  const ft   = fTemp(S.tmp);
+  const soh  = S.soh / 100;
+
+  const rDesign = base * k;                                  // 원문식 소모율
+  const tDesign = (S.soc - RES) * soh * ft / rDesign;        // 원문식 T_avail
+  const rEff    = rDesign / (soh * ft);                      // 보정식 소모율
+  const tAv     = simulate(S.soc, rEff);                     // 보정식 T_avail
+  const mg      = tAv - S.req;
+  const endS    = socAfter(S.soc, rEff, S.req);
+  const socNeed = Math.max(0, socNeededFor(rEff, S.req) - S.soc);
+  const tChg    = mg < 0 ? socNeed / 1.2 : 0;                // c = 1.2 %/분 가정
+
+  return {m, p, base, k, ft, soh, rDesign, tDesign, rEff, tAv, mg, endS, socNeed, tChg,
+          gap: tDesign - tAv,
+          depleted: S.soc <= RES + C.e0,
+          vd: mg >= 5 ? 'ok' : (mg >= 0 ? 'tight' : 'short')};
 }
 
-// History chart
-var days = ['월','화','수','목','금','토','일'];
-var histData = [85,62,78,55,90,43,70];
-var ctx = document.getElementById('history-chart').getContext('2d');
-new Chart(ctx, {
-  type:'bar',
-  data:{
-    labels: days,
-    datasets:[
-      { label:'배터리 소모(%)', data: histData.map(function(v){return 100-v;}),
-        backgroundColor:'rgba(79,195,247,0.7)', borderRadius:6, borderSkipped:false },
-      { label:'잔량(%)', data: histData,
-        backgroundColor:'rgba(129,199,132,0.5)', type:'line',
-        borderColor:'#81c784', pointBackgroundColor:'#81c784', tension:0.4, fill:false }
-    ]
-  },
-  options:{
-    responsive:true, maintainAspectRatio:false,
-    plugins:{ legend:{ position:'top', labels:{font:{size:12}} } },
-    scales:{
-      y:{ min:0, max:100, ticks:{ callback:function(v){return v+'%';}, font:{size:11} }, grid:{color:'#f1f5f9'} },
-      x:{ ticks:{ font:{size:12} }, grid:{display:false} }
+function tAvailOf(p, k, soh, ft, soc){
+  const base = Object.entries(p).reduce((a,[m,v]) => a + v * R[m], 0);
+  return simulate(soc, base * k / (soh * ft));
+}
+
+/* 모드 다운그레이드 대안 — 정의서 5.7(D-1) 규칙의 일반화.
+   상위 모드 비중을 0.1 단위로 한 단계 아래에 이관하되,
+   margin ≥ +5분을 만족하는 '최소 조정량'에서 멈춘다.
+   (일괄 강등이 아니라 필요한 만큼만 낮추므로 사용자 체감 손실이 작다) */
+function suggestMix(p, k, soh, ft, soc, req){
+  let last = null;
+  for (let step = 1; step <= 10; step++){
+    const q = Object.assign({}, p);
+    let rem = step / 10, moved = 0;
+    for (const m of ['turbo','std']){                 // 높은 모드부터 이관
+      if (!q[m] || rem <= 1e-9) continue;
+      const down = m === 'turbo' ? 'std' : 'eco';
+      const mv = Math.min(q[m], rem);
+      q[m] -= mv; q[down] = (q[down] || 0) + mv;
+      rem -= mv; moved += mv;
+    }
+    if (moved <= 1e-9) break;                          // 더 낮출 모드가 없음
+    for (const m of Object.keys(q)) if (q[m] < 1e-9) delete q[m];
+    const t = tAvailOf(q, k, soh, ft, soc);
+    last = {p:q, t, margin:t - req};
+    if (t - req >= 5) break;                           // 최소 조정량 도달
+  }
+  return last;
+}
+
+const VD = {
+  ok:    {t:'완주 가능', bg:'rgba(15,157,88,.18)',  c:'#7ee2a8', ico:'●'},
+  tight: {t:'빠듯함',   bg:'rgba(224,134,0,.20)',  c:'#ffcc80', ico:'●'},
+  short: {t:'부족',     bg:'rgba(217,48,37,.20)',  c:'#ff9f96', ico:'●'},
+};
+
+/* ═══════════ 렌더 ═══════════ */
+function render(){
+  const c = compute(), m = c.m;
+
+  $('mdl-nm').textContent = `${S.mid} · ${m.name}`;
+  $('mdl-desc').innerHTML =
+    `${m.persona} · 축 조합 <b>${m.F}·${m.D}·${m.M}·${m.L}·${m.C}</b> — 핵심 리스크: ${m.risk}`;
+  $('v-soc').textContent = S.soc;  $('v-soh').textContent = S.soh;
+  $('v-tmp').textContent = S.tmp;  $('v-ft').textContent  = c.ft.toFixed(2);
+  $('v-k').textContent   = c.k.toFixed(2);
+  $('v-req').textContent = S.req;
+  $('v-p').textContent   = pStr(c.p);
+
+  /* 결과 패널 */
+  $('r-t').textContent  = c.depleted ? '—' : c.tAv.toFixed(1);
+  const v = VD[c.vd];
+  $('r-vd').style.background = v.bg;
+  $('r-vd').style.color = v.c;
+  $('r-vd').innerHTML = c.depleted
+    ? `${v.ico} 예약 잔량 이하 · 충전 필요`
+    : `${v.ico} ${v.t} · T_req ${S.req}분 기준`;
+  $('r-mg').innerHTML = `<span style="color:${c.mg>=0?'#7ee2a8':'#ff9f96'}">${c.mg>=0?'+':''}${c.mg.toFixed(1)}분</span>`;
+  $('r-re').textContent  = c.rEff.toFixed(2) + ' %/분';
+  $('r-end').textContent = c.mg >= 0 ? c.endS.toFixed(0) + '%' : '완주 불가';
+
+  /* 원문식과의 차이 */
+  $('r-cmp').innerHTML = c.depleted ? '' :
+    `정의서 원문식으로 계산하면 <b>${c.tDesign.toFixed(1)}분</b> —
+     보정식보다 <b style="color:#ff9f96">${c.gap>=0?'+':''}${c.gap.toFixed(1)}분</b> 길게 안내합니다.`;
+
+  /* 계산 과정 */
+  const tr = [
+    ['①', 'Σ(pᵢ×rᵢ) — 기본 소모율', `${pStr(c.p)} → ${c.base.toFixed(2)} %/분`],
+    ['①', '× k (부하 보정)',        `${c.base.toFixed(2)} × ${c.k.toFixed(2)} = ${c.rDesign.toFixed(2)} %/분`],
+    ['②', '÷ (SOH × f_temp) — 소모 속도에 적용',
+          `${c.rDesign.toFixed(2)} / (${c.soh.toFixed(2)} × ${c.ft.toFixed(2)}) = ${c.rEff.toFixed(2)} %/분`],
+    ['③', `− 기동 전력 e0`,          `SOC ${S.soc}% → ${(S.soc - C.e0).toFixed(1)}% (세션당 ${C.e0}%)`],
+    ['④', `저잔량 가중 β=${C.beta} (SOC<${C.soc_low}%)`,
+          `${S.soc > C.soc_low ? '현재 구간 미적용' : '적용 중 · 소모율 ×' + (1 + C.beta*(C.soc_low - S.soc)/C.soc_low).toFixed(2)}`],
+    ['⑤', `T_avail — ${C.dt}분 간격 방전 재현`, `${c.tAv.toFixed(1)}분`],
+    ['⑥', 'margin = T_avail − T_req',  `${c.tAv.toFixed(1)} − ${S.req} = ${c.mg>=0?'+':''}${c.mg.toFixed(1)}분`],
+  ];
+  if (c.mg < 0) tr.push(['⑦', 'T_charge = SOC_need / c',
+    `+${c.socNeed.toFixed(1)}%p / 1.2 = ${c.tChg.toFixed(0)}분 충전 필요`]);
+  if (!c.depleted && c.mg < 5){
+    const alt = suggestMix(c.p, c.k, c.soh, c.ft, S.soc, S.req);
+    tr.push(['↳', '모드 조정 대안 (최소 조정량)',
+      alt ? `${pStr(alt.p)} → ${alt.t.toFixed(1)}분 (margin ${alt.margin>=0?'+':''}${alt.margin.toFixed(1)}분)`
+          : '이미 최저 전력 구성']);
+  }
+  $('r-tr').innerHTML = tr.map(([e,l,val]) =>
+    `<div class="ln"><span class="lbl"><span class="eq">${e}</span>${l}</span><span class="val">${val}</span></div>`).join('');
+
+  renderLCD(c);
+}
+
+/* ── 기기 LCD ─────────────────────────────
+   페르소나 문구는 팀이 작성한 원문 그대로. {n} 은 호칭 치환 자리. */
+const PERSONA = {
+  A: {label:'1인 가구', models:['A-1','A-2'], motif:'●●●●', mark:'집',
+      msg:{ok:'{n}{v}, 누워있지말고 오늘은 청소하자.', tight:'{n}{v}, 오늘은 짧게나마 청소하자',
+            short:'{n}{v}, 나를 충전시켜줘,,'}},
+  B: {label:'장모형 1인 가구', models:['B-1','B-2'], motif:'✦✦✦✦', mark:'털',
+      msg:{ok:'{n}{v}, 오늘은 청소 어때?', tight:'{n}{v}, 저소음모드로 청소 한바퀴 어때?',
+            short:'배고파, 밥줘'}},
+  C: {label:'영유아 가정', models:['C-1','C-2'], motif:'♥♥♥♥', mark:'아이',
+      msg:{ok:'우리 아이 건강을 위해 청소 할 준비가 됐어요!',
+            tight:'우리 아이 건강을 위해 저소음 모드로 가볍게 어떨까요?',
+            short:'우리 아이 건강을 위해 청소기 충전을 해주세요'}},
+  D: {label:'반려동물', models:['D-1','D-2'], motif:'🐾🐾🐾🐾', mark:'털',
+      msg:{ok:'우리아이 털 청소할시간이에요', tight:'가볍게 털 청소 어때요?',
+            short:'우리강아지를 위해 배터리를 충전해주세요'}},
+  E: {label:'일반 가정', models:['E-1','E-2'], motif:'▪▪▪▪', mark:'가족',
+      msg:{ok:'주말동안 미룬 청소를 가족과 함께 어때요?', tight:'가족을 위해서 가볍게 청소 어때요?',
+            short:'미룬 청소를 위해 충전해주세요'}},
+};
+const personaOf = mid => Object.entries(PERSONA).find(([, v]) => v.models.includes(mid));
+
+/* 호격조사 — 받침이 있으면 '아', 없으면 '야' (준우야 / 세민아) */
+function hasBatchim(name){
+  const c = name.charCodeAt(name.length - 1);
+  return c >= 0xAC00 && c <= 0xD7A3 ? (c - 0xAC00) % 28 !== 0 : false;
+}
+const fill = tpl => {
+  const n = S.name || '준우';
+  return tpl.replace(/\{n\}/g, n).replace(/\{v\}/g, hasBatchim(n) ? '아' : '야');
+};
+const LC = {ok:{c:'#3ddc84', t:'완주가능'}, tight:{c:'#ff9d2e', t:'빠듯함'}, short:{c:'#ff4d42', t:'부족'}};
+
+/* 도면형 청소 경로 — 완주율만큼 채워진다 */
+function mapSVG(col, ratio){
+  const pts = [[14,74],[14,30],[38,30],[38,58],[62,58],[62,22],[86,22],[86,74],[110,74],[110,38],[132,38]];
+  let segs = [], total = 0;
+  for (let i = 1; i < pts.length; i++){
+    const d = Math.hypot(pts[i][0]-pts[i-1][0], pts[i][1]-pts[i-1][1]);
+    segs.push(d); total += d;
+  }
+  const target = total * Math.max(0, Math.min(1, ratio));
+  let acc = 0, path = `M${pts[0][0]} ${pts[0][1]}`, done = false;
+  for (let i = 1; i < pts.length; i++){
+    if (done) break;
+    if (acc + segs[i-1] <= target){ path += ` L${pts[i][0]} ${pts[i][1]}`; acc += segs[i-1]; }
+    else {
+      const f = (target - acc) / segs[i-1];
+      path += ` L${(pts[i-1][0]+(pts[i][0]-pts[i-1][0])*f).toFixed(1)} ${(pts[i-1][1]+(pts[i][1]-pts[i-1][1])*f).toFixed(1)}`;
+      done = true;
     }
   }
-});
+  const full = pts.map((p,i) => `${i?'L':'M'}${p[0]} ${p[1]}`).join(' ');
+  return `<svg viewBox="0 0 146 92" width="146" height="92">
+    <rect x="6" y="12" width="134" height="72" rx="4" fill="none" stroke="rgba(255,255,255,.13)" stroke-width="1.4"/>
+    <line x1="52" y1="12" x2="52" y2="46" stroke="rgba(255,255,255,.1)" stroke-width="1.2"/>
+    <line x1="96" y1="50" x2="140" y2="50" stroke="rgba(255,255,255,.1)" stroke-width="1.2"/>
+    <path d="${full}" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="3.4"
+      stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="${path}" fill="none" stroke="${col}" stroke-width="3.4"
+      stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="${pts[0][0]}" cy="${pts[0][1]}" r="3.4" fill="${col}"/>
+  </svg>`;
+}
 
-// Session table
-var sessions = [
-  { date:'2026-05-09', mode:'표준', time:'23분', drain:'31%', place:'거실·침실', status:'완료' },
-  { date:'2026-05-08', mode:'절전', time:'38분', drain:'44%', place:'전체',     status:'완료' },
-  { date:'2026-05-07', mode:'강력', time:'14분', drain:'28%', place:'카펫 집중', status:'완료' },
-  { date:'2026-05-06', mode:'표준', time:'19분', drain:'25%', place:'주방·화장실', status:'완료' },
-  { date:'2026-05-05', mode:'절전', time:'41분', drain:'47%', place:'전체',     status:'배터리부족' },
-];
-var modeColor = {표준:'badge-blue',절전:'badge-green',강력:'badge-red'};
-var statusColor = {완료:'badge-green','배터리부족':'badge-amber'};
-var tbody = document.getElementById('session-table');
-sessions.forEach(function(s){
-  var tr = document.createElement('tr');
-  tr.innerHTML = '<td>'+s.date+'</td>'
-    +'<td><span class="badge '+modeColor[s.mode]+'">'+s.mode+'</span></td>'
-    +'<td>'+s.time+'</td>'
-    +'<td>'+s.drain+'</td>'
-    +'<td>'+s.place+'</td>'
-    +'<td><span class="badge '+statusColor[s.status]+'">'+s.status+'</span></td>';
-  tbody.appendChild(tr);
-});
+function renderLCD(c){
+  const [pid, per] = personaOf(S.mid);
+  const st = LC[c.vd], col = st.c;
+  const msg = fill(per.msg[c.vd]);
+  const ratio = c.depleted ? 0 : Math.max(0, Math.min(1, c.tAv / Math.max(S.req, 1)));
 
-updateAll(70);
+  $('lcd').innerHTML = `
+    <div class="lcd-top">
+      <div class="batt" style="color:${col}">
+        <div class="batt-b"><div class="batt-f" style="width:${Math.max(6, S.soc)}%"></div></div>
+        <span class="batt-t">${S.soc}% Full</span>
+      </div>
+      <div class="lcd-motif" style="color:${col}">${per.motif}</div>
+    </div>
+    <div class="lcd-msg">${msg}</div>
+    <div class="lcd-vd" style="color:${col}">${st.t}</div>
+    <div class="lcd-sub">${c.depleted ? `충전 후 사용해 주세요`
+      : `${c.tAv.toFixed(0)}분 사용 가능 · 목표 ${S.req}분`}</div>
+    <div class="lcd-prog"><i style="width:${(ratio*100).toFixed(0)}%;background:${col}"></i></div>
+    <div class="lcd-map">${mapSVG(col, ratio)}</div>
+    <div class="lcd-dots">${[0,1,2,3].map(i=>`<i class="${i===1?'on':''}"></i>`).join('')}</div>`;
+
+  /* 문구 표 — 현재 모델의 페르소나 행 강조 */
+  $('tbl-msg').innerHTML =
+    `<thead><tr><th>페르소나</th><th>모델</th><th class="l">완주 가능</th><th class="l">빠듯함</th><th class="l">부족</th></tr></thead><tbody>` +
+    Object.entries(PERSONA).map(([id, p]) => `
+      <tr class="${id === pid ? 'hl' : ''}">
+        <td><b>${id}</b> ${p.label}</td>
+        <td style="color:var(--mut)">${p.models.join(' · ')}</td>
+        <td class="l" style="max-width:180px">${fill(p.msg.ok)}</td>
+        <td class="l" style="max-width:180px">${fill(p.msg.tight)}</td>
+        <td class="l" style="max-width:180px">${fill(p.msg.short)}</td>
+      </tr>`).join('') + '</tbody>';
+}
+
+
+/* ═══════════ 컨트롤 구성 ═══════════ */
+$('mdl-chips').innerHTML = Object.keys(M).map(id =>
+  `<button class="chip" data-m="${id}">${id} <span style="opacity:.65;font-weight:500">${M[id].name}</span></button>`).join('');
+$('mdl-chips').onclick = e => {
+  const b = e.target.closest('[data-m]'); if (!b) return;
+  S.mid = b.dataset.m;
+  const m = M[S.mid];
+  S.p = null; S.pKey = '기본';
+  S.req = m.mu_T;  $('i-req').value = m.mu_T;
+  S.loads = new Set(m.L === 'L2' ? ['carpet','pet'] : m.L === 'L1' ? ['long'] : []);
+  syncChips(); render();
+};
+
+$('load-togs').innerHTML = LOADS.map(l =>
+  `<button class="tog" data-l="${l.id}">${l.label} <span style="opacity:.6">+${l.v.toFixed(2)}</span></button>`).join('');
+$('load-togs').onclick = e => {
+  const b = e.target.closest('[data-l]'); if (!b) return;
+  S.loads.has(b.dataset.l) ? S.loads.delete(b.dataset.l) : S.loads.add(b.dataset.l);
+  syncChips(); render();
+};
+
+const PRESETS = {
+  '기본':   null,
+  '저전력': {eco:0.8, std:0.2},
+  '표준':   {std:1.0},
+  '균형':   {std:0.6, eco:0.4},
+  '터보':   {turbo:0.7, std:0.3},
+};
+$('p-chips').innerHTML = Object.keys(PRESETS).map(k =>
+  `<button class="chip" data-p="${k}">${k}</button>`).join('');
+$('p-chips').onclick = e => {
+  const b = e.target.closest('[data-p]'); if (!b) return;
+  S.pKey = b.dataset.p; S.p = PRESETS[b.dataset.p];
+  syncChips(); render();
+};
+
+function syncChips(){
+  document.querySelectorAll('[data-m]').forEach(b => b.classList.toggle('sel', b.dataset.m === S.mid));
+  document.querySelectorAll('[data-l]').forEach(b => b.classList.toggle('on', S.loads.has(b.dataset.l)));
+  document.querySelectorAll('[data-p]').forEach(b => b.classList.toggle('sel', b.dataset.p === S.pKey));
+}
+
+[['i-soc','soc'],['i-soh','soh'],['i-tmp','tmp'],['i-req','req']].forEach(([el,key]) => {
+  $(el).oninput = e => { S[key] = +e.target.value; render(); };
+});
+$('i-name').oninput = e => {
+  S.name = e.target.value.trim() || '준우';
+  $('v-name').textContent = S.name;
+  render();
+};
+
+/* ═══════════ 섹션 3 — 모델 비교 ═══════════ */
+(function(){
+  const rs = REG.results, cr = REG.correction;
+  const best = Math.min(...rs.map(r => r.mae));
+  const imp = (1 - rs[1].mae / rs[0].mae) * 100;
+
+  $('score-cards').innerHTML = rs.map(r => `
+    <div class="card">
+      <h4 style="margin-bottom:9px">${r.name}</h4>
+      <div style="font-size:29px;font-weight:800;letter-spacing:-.02em;
+        color:${r.mae===best?'var(--green)':'var(--ink)'};font-variant-numeric:tabular-nums">
+        ${r.mae}<span style="font-size:13px;font-weight:600;color:var(--mut)"> 분 MAE</span></div>
+      <div style="font-size:11.5px;color:var(--mut);margin-top:7px;line-height:1.7">
+        편향 <b style="color:${Math.abs(r.bias)>1?'var(--red)':'var(--ink)'}">${r.bias>=0?'+':''}${r.bias}분</b>
+        · 판정 ${r.acc}%<br>R² ${r.r2.toFixed(3)} · RMSE ${r.rmse}</div>
+      <div style="font-size:11px;color:var(--mut2);margin-top:8px;padding-top:8px;
+        border-top:1px solid var(--line2);line-height:1.6">${r.note}</div>
+    </div>`).join('') + `
+    <div class="card" style="background:#16181d;border:none;color:#fff">
+      <h4 style="color:rgba(255,255,255,.45);margin-bottom:9px">보정 효과</h4>
+      <div style="font-size:29px;font-weight:800;letter-spacing:-.02em;color:#7ee2a8">${imp.toFixed(0)}%<span style="font-size:13px;font-weight:600;color:rgba(255,255,255,.55)"> 오차 감소</span></div>
+      <div style="font-size:11.5px;color:rgba(255,255,255,.5);margin-top:7px;line-height:1.7">
+        ${rs[0].mae}분 → ${rs[1].mae}분<br>판정 정확도 ${rs[0].acc}% → ${rs[1].acc}%</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:8px;padding-top:8px;
+        border-top:1px solid rgba(255,255,255,.12);line-height:1.6">
+        학습 ${REG.n_train}건 · 검증 ${REG.n_test}건 (25% 홀드아웃)</div>
+    </div>`;
+
+  /* 보정 계수 */
+  $('corr-eq').innerHTML = [
+    ['적용 위치', '온도·SOH → 소모 속도', 'r_eff = Σ(pᵢrᵢ)·k / (SOH·f_temp)'],
+    ['추가 항 ①', '기동 전력 e0', `세션당 ${cr.e0} %`],
+    ['추가 항 ②', '저잔량 가중 β', `SOC < ${cr.soc_low}% 구간, β = ${cr.beta}`],
+    ['계산 방식', '방전 재현 간격', `${cr.dt} 분`],
+  ].map(([e,l,v]) =>
+    `<div class="ln"><span class="lbl"><span class="eq">${e}</span>${l}</span><span class="val">${v}</span></div>`).join('') +
+    `<div style="font-size:11px;color:var(--mut2);margin-top:11px;line-height:1.65;font-family:inherit">
+      생성기 실제값은 e0 = ${cr.truth.e_start}%, β = ${cr.truth.beta} 입니다.
+      적합값이 다른 것은 두 계수가 서로를 대체할 수 있고, 부하 계수 k 의 오차까지 함께 흡수하기 때문입니다.
+      <b>계수의 절대값보다 어떤 항이 빠져 있었는지</b>에 의미를 두어야 합니다.
+    </div>`;
+
+  /* 회귀식 */
+  const co = REG.coef;
+  $('reg-eq').innerHTML =
+    `<div class="ln"><span class="lbl"><span class="eq">③</span>예상 사용 가능 시간(min) =</span><span class="val">${co.intercept >= 0 ? '+' : ''}${co.intercept.toFixed(2)}</span></div>` +
+    REG.features.map(f =>
+      `<div class="ln"><span class="lbl" style="padding-left:26px">${f}</span><span class="val">${co[f] >= 0 ? '+' : ''}${co[f].toFixed(4)} ×</span></div>`).join('');
+
+  /* 산점도 */
+  const mx = Math.ceil(Math.max(...REG.scatter.map(d => Math.max(d.actual, d.design, d.corr))) / 10) * 10;
+  new Chart($('ch-scatter'), {
+    type:'scatter',
+    data:{datasets:[
+      {label:'① 정의서 원문식', data:REG.scatter.map(d => ({x:d.actual, y:d.design})),
+        backgroundColor:'rgba(156,163,175,.5)', pointRadius:3},
+      {label:'② 보정식', data:REG.scatter.map(d => ({x:d.actual, y:d.corr})),
+        backgroundColor:'rgba(15,157,88,.6)', pointRadius:3},
+      {label:'③ 간단 회귀', data:REG.scatter.map(d => ({x:d.actual, y:d.reg})),
+        backgroundColor:'rgba(30,111,217,.45)', pointRadius:2.5},
+      {label:'완전 일치선', type:'line', data:[{x:0,y:0},{x:mx,y:mx}],
+        borderColor:'#111827', borderWidth:1.2, borderDash:[5,4], pointRadius:0, fill:false},
+    ]},
+    options:{responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{position:'bottom', labels:{boxWidth:9, font:{size:11}, usePointStyle:true}}},
+      scales:{
+        x:{title:{display:true, text:'실측 사용 가능 시간 (분)', font:{size:11}}, min:0, max:mx,
+           ticks:{font:{size:10}}, grid:{color:'#f3f4f6'}},
+        y:{title:{display:true, text:'예측값 (분)', font:{size:11}}, min:0, max:mx,
+           ticks:{font:{size:10}}, grid:{color:'#f3f4f6'}}}}
+  });
+
+  /* 편향 바 */
+  const ids = Object.keys(REG.per_model).sort();
+  new Chart($('ch-bias'), {
+    type:'bar',
+    data:{labels:ids, datasets:[
+      {label:'① 원문식', data:ids.map(i => REG.per_model[i].design_bias),
+       backgroundColor:'rgba(217,48,37,.7)', borderRadius:4},
+      {label:'② 보정식', data:ids.map(i => REG.per_model[i].corr_bias),
+       backgroundColor:'rgba(15,157,88,.75)', borderRadius:4},
+      {label:'③ 회귀', data:ids.map(i => REG.per_model[i].reg_bias),
+       backgroundColor:'rgba(30,111,217,.5)', borderRadius:4},
+    ]},
+    options:{responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{position:'bottom', labels:{boxWidth:9, font:{size:11}, usePointStyle:true}}},
+      scales:{x:{ticks:{font:{size:10}}, grid:{display:false}},
+              y:{ticks:{font:{size:10}, callback:v => v + '분'}, grid:{color:'#f3f4f6'}}}}
+  });
+
+  /* 모델별 표 */
+  const th = ['모델','유형','n','원문 MAE','보정 MAE','개선율','회귀 MAE','원문 편향','완주 실패율'];
+  $('tbl-perf').innerHTML = `<thead><tr>${th.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>` +
+    ids.map(i => {
+      const v = REG.per_model[i];
+      return `<tr>
+        <td><b>${i}</b></td><td>${M[i].name}</td><td style="color:var(--mut)">${v.n}</td>
+        <td>${v.design_mae.toFixed(2)}</td>
+        <td style="color:var(--green);font-weight:600">${v.corr_mae.toFixed(2)}</td>
+        <td><span class="tag ${v.improve>=50?'t-g':v.improve>0?'t-a':'t-r'}">${v.improve.toFixed(0)}%</span></td>
+        <td>${v.reg_mae.toFixed(2)}</td>
+        <td class="num-p">+${v.design_bias.toFixed(2)}</td>
+        <td><span class="tag ${v.fail>=15?'t-r':v.fail>=5?'t-a':'t-n'}">${v.fail.toFixed(0)}%</span></td>
+      </tr>`;
+    }).join('') + '</tbody>';
+})();
+
+/* ═══════════ 섹션 4 — 데이터셋 ═══════════ */
+(function(){
+  const d = DATA.ds;
+  const cards = [
+    ['총 세션 수', d.n.toLocaleString(), `사용자 ${d.users}명 · 모델 10개`],
+    ['평균 청소 시간', d.avg_time + '분', '모델별 μ_T 기준 정규분포'],
+    ['세션당 평균 소모', d.avg_drop + '%', `평균 소모율 ${d.avg_rate} %/분`],
+    ['중도 종료 세션', d.abort + '%', 'UI가 사전에 막아야 할 구간'],
+  ];
+  $('ds-cards').innerHTML = cards.map(([l,v,s]) => `
+    <div class="card">
+      <h4 style="margin-bottom:9px">${l}</h4>
+      <div style="font-size:29px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums">${v}</div>
+      <div style="font-size:11.5px;color:var(--mut);margin-top:7px">${s}</div>
+    </div>`).join('');
+
+  /* 모델 표 */
+  const th = ['ID','모델명','축 조합','pᵢ','k','μ_T','설계 r_eff','실측 r_eff','괴리','중단율','핵심 리스크'];
+  const rows = Object.entries(M).map(([id,m]) => {
+    const gap = (m.measured_rate - m.r_eff) / m.r_eff * 100;
+    const ab  = m.abort_rate;
+    return `<tr>
+      <td><b>${id}</b></td><td>${m.name}</td>
+      <td style="color:var(--mut)">${m.F}·${m.D}·${m.M}·${m.L}·${m.C}</td>
+      <td style="color:var(--mut)">${pStr(m.p)}</td>
+      <td>${m.k.toFixed(2)}</td><td>${m.mu_T}분</td>
+      <td>${m.r_eff.toFixed(2)}</td><td>${m.measured_rate.toFixed(2)}</td>
+      <td class="num-p">+${gap.toFixed(1)}%</td>
+      <td><span class="tag ${ab>=15?'t-r':ab>=5?'t-a':'t-n'}">${ab.toFixed(1)}%</span></td>
+      <td class="l" style="color:var(--mut);max-width:210px">${m.risk}</td>
+    </tr>`;
+  }).join('');
+  $('tbl-mdl').innerHTML = `<thead><tr>${th.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows}</tbody>`;
+
+  /* 세션 표 */
+  const sh = ['session_id','model_id','cleaning_mode','cleaning_time_min','start_battery_pct',
+              'end_battery_pct','battery_drop_pct','consumption_rate','ambient_temp_c','soh','aborted'];
+  const modeTag = {'저소음':'t-g','표준':'t-b','강력':'t-r'};
+  $('tbl-sess').innerHTML =
+    `<thead><tr>${sh.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>` +
+    SESS.map(r => `<tr>
+      <td>${r.session_id}</td><td><b>${r.model_id}</b></td>
+      <td><span class="tag ${modeTag[r.cleaning_mode]}">${r.cleaning_mode}</span></td>
+      <td>${r.cleaning_time_min}</td><td>${r.start_battery_pct}</td><td>${r.end_battery_pct}</td>
+      <td>${r.battery_drop_pct}</td><td>${r.consumption_rate}</td><td>${r.ambient_temp_c}</td>
+      <td>${r.soh}</td>
+      <td>${r.aborted ? '<span class="tag t-r">중단</span>' : '<span class="tag t-n">정상</span>'}</td>
+    </tr>`).join('') + '</tbody>';
+})();
+
+/* ═══════════ 섹션 5 ═══════════ */
+$('ask-list').innerHTML = [
+  '<b>기기 전제</b> — 주제명은 "로봇청소기"인데 제어 로직과 LCD는 무선 스틱형(탈착식 팩) 기준입니다. 어느 쪽으로 확정할지 확인 부탁드립니다.',
+  '<b>모드별 소모율 r</b> — 1.7 / 2.5 / 5.0 %/분은 설계용 잠정치입니다. LG 실측 레인지를 공유받을 수 있을지요.',
+  '<b>기동 전력 e0</b> — 3차 검증에서 필요성은 확인했으나 실제 크기를 모릅니다. 스틱형 기준 세션당 몇 %인지 확인이 필요합니다.',
+  '<b>저잔량 임계</b> — SOC 25%를 전압 강하 시작점으로 가정했습니다. 셀 사양 기준으로 맞는지요.',
+  '<b>판정 임계값</b> — margin 5분을 "빠듯함" 경계로 두었습니다. 사용자 체감 기준으로 적절한지 의견 부탁드립니다.',
+  '<b>페르소나 문구</b> — 5개 페르소나에 10개 제어 모델을 매핑했습니다. 서브타입별로 문구를 나눌지 여부.',
+].map(x => `<div style="padding:8px 0;border-bottom:1px solid var(--line2)">· ${x}</div>`).join('');
+
+$('next-list').innerHTML = [
+  '보정식을 정의서 4장에 반영해 개정 — <b>온도 보정의 적용 위치</b>가 핵심 변경점',
+  'D-1 · D-2 · E-1은 계산식이 아니라 사용 패턴 문제 — 2팩 운용·분할 청소를 UI 기본 동선에 편입',
+  'C-1은 세션 길이 편차가 커 μ_T 고정값으로는 부족 — 요일·시간대별 T_req 추정 검토',
+  '축 조합이 10개 모델 중 어디에도 맞지 않을 때의 <b>최근접 할당 규칙</b> 정의',
+  '3차 실측 CSV 확보 후 같은 절차로 보정 계수 재적합',
+].map(x => `<div style="padding:8px 0;border-bottom:1px solid var(--line2)">· ${x}</div>`).join('') + `
+  <div style="margin-top:14px;padding:12px 13px;background:#fffbe9;border:1px solid #f0e3b0;border-radius:10px;font-size:12px;line-height:1.75;color:var(--ink2)">
+    <b style="color:#8a5300">문서 수정 필요 (검산 중 발견)</b><br>
+    · 정의서 C-1 · C-2 표의 T_avail <b>48.9분 → 49.0분</b> (95 ÷ 1.94 = 48.97, 반올림 오기)<br>
+    · 문구표의 페르소나 <b>F → E</b> (일반가정은 E-1 · E-2 계열)<br>
+    · 모드 다운그레이드 규칙: 정의서 E-1은 저전력 0.4까지 일괄 상향하지만,
+      <b>margin +5분을 만족하는 최소 조정</b>이면 충분합니다.
+      본 대시보드는 최소 조정 방식이며, D-1은 정의서 값(0.2/0.8)과 일치합니다.
+  </div>`;
+
+/* ═══════════ 초기화 ═══════════ */
+S.req = M['A-1'].mu_T; $('i-req').value = S.req;
+syncChips(); render();
 </script>
 </body>
 </html>
