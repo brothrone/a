@@ -124,6 +124,7 @@ h1{font-size:19px;font-weight:800;letter-spacing:-.03em}h1 b{color:var(--lg)}
 .foot b{color:var(--ink2)}
 .backfab{position:fixed;right:22px;bottom:22px;background:#fff;border:1px solid var(--line);border-radius:99px;
  padding:12px 18px;font-size:13px;font-weight:700;color:var(--ink2);text-decoration:none;box-shadow:0 8px 24px -10px rgba(0,0,0,.25)}
+@media(max-width:560px){.kpis{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
@@ -134,7 +135,7 @@ h1{font-size:19px;font-weight:800;letter-spacing:-.03em}h1 b{color:var(--lg)}
       <h1>파라써블 · <b>배터리 라이프 코칭 UI</b></h1>
       <div class="tsub">무선 스틱형(LG 코드제로 A9) 기기 화면 · 잔량에 따라 실시간으로 변합니다 · 3차 최종 보정식 적용</div>
     </div>
-    <div class="keys"><b>Space</b> 자동 방전 · <b>← →</b> 페르소나 · <b>↑ ↓</b> 잔량 · <b>1 2</b> 서브타입</div>
+    <div class="keys"><b>Space</b> 자동 방전 · <b>← →</b> 페르소나 · <b>↑ ↓</b> 잔량 · <b>1 2</b> 서브타입 · <b>Esc</b> 대시보드</div>
   </div>
 
   <div class="pchips" id="pchips"></div>
@@ -152,7 +153,7 @@ h1{font-size:19px;font-weight:800;letter-spacing:-.03em}h1 b{color:var(--lg)}
         <div class="sv-bin" id="svbin"></div>
         <div class="lcd" id="lcd">
           <div class="glow" id="lglow"></div>
-          <div class="lb" id="lb">CODE ZERO</div>
+          <div class="lb" id="lb">CORD ZERO</div>
           <div class="lp" id="lp"></div>
           <div class="lm" id="lm"></div>
           <div class="lv" id="lv"></div>
@@ -254,15 +255,15 @@ const P={
   voice:['오늘은 집 전체 다 끝낼 수 있어. 같이 시작하자!','배터리가 좀 빠듯한데, 거실만 먼저 할까?','나 거치대에서 잠깐 충전할게. 조금만 기다려줘!'],
   cap:['배터리 충분, 완주 권유','배터리 빠듯, 우선 구역 안내','배터리 부족, 충전 유도'],
   coach:['2주 미사용 시 55% 보관 충전 안내','만충 상시 유지 경고 · 80% 상한 제안']},
- B:{label:'장모형 1인 가구 (여성)',mood:'파스텔 · 로즈골드',models:['B-1','B-2'],name:'지영',skin:'rose',th:[70,40,15],
-  msg:['{n}, 오늘은\n청소 어때?','{n}, 저소음모드로\n청소 한바퀴 어때?','{n},\n배고파, 밥줘'],
+ B:{label:'1인 가구 (여성 · 긴 머리)',mood:'파스텔 · 로즈골드',models:['B-1','B-2'],name:'지영',skin:'rose',th:[70,40,15],
+  msg:['{n}, 오늘은\n청소 어때?','{n}, 저소음모드로\n청소 한 바퀴 어때?','{n},\n배고파, 밥줘'],
   voice:['오늘 컨디션 좋아. 한 바퀴 돌고 올까?','조용히 거실만 먼저 정리할게.','배고파졌어. 밥 좀 줄래?'],
   cap:['배터리 충분, 완주 권유','배터리 빠듯, 우선 구역 안내','배터리 부족, 충전 유도'],
   coach:['터보 8분 = 표준 15분 · 모드 다이어트 제안','주간 배터리 효율 점수 리포트 (기준 그룹)']},
  C:{label:'영유아 가정',mood:'파스텔 · 키즈',models:['C-1','C-2'],name:'',skin:'kids',th:[88,42,7],
   msg:['우리 아이 건강을 위해\n청소 할 준비가 됐어요!','우리 아이 건강을 위해\n저소음 모드로 가볍게 어떨까요?','우리 아이 건강을 위해\n청소기 충전을 해주세요'],
   voice:['아이 방부터 깨끗하게 돌아볼게요.','낮잠 시간이라 저소음으로 조용히 할게요.','충전이 필요해요. 잠시 쉬었다 올게요.'],
-  cap:['배터리 충실, 전 구역 권유','배터리 부족, 저소음 모드 최적','배터리 긴급, 즉시 충전 유도'],
+  cap:['배터리 충분, 전 구역 권유','배터리 부족, 저소음 모드 최적','배터리 긴급, 즉시 충전 유도'],
   coach:['종료 예상 잔량 사전 표시 · DoD 70% 상한','분할 2회 = 0.9사이클, 통합 1회 = 0.7사이클 안내']},
  D:{label:'반려동물 가정',mood:'우드 · 코지',models:['D-1','D-2'],name:'',skin:'wood',th:[92,45,8],
   msg:['우리아이\n털 청소할시간이에요','가볍게\n털 청소 어때요?','우리강아지를 위해\n배터리를 충전해주세요'],
@@ -338,7 +339,7 @@ function draw(){
 
   /* 무대 + 기기 스킨 */
   $('stagebox').style.background=sk.stage;
-  $('stitle').style.color=sk.stageT;$('stitle').textContent=`LG CodeZero A9 · ${p.label}`;
+  $('stitle').style.color=sk.stageT;$('stitle').textContent=`LG CordZero A9 · ${p.label}`;
   $('ssub').style.color=sk.stageS;$('ssub').textContent=`${p.mood} · SOC 임계값 ${p.th.join(' / ')}`;
   $('dockpole').style.background=sk.dock;
   $('svgrip').style.background=sk.grip;$('svtrig').style.background=sk.trig;
@@ -368,7 +369,7 @@ function draw(){
   $('k-tav').innerHTML=`${tAv.toFixed(1)}<em>분</em>`;
   $('k-req').innerHTML=`${m.req}<em>분</em>`;
   $('k-mg').innerHTML=`<span style="color:${ac}">${mg>=0?'+':''}${mg.toFixed(1)}</span><em>분</em>`;
-  $('k-end').innerHTML=mg>=0?`${endS.toFixed(0)}<em>%</em>`:`<span style="color:${sk.ac[2]}">완주 불가</span>`;
+  $('k-end').innerHTML=mg>=0?`${endS.toFixed(0)}<em>%</em>`:`<span style="color:${sk.ac[2]}">분할 청소</span>`;
 
   /* 기준 비교 */
   const scr=SOC>=p.th[0]?0:(SOC>=p.th[1]?1:2);
@@ -386,22 +387,26 @@ function draw(){
   const mks=[...p.th.map(t=>({v:t,t:t+'%',up:0}))];
   if(fullMg>=0)mks.push({v:bTI,t:'빠듯 '+bTI.toFixed(0)+'%',up:1});
   if(fullMg>=5)mks.push({v:bOK,t:'완주 '+(bOK>=99.5?'100%':bOK.toFixed(0)+'%'),up:1});
+  let lastUp=null;
   mks.forEach(x=>{const e=document.createElement('div');e.className='mk '+(x.up?'up':'dn');
-    e.style.left=Math.max(3,Math.min(97,pos(x.v)))+'%';e.textContent=x.t;$('track').appendChild(e)});
+    const px=Math.max(3,Math.min(97,pos(x.v)));
+    if(x.up){if(lastUp!=null&&Math.abs(px-lastUp)<9)e.style.top='-34px';lastUp=px}  // 상단 마커 겹침 시 이단 배치
+    e.style.left=px+'%';e.textContent=x.t;$('track').appendChild(e)});
   $('cur').style.left=pos(SOC)+'%';
   $('splitnote').innerHTML=fullMg<0
     ?`⚠ <b>${P[CUR].models[SUB]}</b>는 만충으로도 목표 ${m.req}분을 채울 수 없습니다 (만충 ${t100.toFixed(1)}분). 계산식 문제가 아니라 사용 패턴 문제로, <b>분할 청소</b>가 전제됩니다.`
     :(fullMg<5?`⚠ 만충에서도 여유가 ${fullMg.toFixed(1)}분뿐이라 "완주 가능" 구간이 없습니다.`:'');
 
-  /* 서브타입 */
-  $('sub-cur').innerHTML=`<span style="font-size:12.5px;font-weight:800">${P[CUR].models[SUB]} · ${m.name}</span>`;
-  $('stog').innerHTML=P[CUR].models.map((x,i)=>
-   `<button data-i="${i}" class="${i===SUB?'on':''}"><b>${x} · ${M[x].name}</b><small>${M[x].axes}</small></button>`).join('');
-  $('sinfo').innerHTML=`<dt>기본 소모율</dt><dd><b>${m.base.toFixed(2)}</b> %/분 · 실측 ${m.meas.toFixed(2)} · k ${m.k.toFixed(2)}</dd>
+  /* 서브타입 — 자동 방전 중 재렌더로 클릭이 유실되지 않게 내용 변경 시에만 갱신 */
+  const setH=(id,h)=>{const el=$(id);if(el.__h!==h){el.__h=h;el.innerHTML=h}};
+  setH('sub-cur',`<span style="font-size:12.5px;font-weight:800">${P[CUR].models[SUB]} · ${m.name}</span>`);
+  setH('stog',P[CUR].models.map((x,i)=>
+   `<button data-i="${i}" class="${i===SUB?'on':''}"><b>${x} · ${M[x].name}</b><small>${M[x].axes}</small></button>`).join(''));
+  setH('sinfo',`<dt>기본 소모율</dt><dd><b>${m.base.toFixed(2)}</b> %/분 · 실측 ${m.meas.toFixed(2)} · k ${m.k.toFixed(2)}</dd>
    <dt>만충 가동</dt><dd><b>${t100.toFixed(1)}분</b> · 목표 ${m.req}분</dd>
    <dt>완주 실패율</dt><dd><b>${m.abort.toFixed(1)}%</b></dd>
    <dt>핵심 리스크</dt><dd class="rk">${m.risk}</dd>
-   <dt>수명 코칭</dt><dd>${p.coach[SUB]}</dd>`;
+   <dt>수명 코칭</dt><dd>${p.coach[SUB]}</dd>`);
 }
 addEventListener('keydown',e=>{
  const i=ORDER.indexOf(CUR),k=e.key.toLowerCase();

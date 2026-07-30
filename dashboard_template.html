@@ -271,7 +271,7 @@ footer{border-top:1px solid var(--line);padding:22px 28px;text-align:center;
       <div class="fld">
         <div class="fld-l"><span>흡입 부하 조건 (L축)</span><b>k = <span id="v-k">1.00</span></b></div>
         <div class="togs" id="load-togs"></div>
-        <div class="hint">보정치를 합산하며 상한은 1.40입니다.</div>
+        <div class="hint">보정치를 합산하며 상한은 1.40입니다 (현재 옵션 조합 최대 1.33).</div>
       </div>
 
       <div class="fld">
@@ -291,7 +291,7 @@ footer{border-top:1px solid var(--line);padding:22px 28px;text-align:center;
     <div style="display:flex;flex-direction:column;gap:16px">
       <div class="res">
         <h4>예상 사용 가능 시간 T_avail</h4>
-        <div class="big"><span class="n" id="r-t">40.6</span><span class="u">분</span></div>
+        <div class="big"><span class="n" id="r-t">36.5</span><span class="u">분</span></div>
         <div class="verdict" id="r-vd"></div>
         <div class="kv">
           <div><div class="k">여유 시간 margin</div><div class="v" id="r-mg"></div></div>
@@ -397,7 +397,7 @@ footer{border-top:1px solid var(--line);padding:22px 28px;text-align:center;
 <!-- ══════════ 3. 모델 비교 ══════════ -->
 <section>
   <div class="sec-h"><span class="sec-n">03</span><span class="sec-t">계산식 검증 — 원문식 · 보정식 · 회귀</span></div>
-  <p class="sec-d">팀 3차 시뮬레이션 로그 <b>14,014세션(10개 모델 · 60가구 · 1년)</b> 전체에 동일한 보정식을 적용해 검증했습니다. 수치는 <b>시뮬레이션 결과보고(3차)</b> 기준이며, 회귀 feature는 멘토 제시 5개를 그대로 썼습니다.</p>
+  <p class="sec-d">팀 3차 시뮬레이션 로그 <b>14,014세션(10개 모델 · 60가구 · 1년)</b> 중 가동 1분 미만을 제외한 <b>13,392건</b>에 동일한 보정식을 적용해 검증했습니다. 수치는 <b>시뮬레이션 결과보고(3차)</b> 기준이며, 회귀 feature는 멘토 제시 5개를 그대로 썼습니다.</p>
 
   <div class="row c-4" style="margin-bottom:16px" id="score-cards"></div>
 
@@ -434,18 +434,14 @@ footer{border-top:1px solid var(--line);padding:22px 28px;text-align:center;
     <h4>시뮬레이션 진단 그래프 <span style="font-weight:500;color:var(--mut2);text-transform:none;letter-spacing:0">— 3차 결과보고 분석 원본</span></h4>
     <div class="row c-2" style="gap:14px">
       <figure style="margin:0"><img src="figs/fig1_scatter.png" style="width:100%;border:1px solid var(--line);border-radius:10px" alt="예측 vs 실측 산점도">
-        <figcaption class="hint" style="margin-top:6px">설계식은 y=x 위쪽에 치우쳐 체계적 과대추정 — 보정 후 대각선에 밀집</figcaption></figure>
+        <figcaption class="hint" style="margin-top:6px">원문식은 y=x 위쪽에 치우친 체계적 과대추정 — 최종 보정식은 대각선 밀집</figcaption></figure>
       <figure style="margin:0"><img src="figs/fig3_error.png" style="width:100%;border:1px solid var(--line);border-radius:10px" alt="보정 전후 오차 비교">
-        <figcaption class="hint" style="margin-top:6px">오차 분포가 0 중심으로 이동 — 3차 분석 과정 산출 그래프 (참고)</figcaption></figure>
+        <figcaption class="hint" style="margin-top:6px">오차 분포가 0 중심으로 이동 — 최종 보정식 기준 재산출</figcaption></figure>
     </div>
     <figure style="margin:14px 0 0"><img src="figs/fig2_residual.png" style="width:100%;border:1px solid var(--line);border-radius:10px" alt="잔차 진단">
-      <figcaption class="hint" style="margin-top:6px">잔차 진단 — 설계식 잔차에 남은 추세(시작 SOC·온도·가동 시간)가 곧 누락된 항이라는 근거</figcaption></figure>
-    <div class="row c-2" style="gap:14px;margin-top:14px">
-      <figure style="margin:0"><img src="figs/fig4_waterfall.png" style="width:100%;border:1px solid var(--line);border-radius:10px" alt="r_eff 오차 요인 분해">
-        <figcaption class="hint" style="margin-top:6px">소모율 오차 요인 분해 — 기동·전환 오버헤드와 저SOC 전압강하가 최대 기여 (3차 분석 과정 · 참고)</figcaption></figure>
-      <figure style="margin:0"><img src="figs/fig5_recovery.png" style="width:100%;border:1px solid var(--line);border-radius:10px" alt="파라미터 복원 검증">
-        <figcaption class="hint" style="margin-top:6px">파라미터 복원 검증 — 회귀가 주입값을 재현 (모드전환 c1만 식별 실패)</figcaption></figure>
-    </div>
+      <figcaption class="hint" style="margin-top:6px">잔차 진단 — 원문식 잔차에 남은 추세(시작 SOC·온도·가동 시간)가 곧 누락된 항이라는 근거 · 보정식은 전 구간 0 부근</figcaption></figure>
+    <figure style="margin:14px 0 0"><img src="figs/fig4_waterfall.png" style="width:100%;border:1px solid var(--line);border-radius:10px" alt="오차 원인 분해">
+      <figcaption class="hint" style="margin-top:6px">원문식 오차 원인 분해 — 식에 없는 항 47.5% · 값이 틀린 항 33.9% · 적용 위치가 틀린 항 18.5% (결과보고 기준)</figcaption></figure>
   </div>
 </section>
 
@@ -463,7 +459,7 @@ footer{border-top:1px solid var(--line);padding:22px 28px;text-align:center;
   </div>
 
   <div class="card">
-    <h4>세션 로그 샘플 <span style="font-weight:500;color:var(--mut2);text-transform:none;letter-spacing:0">— 전체모델_세션로그.csv (14,014건 중 모델별 6건)</span></h4>
+    <h4>세션 로그 샘플 <span style="font-weight:500;color:var(--mut2);text-transform:none;letter-spacing:0">— 전체모델_세션로그.csv 14,014건 → 분석 13,332건 · 모델별 6건 표본</span></h4>
     <div class="tw" style="max-height:340px;overflow-y:auto"><table id="tbl-sess"></table></div>
   </div>
 </section>
@@ -494,7 +490,6 @@ const DATA = /*__DATA__*/{};
 const P   = DATA.params, REG = DATA.reg, SESS = DATA.sessions;
 const R   = P.r_mode, RES = P.soc_res, M = P.models;
 const KO  = {eco:'저소음', std:'표준', turbo:'강력'};
-const COL = {eco:'#0f9d58', std:'#1e6fd9', turbo:'#d93025'};
 
 const LOADS = [
   {id:'carpet', label:'카펫 · 러그',  v:0.15},
@@ -661,7 +656,7 @@ function render(){
     ['⑤', `T_avail = (SOC − ${RES} − c₀) ÷ r̄`, `(${S.soc} − ${RES} − ${C.c0}) / ${c.rEff.toFixed(2)} = ${c.tAv.toFixed(1)}분`],
     ['⑥', 'margin = T_avail − T_req',  `${c.tAv.toFixed(1)} − ${S.req} = ${c.mg>=0?'+':''}${c.mg.toFixed(1)}분`],
   ];
-  if (c.mg < 0) tr.push(['⑦', 'T_charge = SOC_need / c',
+  if (c.mg < 0) tr.push(['⑦', 'T_charge = SOC_need / c (충전 속도 1.2%/분 가정)',
     `+${c.socNeed.toFixed(1)}%p / 1.2 = ${c.tChg.toFixed(0)}분 충전 필요`]);
   if (!c.depleted && c.mg < 5){
     const alt = suggestMix(c.p, c.k, c.soh, S.tmp, S.soc, S.req);
@@ -683,13 +678,13 @@ const PERSONA = {
       th:[70,40,15], skin:'dark',
       msg:{ok:'{n}{v}, 누워있지말고 오늘은 청소하자.', tight:'{n}{v}, 오늘은 짧게나마 청소하자',
             short:'{n}{v}, 나를 충전시켜줘,,'},
-      voice:{ok:'오늘은 내가 집 전체 다 돌아볼게. 같이 시작하자!',
+      voice:{ok:'오늘은 집 전체 다 끝낼 수 있어. 같이 시작하자!',
              tight:'배터리가 좀 빠듯한데, 거실만 먼저 할까?',
-             short:'나 잠깐 충전하고 올게. 조금만 기다려줘!'}},
-  B: {label:'장모형 1인 가구 (여성)', models:['B-1','B-2'], motif:'✦✦✦✦', name:'지영',
+             short:'나 거치대에서 잠깐 충전할게. 조금만 기다려줘!'}},
+  B: {label:'1인 가구 (여성 · 긴 머리)', models:['B-1','B-2'], motif:'✦✦✦✦', name:'지영',
       mood:'파스텔 · 로즈골드', tone:'이름 + 제안형', care:'저소음 · 머리카락', strat:'완곡한 제안',
       th:[70,40,15], skin:'rose',
-      msg:{ok:'{n}{v}, 오늘은 청소 어때?', tight:'{n}{v}, 저소음모드로 청소 한바퀴 어때?',
+      msg:{ok:'{n}{v}, 오늘은 청소 어때?', tight:'{n}{v}, 저소음모드로 청소 한 바퀴 어때?',
             short:'{n}{v}, 배고파, 밥줘'},
       voice:{ok:'오늘 컨디션 좋아. 한 바퀴 돌고 올까?',
              tight:'조용히 거실만 먼저 정리할게.',
@@ -771,7 +766,7 @@ const LC = {ok:{c:'#3ddc84', d:'#128a4a', t:'완주 가능'},
             short:{c:'#ff4d42', d:'#b62a22', t:'충전 필요'}};
 
 /* PPT 4장 — SOC 고정 임계값에 따른 판정 (페르소나별) */
-const socVerdict = (soc, th) => soc >= th[0] ? 'ok' : (soc >= th[2] ? 'tight' : 'short');
+const socVerdict = (soc, th) => soc >= th[0] ? 'ok' : (soc >= th[1] ? 'tight' : 'short');
 
 /* 모델별 보정식 기본 소모율 — Σ(pᵢ·재추정rᵢ) × k */
 const baseOfM = m => Object.entries(m.p).reduce((a,[md,v]) => a + v * RN[md], 0) * m.k;
@@ -797,7 +792,7 @@ function screenHTML(pid, per, sk, state, soc, active){
 
   return `<div class="scr ${active ? 'act' : 'dim'}"
       style="background:${sk.frame};border-color:${active ? col : 'transparent'}">
-    <div class="scr-brand" style="color:${sk.brand}">LG <span>CodeZero</span></div>
+    <div class="scr-brand" style="color:${sk.brand}">LG <span>CordZero</span></div>
     <div class="scr-in" style="background:${sk.inBg(state)}">
       <div class="scr-top" style="color:${col}">
         <div class="batt-b"><div class="batt-f" style="width:${Math.max(8, soc)}%"></div></div>
@@ -1037,7 +1032,7 @@ $('i-name').oninput = e => {
         ${r.mae}<span style="font-size:13px;font-weight:600;color:var(--mut)"> 분 MAE</span></div>
       <div style="font-size:11.5px;color:var(--mut);margin-top:7px;line-height:1.7">
         편향 <b style="color:${Math.abs(r.bias)>1?'var(--red)':'var(--ink)'}">${r.bias>=0?'+':''}${r.bias}분</b>
-        · 판정 ${r.acc}%<br>R² ${r.r2.toFixed(3)} · RMSE ${r.rmse}</div>
+        · 판정 정확도 ${r.acc}%</div>
       <div style="font-size:11px;color:var(--mut2);margin-top:8px;padding-top:8px;
         border-top:1px solid var(--line2);line-height:1.6">${r.note}</div>
     </div>`).join('') + `
@@ -1048,7 +1043,7 @@ $('i-name').oninput = e => {
         ${rs[0].mae}분 → ${rs[1].mae}분<br>판정 정확도 ${rs[0].acc}% → ${rs[1].acc}%</div>
       <div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:8px;padding-top:8px;
         border-top:1px solid rgba(255,255,255,.12);line-height:1.6">
-        ①·② 는 14,014세션 전체 검증 (결과보고 기준)<br>③ 회귀만 학습 ${REG.n_train.toLocaleString()} · 검증 ${REG.n_test.toLocaleString()} 홀드아웃</div>
+        ①·② 는 14,014세션(1분 미만 제외) 검증 · 결과보고 기준<br>③ 회귀만 학습 ${REG.n_train.toLocaleString()} · 검증 ${REG.n_test.toLocaleString()} 홀드아웃</div>
     </div>`;
 
   /* 보정 계수 — 3차 최종 보정식 (결과보고 슬라이드 9) */
@@ -1187,11 +1182,12 @@ $('ask-list').innerHTML = [
 ].map(x => `<div style="padding:8px 0;border-bottom:1px solid var(--line2)">· ${x}</div>`).join('');
 
 $('next-list').innerHTML = [
-  '보정식을 정의서 4장에 반영해 개정 — <b>온도 보정의 적용 위치</b>가 핵심 변경점',
-  'D-1 · D-2 · E-1은 계산식이 아니라 사용 패턴 문제 — 2팩 운용·분할 청소를 UI 기본 동선에 편입',
+  '<b>[반영됨]</b> 분할 청소를 UI 기본 동선에 편입 — 폰 앱의 구역 선택 · 1차→충전→2차 분할 흐름으로 구현',
+  '<b>[반영됨]</b> 아이돌 보이스팩 데모 — 브라우저 TTS 톤 프로토타입 (음성권 계약 전)',
+  '보정식을 정의서 4장에 반영해 개정 — <b>온도 보정의 적용 위치</b>가 핵심 변경점 · 스틱형 전제 복원',
   'C-1은 세션 길이 편차가 커 μ_T 고정값으로는 부족 — 요일·시간대별 T_req 추정 검토',
   '축 조합이 10개 모델 중 어디에도 맞지 않을 때의 <b>최근접 할당 규칙</b> 정의',
-  '3차 실측 CSV 확보 후 같은 절차로 보정 계수 재적합',
+  '실측 CSV 확보 후 같은 절차로 보정 계수 재적합 · 8/24~26 대면 멘토링에서 데모 시연 (발표 5분 · 데모 3분)',
 ].map(x => `<div style="padding:8px 0;border-bottom:1px solid var(--line2)">· ${x}</div>`).join('') + `
   <div style="margin-top:14px;padding:12px 13px;background:#fffbe9;border:1px solid #f0e3b0;border-radius:10px;font-size:12px;line-height:1.75;color:var(--ink2)">
     <b style="color:#8a5300">문서 수정 필요 (검산 중 발견)</b><br>
