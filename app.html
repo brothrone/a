@@ -427,16 +427,19 @@ function kOf(loads){let s=0;loads.forEach(l=>s+=LOADS[l]||0);return Math.min(1.4
 /* 시간대 */
 const TIMES=['아침','오후','저녁','심야'];
 
-/* ── 보정식 (3차 · regression_result.json) ── */
-const RES=5,E0=1.46,BETA=2.2,LOW=25,DT=0.25;
-function sim(soc,r){let s=soc-E0;if(s<=RES)return 0;let t=0;
- while(t<600){const g=1+BETA*Math.max(0,(LOW-s)/LOW),st=r*g*DT;
-  if(s-st<=RES)return t+(s-RES)/(r*g);s-=st;t+=DT}return t}
-function simEnd(soc,r,tgt){let s=soc-E0;if(s<=RES)return RES;let t=0;
- while(t<tgt){const g=1+BETA*Math.max(0,(LOW-s)/LOW),st=r*g*DT;
-  if(s-st<=RES)return RES;s-=st;t+=DT}return s}
-function boundary(r,req,tg){let lo=RES,hi=100;
- for(let i=0;i<44;i++){const m=(lo+hi)/2;if(sim(m,r)-req>=tg)hi=m;else lo=m}return hi}
+/* ── 3차 최종 보정식 (파라써블 시뮬레이션 결과보고 · 슬라이드 9) ────────
+   r̄ = Σ(pᵢrᵢ)·k·(1+a_c·max(0,18−T)+a_h·max(0,T−30))·(1+β(1−SOC_mid/100)²) ÷ SOH
+   T_avail = (SOC − SOC_res − c₀) / r̄          SOC_mid = (SOC + SOC_res)/2
+   추정 계수: rᵢ 1.56·2.63·5.00 / β 0.237 / c₀ 2.14% / a_c 0.0056 · a_h 0.0012 */
+const RES=5,C0=2.14,BETA=0.237,AC=0.0056,AH=0.0012,TEMP=22;
+/* 모델별 base_r = Σ(pᵢ·rᵢ) — 결과보고 신(新) rᵢ 기준 */
+const BASE={'A-1':2.416,'A-2':2.416,'B-1':4.289,'B-2':3.341,'C-1':1.881,'C-2':1.881,'D-1':4.052,'D-2':4.052,'E-1':2.523,'E-2':2.416};
+function rbarAt(soc,base,k,soh){const m=(soc+RES)/2,tf=1+AC*Math.max(0,18-TEMP)+AH*Math.max(0,TEMP-30),
+ sf=1+BETA*Math.pow(1-m/100,2);return base*k*tf*sf/(soh||1)}
+function tAvail(soc,base,k,soh){return Math.max(0,(soc-RES-C0)/rbarAt(soc,base,k,soh))}
+function endOf(soc,base,k,req,soh){return Math.max(RES,soc-C0-rbarAt(soc,base,k,soh)*req)}
+function boundary(base,k,req,tg){let lo=RES,hi=100;
+ for(let i=0;i<44;i++){const m=(lo+hi)/2;if(tAvail(m,base,k,1)-req>=tg)hi=m;else lo=m}return hi}
 const vOf=m=>m>=5?0:(m>=0?1:2);
 const josa=n=>!n?'':n+(((n.charCodeAt(n.length-1)-0xac00)%28)===0?'야':'아');
 const VL=['완주 가능','빠듯함','충전 필요'],CC=['g','a','r'],ACC=['var(--g)','var(--a)','var(--r)'];
@@ -444,15 +447,16 @@ const $=id=>document.getElementById(id);
 
 /* 평수 → 필요 청소시간 T_req (분) */
 const reqFromArea=py=>Math.max(5,Math.round(py*0.82+2));
-/* 유효 소모율: 모델 r_base × 사용자 k */
-function rEff(mid,loads){const m=M[mid];return +(m.rb*kOf(loads)).toFixed(3)}
+/* 모델 base_r · 사용자 k */
+const baseOf=mid=>BASE[mid];
 
 /* 구역 */
 const ROOMS=[{n:'거실',i:'🛋️'},{n:'주방',i:'🍽️'},{n:'침실',i:'🛏️'},{n:'복도',i:'🚪'},{n:'현관',i:'🧹'}];
 
 /* ══════════ 상태 ══════════ */
 let W={step:1,model:null,sub:0,area:7,loads:[],time:'저녁',voice:null};
-let SOC=100,phase='idle',elapsed=0,cleanReq=0,cleanR=0,cleanEco=false,timer=null,started=false;
+let SOC=100,phase='idle',elapsed=0,cleanReq=0,cleanBase=0,cleanK=1,cleanEco=false,timer=null,started=false;
+const DTA=0.3;   /* 청소 애니메이션 분(min) 스텝 */
 const mid=()=>P[W.model].models[W.sub];
 
 /* ══════════ 위저드 ══════════ */
@@ -472,7 +476,7 @@ function renderWiz(){
       <button class="${W.sub===i?'on':''}" onclick="W.sub=${i};renderWiz()"><b>${x} · ${M[x].name}</b><small>${M[x].axes}</small></button>`).join('')}</div>`:''}`;
  }
  else if(W.step===2){
-  const p=P[W.model],req=reqFromArea(W.area),r=rEff(mid(),W.loads),k=kOf(W.loads);
+  const p=P[W.model],req=reqFromArea(W.area),k=kOf(W.loads),base=baseOf(mid()),r=rbarAt(100,base,k,1);
   body=`<div class="wtag">STEP 2 · 사용 환경</div>
    <div class="wtitle">청소 조건을 설정하세요</div>
    <div class="wsub">같은 1인 가구라도 원룸인지 넓은 집인지에 따라 완주 판정이 달라집니다.</div>
@@ -494,7 +498,7 @@ function renderWiz(){
    <div class="derived">
      <div class="d"><div class="k">필요 청소시간</div><div class="v">${req}<em>분</em></div></div>
      <div class="d"><div class="k">유효 소모율</div><div class="v">${r.toFixed(2)}<em>%/분</em></div></div>
-     <div class="d"><div class="k">만충 가동</div><div class="v">${sim(100,r).toFixed(0)}<em>분</em></div></div>
+     <div class="d"><div class="k">만충 가동</div><div class="v">${tAvail(100,base,k,1).toFixed(0)}<em>분</em></div></div>
    </div>`;
  }
  else if(W.step===3){
@@ -534,15 +538,15 @@ const CIDX={ok:0,tight:1,charge:2,split:1};        // 화면 컬러 인덱스 (s
 const LBL ={ok:'완주 가능',tight:'빠듯함',charge:'충전 필요',split:'분할 청소'};
 const MIDX={ok:0,tight:1,charge:2,split:1};         // 페르소나 문구 인덱스
 function judge(){
- const r=rEff(mid(),W.loads),req=reqFromArea(W.area);
- const tAv=sim(SOC,r),mg=tAv-req,end=simEnd(SOC,r,req);
- const fullMg=sim(100,r)-req;                        // 만충으로도 완주 가능한가
+ const base=baseOf(mid()),k=kOf(W.loads),req=reqFromArea(W.area);
+ const tAv=tAvail(SOC,base,k,1),mg=tAv-req,end=endOf(SOC,base,k,req,1),r=rbarAt(SOC,base,k,1);
+ const fullMg=tAvail(100,base,k,1)-req;              // 만충으로도 완주 가능한가
  let state;
  if(mg>=5)state='ok';
  else if(mg>=0)state='tight';
  else if(fullMg>=0)state='charge';                   // 충전하면 완주 가능
  else state='split';                                 // 한 번 충전으로 불가 → 분할 청소
- return {r,req,tAv,mg,end,fullMg,state,ci:CIDX[state],mi:MIDX[state]};
+ return {base,k,r,req,tAv,mg,end,fullMg,state,ci:CIDX[state],mi:MIDX[state]};
 }
 function ringSVG(pct){const R=50,C=2*Math.PI*R,off=C*(1-pct/100);
  return `<svg viewBox="0 0 116 116" width="112" height="112">
@@ -634,7 +638,7 @@ function draw(){
 function renderDevice(){
  let ci=0,st='ok',socShow=SOC,mode='표준';
  if(started){const c=judge();ci=c.ci;st=c.state;mode=cleanEco?'저소음':(st==='tight'||st==='split'?'저소음 권장':'표준')}
- else if(W.model){const r=rEff(mid(),W.loads),req=reqFromArea(W.area);const c=judge();ci=c.ci;st=c.state}
+ else if(W.model){const c=judge();ci=c.ci;st=c.state}
  const ac=['#3ecf82','#e0a341','#f0576c'][ci];
  $('lglow').style.background=[`radial-gradient(circle at 50% 42%,rgba(62,207,130,.20),transparent 62%)`,
    `radial-gradient(circle at 50% 42%,rgba(224,163,65,.18),transparent 62%)`,
@@ -655,13 +659,13 @@ function renderDevice(){
 
 /* ── 액션 ── */
 function startClean(eco){
- const c=judge();cleanEco=eco;cleanReq=c.req;cleanR=eco?c.r*0.78:c.r;
- elapsed=0;phase='clean';SOC=Math.max(RES,SOC-E0);
+ const c=judge();cleanEco=eco;cleanReq=c.req;cleanBase=eco?c.base*0.78:c.base;cleanK=c.k;
+ elapsed=0;phase='clean';SOC=Math.max(RES,SOC-C0);       // 기동 전력 c₀ 차감
  if(timer)clearInterval(timer);
  const vv=VOICE[W.voice];toast(`${eco?'저소음':'전 구역'} 청소 시작 — ${vv.name} 보이스 안내`);
  timer=setInterval(()=>{
-  const g=1+BETA*Math.max(0,(LOW-SOC)/LOW),step=cleanR*g*DT;
-  SOC=Math.max(RES,SOC-step);elapsed+=DT;$('soc').value=SOC.toFixed(0);
+  const step=rbarAt(SOC,cleanBase,cleanK,1)*DTA;         // 현재 잔량 기준 r̄ 로 방전
+  SOC=Math.max(RES,SOC-step);elapsed+=DTA;$('soc').value=SOC.toFixed(0);
   if(SOC<=RES&&elapsed<cleanReq){phase='stranded';clearInterval(timer);timer=null;toast('⚠ 청소 도중 배터리 부족 — 거치대 충전');draw();return}
   if(elapsed>=cleanReq){phase='done';clearInterval(timer);timer=null;toast('✓ 청소 완주 완료');draw();return}
   draw();
@@ -683,8 +687,12 @@ function toast(t){const el=$('toast');el.textContent=t;el.classList.add('show');
 $('soc').oninput=e=>{SOC=+e.target.value;if(phase==='clean'||phase==='charge')stopTimers();draw()};
 function stopTimers(){if(timer)clearInterval(timer);timer=null;if(phase==='clean'||phase==='charge'||phase==='stranded'||phase==='done')phase='idle'}
 $('reset').onclick=()=>{stopTimers();SOC=100;$('soc').value=100;draw();renderDevice()};
-$('jump-ok').onclick=()=>{if(!started)return;stopTimers();const c=judge();SOC=Math.round(boundary(c.r,c.req,5));$('soc').value=SOC;draw()};
-$('jump-ti').onclick=()=>{if(!started)return;stopTimers();const c=judge();SOC=Math.round(boundary(c.r,c.req,0));$('soc').value=SOC;draw()};
+$('jump-ok').onclick=()=>{if(!started)return;stopTimers();const c=judge();
+ if(c.fullMg<5){toast('이 조건은 만충으로도 여유 5분을 못 만들어요 — 분할 청소 대상');return}
+ SOC=Math.round(boundary(c.base,c.k,c.req,5));$('soc').value=SOC;draw()};
+$('jump-ti').onclick=()=>{if(!started)return;stopTimers();const c=judge();
+ if(c.fullMg<0){toast('이 조건은 만충으로도 완주가 안 돼요 — 분할 청소 대상');return}
+ SOC=Math.round(boundary(c.base,c.k,c.req,0));$('soc').value=SOC;draw()};
 $('restart').onclick=()=>{location.reload()};
 
 addEventListener('keydown',e=>{
