@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>파라써블 · CodeZero 케어 — 폰·기기 연동</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+ --lg:#A50034;--ink:#14161a;--ink2:#464c55;--mut:#8b929c;--line:#e7e9ec;--line2:#f1f3f5;--bg:#eef0f2;
+ --g:#1f9d57;--a:#d08a1e;--r:#e0455f;
+ --gs:#e7f5ec;--as:#fbf1de;--rs:#fce8eb;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",Pretendard,"Malgun Gothic",sans-serif;
+ background:
+  radial-gradient(1200px 620px at 22% -8%,#f7f8f9,transparent 60%),
+  radial-gradient(900px 620px at 96% 8%,#e9ebee,transparent 62%),
+  linear-gradient(180deg,#f2f4f6,#e7eaed);
+ color:var(--ink);-webkit-font-smoothing:antialiased;min-height:100vh}
+.wrap{max-width:1500px;margin:0 auto;padding:18px 26px 40px}
+
+/* ── 상단 바 ── */
+.top{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:14px}
+h1{font-size:19px;font-weight:800;letter-spacing:-.03em}h1 b{color:var(--lg)}
+.tsub{font-size:12.5px;color:var(--mut);margin-top:3px}
+.goback{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;
+ padding:11px 18px;border-radius:99px;background:var(--lg);color:#fff;border:1px solid var(--lg);
+ text-decoration:none;letter-spacing:-.015em;transition:.15s;white-space:nowrap}
+.goback:hover{filter:brightness(1.08)}
+.keys{margin-left:auto;font-size:11.5px;color:var(--mut);border:1px solid var(--line);background:#fff;border-radius:20px;padding:7px 14px}
+.keys b{color:var(--ink2);font-weight:700}
+
+/* ── 데모 컨트롤 ── */
+.demo{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#fff;border:1px solid var(--line);
+ border-radius:16px;padding:12px 16px;margin-bottom:22px;box-shadow:0 1px 0 rgba(0,0,0,.02)}
+.demo .dl{font-size:11px;font-weight:800;color:var(--mut);letter-spacing:.02em;text-transform:uppercase;margin-right:2px}
+.pchips{display:flex;gap:7px;flex-wrap:wrap}
+.pchip{display:flex;flex-direction:column;gap:1px;text-align:left;background:#fff;border:1px solid var(--line);
+ border-radius:11px;padding:7px 11px;font-size:12.5px;font-weight:700;color:var(--ink2);cursor:pointer;transition:.14s;line-height:1.2}
+.pchip b{color:var(--lg);font-weight:800;margin-right:5px}
+.pchip small{font-size:10px;color:var(--mut);font-weight:600}
+.pchip.on{border-color:var(--lg);background:#fbeef2;box-shadow:0 0 0 2px #a5003420 inset}
+.spacer{flex:1 1 22px}
+.sld{display:flex;align-items:center;gap:10px}
+.sld input[type=range]{width:190px;accent-color:var(--lg)}
+.sld .val{font-size:14px;font-weight:800;min-width:44px}
+.btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 13px;font-size:12.5px;
+ font-weight:700;color:var(--ink2);cursor:pointer;transition:.14s;white-space:nowrap}
+.btn:hover{border-color:#cdd2d8}
+.btn.pri{background:var(--lg);color:#fff;border-color:var(--lg)}
+.stog{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.stog button{border:0;background:#fff;padding:8px 12px;font-size:12px;font-weight:700;color:var(--mut);cursor:pointer}
+.stog button.on{background:var(--lg);color:#fff}
+
+/* ── 스테이지 ── */
+.stage{display:flex;gap:60px;align-items:center;justify-content:center;flex-wrap:wrap;padding:8px 0}
+
+/* ── 폰 ── */
+.phone{position:relative;width:352px;height:726px;border-radius:52px;
+ background:linear-gradient(160deg,#20242a,#0e1013);padding:13px;
+ box-shadow:0 40px 90px -30px rgba(20,22,26,.55),0 0 0 2px #2a2f36,inset 0 0 0 1.5px rgba(255,255,255,.05);flex:0 0 auto}
+.phone::after{content:"";position:absolute;top:18px;left:50%;transform:translateX(-50%);
+ width:118px;height:30px;background:#0b0d10;border-radius:0 0 18px 18px;z-index:6}
+.scrn{position:relative;width:100%;height:100%;border-radius:40px;overflow:hidden;background:#fbfbfc;display:flex;flex-direction:column}
+.stat{height:44px;flex:0 0 44px;display:flex;align-items:flex-end;justify-content:space-between;
+ padding:0 24px 7px;font-size:13px;font-weight:700;color:var(--ink);z-index:5}
+.stat .rt{display:flex;gap:6px;align-items:center;font-size:12px}
+.app{flex:1 1 auto;overflow-y:auto;overflow-x:hidden}
+.app::-webkit-scrollbar{width:0}
+
+/* 앱 헤더 */
+.ahead{padding:6px 22px 12px;display:flex;align-items:center;gap:11px}
+.ahead .logo{font-size:16px;font-weight:800;letter-spacing:-.02em}
+.ahead .logo b{color:var(--lg)}
+.pbadge{margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;
+ color:var(--ink2);background:var(--line2);border-radius:99px;padding:5px 10px}
+.pbadge i{width:15px;height:15px;border-radius:5px;display:inline-block}
+.conn{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--g)}
+.conn .dot{width:7px;height:7px;border-radius:99px;background:var(--g);box-shadow:0 0 0 3px #1f9d5722}
+
+/* 화면(탭) */
+.view{display:none;padding:2px 18px 20px}
+.view.on{display:block}
+
+/* HERO */
+.hero{position:relative;border-radius:26px;padding:22px 20px 20px;overflow:hidden;color:#fff;
+ box-shadow:0 18px 34px -18px rgba(20,22,26,.4)}
+.hero .htop{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:700;opacity:.92}
+.ring-wrap{display:flex;align-items:center;gap:18px;margin:14px 0 6px}
+.ring{position:relative;width:118px;height:118px;flex:0 0 auto}
+.ring .pct{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring .pct b{font-size:30px;font-weight:800;letter-spacing:-.03em;line-height:1}
+.ring .pct span{font-size:11px;font-weight:700;opacity:.85;margin-top:3px}
+.hmsg{flex:1 1 auto}
+.hmsg .verd{font-size:24px;font-weight:800;letter-spacing:-.03em}
+.hmsg .line{font-size:13.5px;font-weight:600;line-height:1.5;margin-top:7px;opacity:.96;white-space:pre-line}
+.hstat{display:flex;gap:8px;margin-top:16px}
+.hstat .c{flex:1;background:rgba(255,255,255,.16);border-radius:14px;padding:9px 11px;backdrop-filter:blur(2px)}
+.hstat .c .k{font-size:10.5px;font-weight:700;opacity:.85}
+.hstat .c .v{font-size:17px;font-weight:800;margin-top:2px}
+.hstat .c .v em{font-size:11px;font-style:normal;font-weight:700;opacity:.85;margin-left:1px}
+
+/* CTA */
+.cta{margin-top:14px;display:flex;flex-direction:column;gap:9px}
+.big{width:100%;border:0;border-radius:16px;padding:16px;font-size:15.5px;font-weight:800;letter-spacing:-.02em;
+ cursor:pointer;transition:.14s;display:flex;align-items:center;justify-content:center;gap:8px}
+.big:active{transform:translateY(1px)}
+.big.gr{background:var(--g);color:#fff}
+.big.am{background:var(--a);color:#fff}
+.big.rd{background:var(--r);color:#fff}
+.sub{width:100%;border:1px solid var(--line);background:#fff;border-radius:16px;padding:13px;
+ font-size:13.5px;font-weight:700;color:var(--ink2);cursor:pointer;transition:.14s}
+.sub:hover{border-color:#cdd2d8}
+
+/* 카드 */
+.card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:16px 17px;margin-top:14px}
+.card .ct{font-size:13px;font-weight:800;letter-spacing:-.01em;display:flex;align-items:center;justify-content:space-between}
+.card .ct .tag{font-size:11px;font-weight:800;padding:3px 9px;border-radius:99px}
+.tag.g{background:var(--gs);color:var(--g)}.tag.a{background:var(--as);color:#b5750f}.tag.r{background:var(--rs);color:var(--r)}
+.metrics{display:flex;gap:9px;margin-top:13px}
+.metrics .m{flex:1;background:var(--line2);border-radius:13px;padding:10px 11px}
+.metrics .m .k{font-size:10.5px;font-weight:700;color:var(--mut)}
+.metrics .m .v{font-size:17px;font-weight:800;margin-top:3px}
+.metrics .m .v em{font-size:11px;font-style:normal;font-weight:700;color:var(--mut);margin-left:1px}
+
+/* 미니 도면 */
+.plan-c{margin-top:13px;background:#0f1216;border-radius:16px;padding:13px 14px}
+.plan-c .pl-h{display:flex;justify-content:space-between;align-items:center;color:#c9d0d7;font-size:11.5px;font-weight:700;margin-bottom:8px}
+.plan-c svg{width:100%;height:auto;display:block}
+.plan-c .cov{font-size:11px;font-weight:800}
+
+/* 청소 옵션 */
+.opt{border:1.5px solid var(--line);border-radius:18px;padding:14px 15px;margin-top:11px;cursor:pointer;transition:.14s;background:#fff}
+.opt:hover{border-color:#cdd2d8}
+.opt.rec{border-color:var(--lg);background:#fdf5f7}
+.opt .oh{display:flex;align-items:center;gap:9px}
+.opt .oh .ic{width:34px;height:34px;border-radius:11px;background:var(--line2);display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.opt .oh .nm{font-size:14px;font-weight:800}
+.opt .oh .ds{font-size:11px;color:var(--mut);font-weight:600;margin-top:1px}
+.opt .oh .rb{margin-left:auto;font-size:10px;font-weight:800;color:var(--lg);background:#fbeef2;border-radius:99px;padding:4px 9px}
+.opt .ores{display:flex;gap:8px;margin-top:12px;align-items:center}
+.opt .ores .chip{font-size:11px;font-weight:800;padding:4px 10px;border-radius:99px}
+.opt .ores .mm{font-size:12px;font-weight:700;color:var(--ink2)}
+.opt .ores .mm b{font-weight:800}
+
+/* 리스트 행 */
+.row{display:flex;align-items:center;gap:12px;padding:13px 2px;border-top:1px solid var(--line2)}
+.row:first-child{border-top:0}
+.row .ri{width:38px;height:38px;border-radius:11px;background:var(--line2);display:flex;align-items:center;justify-content:center;flex:0 0 auto;font-size:18px}
+.row .rt{flex:1}
+.row .rt .a{font-size:13.5px;font-weight:700}
+.row .rt .b{font-size:11.5px;color:var(--mut);font-weight:600;margin-top:2px;line-height:1.45}
+.row .rv{font-size:12.5px;font-weight:800;color:var(--ink2)}
+.switch{width:42px;height:25px;border-radius:99px;background:var(--line);position:relative;flex:0 0 auto;transition:.15s}
+.switch.on{background:var(--g)}
+.switch i{position:absolute;top:2.5px;left:2.5px;width:20px;height:20px;border-radius:99px;background:#fff;transition:.15s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.switch.on i{left:19.5px}
+
+/* SOH 게이지 */
+.soh{margin-top:6px}
+.soh .bar{height:12px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:9px}
+.soh .bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#1f9d57,#3ec483)}
+.soh .lab{display:flex;justify-content:space-between;font-size:11px;color:var(--mut);font-weight:700;margin-top:6px}
+
+/* 코칭 카드 */
+.coach{background:linear-gradient(140deg,#fbeef2,#fff);border:1px solid #f0d9e0;border-radius:18px;padding:15px 16px;margin-top:12px}
+.coach .ch{font-size:12.5px;font-weight:800;color:var(--lg);display:flex;align-items:center;gap:7px}
+.coach .cb{font-size:13px;font-weight:600;line-height:1.55;margin-top:8px;color:var(--ink2)}
+.coach .cb b{color:var(--ink);font-weight:800}
+
+/* 주간 리포트 막대 */
+.week{display:flex;align-items:flex-end;gap:7px;height:82px;margin-top:14px;padding:0 2px}
+.week .d{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%}
+.week .d .bb{width:100%;border-radius:6px 6px 0 0;margin-top:auto;transition:.2s}
+.week .d .dl{font-size:10px;color:var(--mut);font-weight:700}
+
+/* 설정 페르소나 그리드 */
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}
+.pcard{border:1.5px solid var(--line);border-radius:15px;padding:12px;cursor:pointer;transition:.14s;text-align:left}
+.pcard.on{border-color:var(--lg);background:#fdf5f7}
+.pcard b{font-size:13px;font-weight:800}
+.pcard b em{font-style:normal;color:var(--lg);margin-right:5px}
+.pcard small{display:block;font-size:10.5px;color:var(--mut);font-weight:600;margin-top:3px}
+.field{margin-top:14px}
+.field label{font-size:12px;font-weight:800;color:var(--ink2)}
+.field input{width:100%;margin-top:7px;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:14px;font-weight:600;font-family:inherit}
+.field input:focus{outline:0;border-color:var(--lg)}
+.field .hint{font-size:11px;color:var(--mut);font-weight:600;margin-top:6px;line-height:1.5}
+
+/* 하단 탭바 */
+.tabbar{flex:0 0 76px;display:flex;border-top:1px solid var(--line);background:rgba(255,255,255,.92);backdrop-filter:blur(10px);z-index:5}
+.tabbar button{flex:1;border:0;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+ padding-top:10px;font-size:10.5px;font-weight:700;color:var(--mut);cursor:pointer;transition:.12s}
+.tabbar button.on{color:var(--lg)}
+.tabbar button svg{width:23px;height:23px}
+
+/* 토스트 */
+.toast{position:absolute;left:50%;bottom:96px;transform:translateX(-50%) translateY(8px);
+ background:#14161a;color:#fff;font-size:12.5px;font-weight:700;padding:11px 16px;border-radius:13px;
+ opacity:0;pointer-events:none;transition:.25s;white-space:nowrap;z-index:9;max-width:90%}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── 연동 표시 ── */
+.link{display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--mut);flex:0 0 auto}
+.waves{display:flex;flex-direction:column;gap:5px;align-items:center}
+.waves span{display:block;width:8px;height:8px;border-radius:99px;background:var(--lg);opacity:.25;animation:pulse 1.5s infinite}
+.waves span:nth-child(2){animation-delay:.2s}.waves span:nth-child(3){animation-delay:.4s}.waves span:nth-child(4){animation-delay:.6s}
+@keyframes pulse{0%,100%{opacity:.2;transform:scale(.8)}50%{opacity:1;transform:scale(1.15)}}
+.link .lt{font-size:11px;font-weight:800;letter-spacing:.02em;writing-mode:vertical-rl;transform:rotate(180deg);color:var(--ink2)}
+
+/* ── 로봇 기기 ── */
+.device{display:flex;flex-direction:column;align-items:center;gap:0;flex:0 0 auto}
+.dev-name{font-size:12.5px;font-weight:800;color:var(--ink2);margin-bottom:16px;letter-spacing:-.01em}
+.dev-name span{color:var(--lg)}
+.robot{position:relative;width:300px;height:300px;border-radius:50%;
+ background:conic-gradient(from 210deg,#e9ecef,#f6f7f8,#dfe3e7,#f2f4f6,#e9ecef);
+ box-shadow:0 34px 70px -26px rgba(20,22,26,.5),inset 0 0 0 2px rgba(255,255,255,.6),inset 0 -18px 40px rgba(0,0,0,.10);
+ display:flex;align-items:center;justify-content:center;transition:transform .4s cubic-bezier(.3,.9,.3,1.2)}
+.robot .turret{position:absolute;top:-13px;width:74px;height:26px;border-radius:14px;
+ background:linear-gradient(180deg,#2b3037,#161a1f);box-shadow:0 6px 14px -4px rgba(0,0,0,.5)}
+.robot .turret::after{content:"";position:absolute;inset:6px 12px;border-radius:8px;background:#0c0f13;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
+.lcd{position:relative;width:216px;height:216px;border-radius:50%;overflow:hidden;
+ background:#0d1014;box-shadow:inset 0 0 0 8px #1a1e24,inset 0 0 40px rgba(0,0,0,.7);
+ display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:22px 26px;transition:.3s}
+.lcd .glow{position:absolute;inset:0;transition:.35s}
+.lcd .lbrand{position:relative;font-size:12px;font-weight:800;letter-spacing:-.01em;z-index:2}
+.lcd .lbatt{position:relative;z-index:2;display:flex;align-items:center;gap:6px;margin-top:8px}
+.lcd .lbatt .cell{width:26px;height:13px;border:1.6px solid;border-radius:3px;position:relative;padding:1.5px}
+.lcd .lbatt .cell::after{content:"";position:absolute;right:-4px;top:3.5px;width:2.5px;height:4px;border-radius:0 1px 1px 0;background:currentColor}
+.lcd .lbatt .cell i{display:block;height:100%;border-radius:1px;background:currentColor}
+.lcd .lpct{position:relative;z-index:2;font-size:26px;font-weight:800;letter-spacing:-.03em;margin-top:9px;line-height:1}
+.lcd .lpct small{font-size:12px;font-weight:700;opacity:.8;margin-left:2px}
+.lcd .lmsg{position:relative;z-index:2;font-size:12px;font-weight:700;line-height:1.4;margin-top:8px;white-space:pre-line}
+.lcd .lverd{position:relative;z-index:2;font-size:22px;font-weight:800;letter-spacing:-.03em;margin-top:8px}
+.lcd .lroute{position:relative;z-index:2;width:118px;margin-top:10px}
+.robot .wheel{position:absolute;bottom:34px;width:20px;height:44px;border-radius:8px;background:linear-gradient(90deg,#20242a,#0e1013);opacity:.55}
+.robot .wheel.l{left:22px}.robot .wheel.r{right:22px}
+.robot .bumper{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);width:120px;height:14px;border-radius:99px;background:rgba(0,0,0,.12)}
+
+/* 도크 */
+.dock{margin-top:-6px;width:150px;height:30px;position:relative;display:flex;justify-content:center}
+.dock .base{width:130px;height:14px;border-radius:8px 8px 12px 12px;background:linear-gradient(180deg,#cfd4d9,#aab1b8);box-shadow:0 8px 18px -8px rgba(0,0,0,.4)}
+.dock .pin{position:absolute;top:-8px;left:50%;transform:translateX(-50%);width:40px;height:12px;border-radius:4px 4px 0 0;background:#bcc3ca}
+.dev-status{margin-top:16px;font-size:12px;font-weight:800;color:var(--ink2);display:flex;align-items:center;gap:8px}
+.dev-status .d{width:8px;height:8px;border-radius:99px;background:var(--mut)}
+.dev-status.run .d{background:var(--g);animation:blink 1s infinite}
+.dev-status.chg .d{background:var(--a);animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.3}}
+
+@media(max-width:1180px){.stage{gap:34px}.link{flex-direction:row;transform:rotate(90deg);margin:6px 0}.link .lt{writing-mode:horizontal-tb;transform:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a class="goback" href="index.html">← 대시보드로 돌아가기</a>
+    <div>
+      <h1>파라써블 · <b>CodeZero 케어</b> 앱</h1>
+      <div class="tsub">폰 컴패니언 앱과 로봇청소기가 실시간으로 연동됩니다 · 청소 시작·중단·충전이 양쪽에 함께 반영</div>
+    </div>
+    <div class="keys">단축키 <b>← →</b> 페르소나 · <b>↑ ↓</b> 잔량 · <b>Space</b> 자동 방전 · <b>1 2</b> 서브타입</div>
+  </div>
+
+  <div class="demo">
+    <span class="dl">데모</span>
+    <div class="pchips" id="pchips"></div>
+    <span class="stog" id="stog"></span>
+    <span class="spacer"></span>
+    <div class="sld"><span style="font-size:12px;font-weight:700;color:var(--mut)">잔량</span>
+      <input type="range" id="soc" min="5" max="100" step="1" value="100"><span class="val" id="soc-v">100%</span></div>
+    <button class="btn pri" id="play">▶ 자동 방전</button>
+    <button class="btn" id="jump-ok">완주 경계</button>
+    <button class="btn" id="jump-ti">빠듯 경계</button>
+    <button class="btn" id="reset">만충</button>
+  </div>
+
+  <div class="stage">
+    <!-- ══ 폰 ══ -->
+    <div class="phone">
+      <div class="scrn">
+        <div class="stat"><span id="clock">9:41</span>
+          <span class="rt">CodeZero <span>􀙇</span> <span id="statbatt">100%</span> ▮</span></div>
+        <div class="app" id="app">
+          <div class="ahead">
+            <div class="logo">LG <b>CodeZero</b> 케어</div>
+            <span class="conn" id="conn"><span class="dot"></span>연결됨</span>
+          </div>
+
+          <!-- 홈 -->
+          <section class="view on" id="v-home"></section>
+          <!-- 청소 -->
+          <section class="view" id="v-clean"></section>
+          <!-- 배터리 케어 -->
+          <section class="view" id="v-care"></section>
+          <!-- 설정 -->
+          <section class="view" id="v-set"></section>
+        </div>
+        <nav class="tabbar" id="tabbar">
+          <button data-v="home" class="on">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 11l9-7 9 7v9a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 20z"/></svg>홈</button>
+          <button data-v="clean">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3l-6 8"/><path d="M12.5 9.5l3.5 3.5-6.5 7.5-4-4z"/></svg>청소</button>
+          <button data-v="care">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="15" height="9" rx="2.5"/><path d="M18 11h2.5a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H18"/><path d="M6.5 11v3M9.5 11v3"/></svg>배터리 케어</button>
+          <button data-v="set">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v2.5M12 18.5V21M4.2 7l2.1 1.2M17.7 15.8l2.1 1.2M4.2 17l2.1-1.2M17.7 8.2l2.1-1.2"/></svg>설정</button>
+        </nav>
+        <div class="toast" id="toast"></div>
+      </div>
+    </div>
+
+    <!-- ══ 연동 ══ -->
+    <div class="link">
+      <span class="lt">실시간 연동</span>
+      <div class="waves"><span></span><span></span><span></span><span></span></div>
+    </div>
+
+    <!-- ══ 로봇 ══ -->
+    <div class="device">
+      <div class="dev-name">LG <span>CodeZero</span> · 우리 집 로봇청소기</div>
+      <div class="robot" id="robot">
+        <div class="turret"></div>
+        <div class="wheel l"></div><div class="wheel r"></div>
+        <div class="lcd" id="lcd">
+          <div class="glow" id="lglow"></div>
+          <div class="lbrand" id="lbrand">LG CodeZero</div>
+          <div class="lbatt"><span class="cell" id="lcell"><i id="lcell-i"></i></span></div>
+          <div class="lpct" id="lpct"></div>
+          <div class="lmsg" id="lmsg"></div>
+          <div class="lverd" id="lverd"></div>
+          <svg class="lroute" id="lroute" viewBox="0 0 320 190"></svg>
+        </div>
+        <div class="bumper"></div>
+      </div>
+      <div class="dock"><div class="pin"></div><div class="base"></div></div>
+      <div class="dev-status" id="devst"><span class="d"></span><span id="devst-t">대기 중 · 도킹</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══════════ 데이터 (live.html 검증 로직 그대로) ══════════ */
+const M={"A-1":{"name":"가끔·방치형","r":2.34,"req":8,"k":1.0,"axes":"F1·D1·M2·L0·C3","risk":"저SOC 장기 보관 → 자가방전 열화","measured":2.75,"abort":7.5,"t100":36.5},
+"A-2":{"name":"가끔·상시거치형","r":2.34,"req":8,"k":1.0,"axes":"F1·D1·M2·L0·C1","risk":"만충 상시 유지 → 고SOC 스트레스","measured":2.64,"abort":0.0,"t100":36.5},
+"B-1":{"name":"짧고 잦은 터보상시","r":4.59,"req":9,"k":1.08,"axes":"F2·D1·M3·L1·C2","risk":"고전류 방전 및 발열 누적","measured":5.37,"abort":4.7,"t100":18.7},
+"B-2":{"name":"짧고 잦은 스팟터보","r":3.51,"req":8,"k":1.08,"axes":"F2·D1·M2→M3·L1·C2","risk":"특이 리스크 없음 (기준 그룹)","measured":4.09,"abort":1.0,"t100":24.4},
+"C-1":{"name":"장시간 완주형","r":1.94,"req":33,"k":1.0,"axes":"F3·D3·M1·L0·C2","risk":"1회 방전 심도(DoD) 과다","measured":2.38,"abort":50.0,"t100":44.0},
+"C-2":{"name":"장시간 분할형","r":1.94,"req":22,"k":1.0,"axes":"F3·D2·M1·L0·C1","risk":"등가 사이클 카운트 급증","measured":2.26,"abort":0.4,"t100":44.0},
+"D-1":{"name":"고빈도 다중세션형","r":5.0,"req":13,"k":1.25,"axes":"F3·D2·M3·L2·C2","risk":"완주 불가 + 급속충전 발열","measured":6.26,"abort":84.4,"t100":17.1},
+"D-2":{"name":"고빈도 팩교체형","r":5.0,"req":15,"k":1.25,"axes":"F3·D2·M3·L2·C1","risk":"팩별 사용 불균형","measured":6.23,"abort":80.2,"t100":17.1},
+"E-1":{"name":"주말 집중형","r":2.42,"req":22,"k":1.0,"axes":"F2·D3·M2·L0·C3","risk":"주중 방전 방치 + 여유 시간 부족","measured":3.01,"abort":89.8,"t100":35.3},
+"E-2":{"name":"균등 분산형","r":2.34,"req":19,"k":1.0,"axes":"F2·D2·M2·L0·C2","risk":"특이 리스크 없음 (기준 그룹)","measured":2.69,"abort":11.2,"t100":36.5}};
+
+const P={
+ A:{label:'1인 가구 (남성)',mood:'다크 · 하이테크',color:'#3a4756',models:['A-1','A-2'],name:'준우',th:[70,40,15],
+  msg:['{n}, 누워있지말고\n오늘은 청소하자.','{n}, 오늘은\n짧게나마 청소하자','{n}, 나를\n충전시켜줘,,'],
+  coach:['2주 미사용 시 55% 보관 충전을 권장해요','만충 상시 유지는 셀 스트레스 · 80% 상한을 권장해요']},
+ B:{label:'장모형 1인 가구 (여성)',mood:'파스텔 · 로즈골드',color:'#c98a9b',models:['B-1','B-2'],name:'지영',th:[70,40,15],
+  msg:['{n}, 오늘은\n청소 어때?','{n}, 저소음모드로\n청소 한바퀴 어때?','{n},\n배고파, 밥줘'],
+  coach:['터보 8분 = 표준 15분, 모드 다이어트를 제안해요','주간 배터리 효율 점수 리포트를 제공해요 (기준 그룹)']},
+ C:{label:'영유아 가정',mood:'파스텔 · 키즈',color:'#7bb3a0',models:['C-1','C-2'],name:'',th:[88,42,7],
+  msg:['우리 아이 건강을 위해\n청소 할 준비가 됐어요!','우리 아이 건강을 위해\n저소음 모드로 가볍게 어떨까요?','우리 아이 건강을 위해\n청소기 충전을 해주세요'],
+  coach:['종료 예상 잔량을 미리 표시 · DoD 70% 상한을 지켜요','분할 2회=0.9사이클, 통합 1회=0.7사이클을 안내해요']},
+ D:{label:'반려동물 가정',mood:'우드 · 코지',color:'#c79a63',models:['D-1','D-2'],name:'',th:[92,45,8],
+  msg:['우리아이\n털 청소할시간이에요','가볍게\n털 청소 어때요?','우리강아지를 위해\n배터리를 충전해주세요'],
+  coach:['급속충전 직후 5분 냉각 대기를 권고해요','팩별 사이클 편차를 표시 · 교체 시점을 예고해요']},
+ E:{label:'일반 가정',mood:'뉴트럴 · 홈',color:'#7f8a93',models:['E-1','E-2'],name:'',th:[70,40,15],
+  msg:['주말동안 미룬 청소를\n가족과 함께 어때요?','가족을 위해서\n가볍게 청소 어때요?','미룬 청소를 위해\n충전해주세요'],
+  coach:['예상 청소일 12시간 전 사전 충전을 알려드려요','경고 없이 주간 요약·예상 수명만 표시해요 (기준 그룹)']},
+};
+
+/* ── 보정식 (3차) ── */
+const RES=5,E0=1.46,BETA=2.2,LOW=25,DT=0.25;
+function sim(soc,r){let s=soc-E0;if(s<=RES)return 0;let t=0;
+ while(t<600){const g=1+BETA*Math.max(0,(LOW-s)/LOW),st=r*g*DT;
+  if(s-st<=RES)return t+(s-RES)/(r*g);s-=st;t+=DT}return t}
+function simEnd(soc,r,tgt){let s=soc-E0;if(s<=RES)return RES;let t=0;
+ while(t<tgt){const g=1+BETA*Math.max(0,(LOW-s)/LOW),st=r*g*DT;
+  if(s-st<=RES)return RES;s-=st;t+=DT}return s}
+function boundary(r,req,tg){let lo=RES,hi=100;
+ for(let i=0;i<44;i++){const m=(lo+hi)/2;if(sim(m,r)-req>=tg)hi=m;else lo=m}return hi}
+const vOf=m=>m>=5?0:(m>=0?1:2);
+const josa=n=>!n?'':n+(((n.charCodeAt(n.length-1)-0xac00)%28)===0?'야':'아');
+const VL=['완주 가능','빠듯함','충전 필요'],CC=['g','a','r'],ACC=['var(--g)','var(--a)','var(--r)'],SFT=['var(--gs)','var(--as)','var(--rs)'];
+const $=id=>document.getElementById(id);
+const ROUTE='M30 168 L30 122 L98 122 L98 58 L152 58 L152 116 L198 116 L198 36 L266 36 L266 104 L300 104';
+
+/* ── 청소 옵션 모델 (UX 레벨 추정) ── */
+function optOf(kind,m){
+ if(kind==='full') return {r:m.r,           req:m.req,      nm:'전체 청소',   ds:'집 전체를 한 번에',        ic:'🧹'};
+ if(kind==='eco')  return {r:m.r*0.78,       req:m.req*1.12, nm:'저소음 청소', ds:'저전력 · 조용하게 · 배터리 절약', ic:'🌙'};
+ return               {r:m.r,           req:m.req*0.55, nm:'우선 구역',   ds:'생활 동선·핵심 구역만',    ic:'📍'};
+}
+
+/* ══════════ 상태 ══════════ */
+let CUR='A',SUB=0,SOC=100,TAB='home',timer=null,phase='idle',elapsed=0,cleanOpt=null,SOH=100,resv=true;
+const ORDER=Object.keys(P);
+const mid=()=>P[CUR].models[SUB];
+const cm=()=>M[mid()];
+
+/* ══════════ 데모 컨트롤 ══════════ */
+$('pchips').innerHTML=ORDER.map(k=>
+ `<button class="pchip${k===CUR?' on':''}" data-k="${k}"><span><b>${k}</b>${P[k].label}</span><small>${P[k].mood}</small></button>`).join('');
+$('pchips').onclick=e=>{const b=e.target.closest('.pchip');if(b)pickP(b.dataset.k)};
+$('stog').onclick=e=>{const b=e.target.closest('button');if(b){SUB=+b.dataset.i;stop();draw()}};
+$('soc').oninput=e=>{SOC=+e.target.value;stop();draw()};
+$('play').onclick=()=>timer?stop():startDischarge();
+$('reset').onclick=()=>{stop();setSOC(100)};
+$('jump-ok').onclick=()=>{stop();setSOC(boundary(cm().r,cm().req,5))};
+$('jump-ti').onclick=()=>{stop();setSOC(boundary(cm().r,cm().req,0))};
+
+$('tabbar').onclick=e=>{const b=e.target.closest('button');if(b){TAB=b.dataset.v;
+ document.querySelectorAll('.tabbar button').forEach(x=>x.classList.toggle('on',x===b));
+ document.querySelectorAll('.view').forEach(v=>v.classList.toggle('on',v.id==='v-'+TAB));draw()}};
+
+function setSOC(v){SOC=Math.max(5,Math.min(100,+v.toFixed?v.toFixed(1):v));SOC=Math.round(SOC*10)/10;$('soc').value=SOC;draw()}
+function pickP(k){CUR=k;SUB=0;phase='idle';stop();
+ document.querySelectorAll('.pchip').forEach(x=>x.classList.toggle('on',x.dataset.k===k));setSOC(100)}
+
+/* ── 타이머 ── */
+function startDischarge(){phase='discharge';$('play').textContent='■ 정지';
+ timer=setInterval(()=>{SOC-=0.6;if(SOC<=5){SOC=5;stop()}$('soc').value=SOC.toFixed(0);draw()},70)}
+function stop(){if(timer)clearInterval(timer);timer=null;$('play').textContent='▶ 자동 방전';
+ if(phase==='discharge')phase='idle';draw()}
+
+/* ── 청소 실행 (기기가 실제로 주행·방전) ── */
+function startClean(kind){
+ const o=optOf(kind,cm());cleanOpt=o;elapsed=0;phase='clean';
+ SOC=Math.max(RES,SOC-E0);   // 기동 전력 차감
+ $('play').textContent='▶ 자동 방전';if(timer)clearInterval(timer);
+ TAB='home';document.querySelectorAll('.tabbar button').forEach(x=>x.classList.toggle('on',x.dataset.v==='home'));
+ document.querySelectorAll('.view').forEach(v=>v.classList.toggle('on',v.id==='v-home'));
+ toast(`${o.nm} 시작 — 기기가 주행을 시작합니다`);
+ timer=setInterval(()=>{
+  const g=1+BETA*Math.max(0,(LOW-SOC)/LOW),step=o.r*g*DT;
+  SOC=Math.max(RES,SOC-step);elapsed+=DT;
+  if(SOC<=RES&&elapsed<o.req){phase='stranded';clearInterval(timer);timer=null;
+   toast('⚠ 청소 도중 배터리 부족 — 도킹으로 복귀');draw();return}
+  if(elapsed>=o.req){phase='done';clearInterval(timer);timer=null;
+   toast('✓ 청소 완주 완료 — 도킹합니다');draw();return}
+  draw();
+ },80);
+}
+function startCharge(){phase='charge';if(timer)clearInterval(timer);
+ toast('충전 위치로 복귀 — 충전을 시작합니다');
+ timer=setInterval(()=>{SOC=Math.min(100,SOC+1.1);$('soc').value=SOC.toFixed(0);
+  if(SOC>=100){SOC=100;clearInterval(timer);timer=null;phase='idle';toast('✓ 충전 완료')}draw()},60);
+}
+
+/* ══════════ 렌더 ══════════ */
+function draw(){
+ const p=P[CUR],m=cm();
+ // 청소 중이면 진행 옵션 소모율로, 아니면 전체 기준
+ const useR=(phase==='clean'||phase==='stranded'||phase==='done')&&cleanOpt?cleanOpt.r:m.r;
+ const useReq=(phase==='clean'||phase==='stranded'||phase==='done')&&cleanOpt?cleanOpt.req:m.req;
+ const tAv=sim(SOC,m.r),mg=tAv-m.req,v=vOf(mg);
+ const endSoc=simEnd(SOC,m.r,m.req);
+ const cov=(phase==='clean'||phase==='stranded')?Math.max(0,Math.min(1,elapsed/useReq))
+          :(phase==='done'?1:Math.max(0,Math.min(1,tAv/Math.max(m.req,.1))));
+ $('stog').innerHTML=p.models.map((x,i)=>`<button data-i="${i}" class="${i===SUB?'on':''}"><b>${x}</b></button>`).join('');
+ $('soc-v').textContent=SOC.toFixed(0)+'%';$('statbatt').textContent=SOC.toFixed(0)+'%';
+
+ renderHome(p,m,tAv,mg,v,endSoc,cov);
+ renderClean(p,m);
+ renderCare(p,m,v);
+ renderSet(p);
+ renderDevice(p,m,v,cov);
+}
+
+/* ── HERO 링 ── */
+function ringSVG(pct,col){
+ const R=52,C=2*Math.PI*R,off=C*(1-pct/100);
+ return `<svg viewBox="0 0 120 120" width="118" height="118">
+  <circle cx="60" cy="60" r="${R}" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="10"/>
+  <circle cx="60" cy="60" r="${R}" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round"
+   stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}" transform="rotate(-90 60 60)"/></svg>`;
+}
+function planSVG(col,cov,dark){
+ const dim=dark?'rgba(255,255,255,.14)':'rgba(0,0,0,.14)';
+ return `<svg viewBox="0 0 320 190">
+  <g fill="none" stroke="${dim}" stroke-width="2">
+   <rect x="8" y="8" width="304" height="174" rx="5"/>
+   <path d="M120 8 V98 M120 98 H8 M206 182 V98 M206 98 H312 M120 52 H176"/></g>
+  <path d="${ROUTE}" fill="none" stroke="${dim}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path id="_r" d="${ROUTE}" fill="none" stroke="${col}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"
+   pathLength="1" stroke-dasharray="1" stroke-dashoffset="${(1-cov).toFixed(3)}"/>
+  <circle cx="30" cy="168" r="6" fill="${col}"/></svg>`;
+}
+
+function renderHome(p,m,tAv,mg,v,endSoc,cov){
+ const stateMsg=p.msg[v].replace('{n}',josa(p.name)).replace(/^,\s*/,'');
+ const gr=`linear-gradient(150deg,${['#1f9d57','#158a4a'][0]},#127a41)`;
+ const grad=[`linear-gradient(150deg,#22a85e,#12894a)`,`linear-gradient(150deg,#dd961f,#c07914)`,`linear-gradient(150deg,#e3536b,#c53350)`][v];
+ let statusBanner='';
+ if(phase==='clean') statusBanner=`<div class="htop"><span>🧹 청소 중 · ${cleanOpt.nm}</span><span>${(cov*100).toFixed(0)}% 진행</span></div>`;
+ else if(phase==='done') statusBanner=`<div class="htop"><span>✓ 청소 완료</span><span>도킹 중</span></div>`;
+ else if(phase==='stranded') statusBanner=`<div class="htop"><span>⚠ 도중 방전 · 복귀</span><span>${(cov*100).toFixed(0)}% 지점 중단</span></div>`;
+ else if(phase==='charge') statusBanner=`<div class="htop"><span>⚡ 충전 중</span><span>${SOC.toFixed(0)}%</span></div>`;
+ else statusBanner=`<div class="htop"><span>${P[CUR].label} · ${mid()}</span><span>실시간 예측</span></div>`;
+
+ const hero=`<div class="hero" style="background:${grad}">
+   ${statusBanner}
+   <div class="ring-wrap">
+     <div class="ring">${ringSVG(SOC,'#fff')}
+       <div class="pct"><b>${SOC.toFixed(0)}</b><span>${v===2?'충전 필요':'배터리'}</span></div></div>
+     <div class="hmsg"><div class="verd">${VL[v]}</div><div class="line">${stateMsg}</div></div>
+   </div>
+   <div class="hstat">
+     <div class="c"><div class="k">예상 사용 시간</div><div class="v">${tAv.toFixed(0)}<em>분</em></div></div>
+     <div class="c"><div class="k">여유 margin</div><div class="v">${mg>=0?'+':''}${mg.toFixed(0)}<em>분</em></div></div>
+     <div class="c"><div class="k">종료 예상 잔량</div><div class="v">${mg>=0?endSoc.toFixed(0)+'<em>%</em>':'—'}</div></div>
+   </div></div>`;
+
+ // CTA
+ let cta='';
+ if(phase==='clean'){
+   cta=`<div class="cta"><button class="big rd" onclick="stopClean()">■ 청소 중단</button></div>`;
+ }else if(phase==='charge'){
+   cta=`<div class="cta"><button class="sub" onclick="stopChargeManual()">충전 중단</button></div>`;
+ }else{
+   const full=optOf('full',m),tf=sim(SOC,full.r),vf=vOf(tf-full.req);
+   if(vf===0){
+     cta=`<div class="cta"><button class="big gr" onclick="startClean('full')">지금 청소 시작 · 전체</button></div>`;
+   }else if(vf===1){
+     const eco=optOf('eco',m),ve=vOf(sim(SOC,eco.r)-eco.req);
+     const primary=ve===0?['저소음으로 완주하기','eco','am']:['우선 구역만 청소','zone','am'];
+     cta=`<div class="cta"><button class="big ${primary[2]}" onclick="startClean('${primary[1]}')">${primary[0]}</button>
+       <button class="sub" onclick="startClean('full')">그래도 전체 청소 (완주 빠듯)</button></div>`;
+   }else{
+     cta=`<div class="cta"><button class="big rd" onclick="startCharge()">⚡ 충전 위치로 복귀</button>
+       <button class="sub" onclick="startClean('zone')">그래도 우선 구역만 시도</button></div>`;
+   }
+ }
+
+ const dark=true;
+ const detail=`<div class="card"><div class="ct">지금 상태 <span class="tag ${CC[v]}">${VL[v]}</span></div>
+   <div class="metrics">
+     <div class="m"><div class="k">실효 소모율</div><div class="v">${m.r.toFixed(2)}<em>%/분</em></div></div>
+     <div class="m"><div class="k">목표 시간</div><div class="v">${m.req}<em>분</em></div></div>
+     <div class="m"><div class="k">완주 실패율</div><div class="v">${m.abort.toFixed(0)}<em>%</em></div></div>
+   </div>
+   <div class="plan-c">
+     <div class="pl-h"><span>청소 경로 · ${phase==='clean'?'주행 중':'예상 커버리지'}</span>
+       <span class="cov" style="color:${['#3ec483','#e6b45a','#f0768a'][v]}">${(cov*100).toFixed(0)}%</span></div>
+     ${planSVG(['#3ec483','#e6b45a','#f0768a'][v],cov,true)}
+   </div></div>`;
+
+ $('v-home').innerHTML=hero+cta+detail;
+}
+
+function renderClean(p,m){
+ const kinds=['full','eco','zone'];
+ const res=kinds.map(k=>{const o=optOf(k,m);const t=sim(SOC,o.r);const mg=t-o.req;const v=vOf(mg);
+   return {o,t,mg,v,end:simEnd(SOC,o.r,o.req)}});
+ // 추천: 완주 가능한 것 중 가장 커버리지 큰(=full 우선)
+ let rec=res.find(x=>x.v===0&&x.o.nm==='전체 청소')||res.find(x=>x.v===0)||null;
+ const cards=res.map(x=>`
+   <div class="opt${rec&&x.o.nm===rec.o.nm?' rec':''}" onclick="startClean('${x.o===res[0].o?'full':x.o===res[1].o?'eco':'zone'}')">
+     <div class="oh"><div class="ic">${x.o.ic}</div>
+       <div><div class="nm">${x.o.nm}</div><div class="ds">${x.o.ds}</div></div>
+       ${rec&&x.o.nm===rec.o.nm?'<span class="rb">추천</span>':''}</div>
+     <div class="ores"><span class="chip tag ${CC[x.v]}">${VL[x.v]}</span>
+       <span class="mm">여유 <b style="color:${ACC[x.v]}">${x.mg>=0?'+':''}${x.mg.toFixed(0)}분</b></span>
+       <span class="mm" style="margin-left:auto">${x.mg>=0?'종료 '+x.end.toFixed(0)+'%':'완주 불가'}</span></div>
+   </div>`).join('');
+
+ const note=`<div class="card"><div class="ct">왜 옵션마다 다른가요?</div>
+   <div style="font-size:12px;color:var(--ink2);font-weight:600;line-height:1.6;margin-top:9px">
+   같은 잔량 <b>${SOC.toFixed(0)}%</b>라도 소모율·청소 면적에 따라 완주 여부가 달라집니다.
+   전체 청소가 빠듯하면 <b>저소음</b>(전력↓)이나 <b>우선 구역</b>(면적↓)으로 바꿔
+   <b>여유 margin +5분</b>을 확보하는 최소 조정을 제안합니다.</div></div>`;
+
+ const resvRow=`<div class="card"><div class="ct">예약 청소</div>
+   <div class="row"><div class="ri">⏰</div><div class="rt"><div class="a">매일 오전 9:00</div>
+     <div class="b">청소 12시간 전 사전 충전 알림</div></div>
+     <div class="switch on" onclick="this.classList.toggle('on')"><i></i></div></div>
+   <div class="row"><div class="ri">🔇</div><div class="rt"><div class="a">야간 저소음 모드</div>
+     <div class="b">22:00~07:00 자동 전환</div></div>
+     <div class="switch on" onclick="this.classList.toggle('on')"><i></i></div></div></div>`;
+
+ $('v-clean').innerHTML=`<div style="font-size:19px;font-weight:800;letter-spacing:-.02em;margin:6px 2px 4px">청소 시작</div>
+   <div style="font-size:12px;color:var(--mut);font-weight:600;margin:0 2px 8px">현재 잔량 ${SOC.toFixed(0)}% 기준 · 옵션별 완주 예측</div>
+   ${cards}${note}${resvRow}`;
+}
+
+function renderCare(p,m,v){
+ const cAxis=m.axes.match(/C\d/)[0];
+ const cText={C1:'상시 거치 (사용 후에도 도크 유지)',C2:'사용 후 충전',C3:'방전 후 충전 (자주 방치)'}[cAxis];
+ const coach=p.coach[SUB];
+ const risk=m.risk;
+ // 주간 데이터 (완주 실패율 기반 가상)
+ const base=m.abort;
+ const wk=[base*.9,base*1.15,base*.7,base*1.05,base*.85,base*.6,base*1.1].map(x=>Math.min(100,x));
+ const days=['월','화','수','목','금','토','일'];
+ const wkBars=wk.map((x,i)=>{const vv=x>=40?2:(x>=12?1:0);
+   return `<div class="d"><div class="bb" style="height:${Math.max(6,x).toFixed(0)}%;background:${['#3ec483','#e6b45a','#f0768a'][vv]}"></div><div class="dl">${days[i]}</div></div>`}).join('');
+
+ $('v-care').innerHTML=`<div style="font-size:19px;font-weight:800;letter-spacing:-.02em;margin:6px 2px 10px">배터리 케어</div>
+   <div class="card"><div class="ct">배터리 건강도 (SOH)</div>
+     <div class="soh"><div style="font-size:30px;font-weight:800;letter-spacing:-.03em">${SOH}<span style="font-size:15px">%</span></div>
+       <div class="bar"><i style="width:${SOH}%"></i></div>
+       <div class="lab"><span>양호</span><span>교체 권장 80%</span></div></div></div>
+
+   <div class="coach"><div class="ch">💡 ${mid()} 맞춤 수명 코칭</div>
+     <div class="cb">${coach}.<br><b>충전 습관</b> — 현재 ${cText}.</div></div>
+
+   <div class="card"><div class="ct">이 사용 패턴의 핵심 리스크</div>
+     <div class="row"><div class="ri">⚠️</div><div class="rt"><div class="a">${risk}</div>
+       <div class="b">축 조합 ${m.axes} · 실측 소모율 ${m.measured.toFixed(2)} %/분</div></div></div></div>
+
+   <div class="card"><div class="ct">이번 주 완주 실패율 <span class="tag ${base>=40?'r':base>=12?'a':'g'}">평균 ${base.toFixed(0)}%</span></div>
+     <div class="week">${wkBars}</div>
+     <div style="font-size:11.5px;color:var(--mut);font-weight:600;margin-top:10px;line-height:1.5">
+       ${base>=40?'한 번 충전으로 목표 시간을 못 채우는 패턴입니다. <b>분할 청소·우선 구역</b>을 기본 동선으로 권장합니다.'
+                 :'대부분의 세션을 한 번에 완주하고 있습니다.'}</div></div>`;
+}
+
+function renderSet(p){
+ const grid=ORDER.map(k=>`<button class="pcard${k===CUR?' on':''}" data-k="${k}" onclick="pickP('${k}')">
+   <b><em>${k}</em>${P[k].label}</b><small>${P[k].mood}</small></button>`).join('');
+ const nameField=(CUR==='A'||CUR==='B')?`<div class="field"><label>호칭</label>
+   <input type="text" id="nm" value="${p.name}" maxlength="6" oninput="P['${CUR}'].name=this.value;draw()">
+   <div class="hint">기기가 이름으로 말을 겁니다. 받침에 따라 조사가 자동으로 바뀝니다 (준우<b>야</b> · 지영<b>아</b>).</div></div>`
+   :`<div class="field"><div class="hint">${P[CUR].label}은 호칭 대신 보호자·가족 존댓말을 사용합니다.</div></div>`;
+
+ $('v-set').innerHTML=`<div style="font-size:19px;font-weight:800;letter-spacing:-.02em;margin:6px 2px 10px">설정</div>
+   <div class="card"><div class="ct">우리 집 페르소나</div>
+     <div style="font-size:11.5px;color:var(--mut);font-weight:600;margin-top:6px">말투·화면 스킨·SOC 표기 임계값이 함께 바뀝니다.</div>
+     <div class="pgrid">${grid}</div>${nameField}</div>
+   <div class="card"><div class="ct">서브타입 (제어 모델)</div>
+     <div class="row" onclick="SUB=0;draw()" style="cursor:pointer">
+       <div class="ri" style="background:${SUB===0?'#fbeef2':''}">1</div>
+       <div class="rt"><div class="a">${p.models[0]} · ${M[p.models[0]].name}</div>
+         <div class="b">${M[p.models[0]].risk}</div></div>
+       ${SUB===0?'<div class="rv" style="color:var(--lg)">선택됨</div>':''}</div>
+     <div class="row" onclick="SUB=1;draw()" style="cursor:pointer">
+       <div class="ri" style="background:${SUB===1?'#fbeef2':''}">2</div>
+       <div class="rt"><div class="a">${p.models[1]} · ${M[p.models[1]].name}</div>
+         <div class="b">${M[p.models[1]].risk}</div></div>
+       ${SUB===1?'<div class="rv" style="color:var(--lg)">선택됨</div>':''}</div></div>
+   <div class="card"><div class="ct">알림</div>
+     <div class="row"><div class="ri">🔔</div><div class="rt"><div class="a">청소 완주 예측 경고</div>
+       <div class="b">완주가 빠듯하면 시작 전에 알림</div></div><div class="switch on" onclick="this.classList.toggle('on')"><i></i></div></div>
+     <div class="row"><div class="ri">🔋</div><div class="rt"><div class="a">수명 코칭 알림</div>
+       <div class="b">충전 습관·보관 상태 주간 안내</div></div><div class="switch on" onclick="this.classList.toggle('on')"><i></i></div></div></div>`;
+}
+
+/* ── 로봇 기기 LCD ── */
+function renderDevice(p,m,v,cov){
+ const ac=['#3ecf82','#e0a341','#f0576c'][v];
+ const glow=[`radial-gradient(ellipse at 50% 42%,rgba(62,207,130,.18),transparent 65%)`,
+   `radial-gradient(ellipse at 50% 42%,rgba(224,163,65,.17),transparent 65%)`,
+   `radial-gradient(ellipse at 50% 42%,rgba(240,87,108,.17),transparent 65%)`][v];
+ $('lglow').style.background=glow;
+ $('lbrand').style.color='#e7eaed';
+ $('lcell').style.color=ac;$('lcell-i').style.width=Math.max(6,SOC)+'%';
+ $('lpct').style.color=ac;$('lpct').innerHTML=`${SOC.toFixed(0)}<small>%</small>`;
+ $('lmsg').style.color='#dfe3e7';
+ $('lmsg').textContent=p.msg[v].replace('{n}',josa(p.name)).replace(/^,\s*/,'').replace(/\n/,' ');
+ $('lverd').style.color=ac;$('lverd').textContent=VL[v];
+ $('lroute').innerHTML=`
+   <path d="${ROUTE}" fill="none" stroke="rgba(255,255,255,.13)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+   <path d="${ROUTE}" fill="none" stroke="${ac}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"
+     pathLength="1" stroke-dasharray="1" stroke-dashoffset="${(1-cov).toFixed(3)}"/>
+   <circle cx="30" cy="168" r="8" fill="${ac}"/>`;
+
+ // 로봇 상태
+ const st=$('devst'),tt=$('devst-t'),rb=$('robot');
+ st.className='dev-status';rb.style.transform='';
+ if(phase==='clean'){st.classList.add('run');tt.textContent=`청소 중 · ${cleanOpt.nm} · ${(cov*100).toFixed(0)}%`;
+   rb.style.transform=`translateX(${(Math.sin(elapsed*2)*6).toFixed(1)}px)`;}
+ else if(phase==='charge'){st.classList.add('chg');tt.textContent=`충전 중 · ${SOC.toFixed(0)}%`;}
+ else if(phase==='stranded'){st.classList.add('chg');tt.textContent='도중 방전 · 도킹 복귀';}
+ else if(phase==='done'){tt.textContent='청소 완료 · 도킹';}
+ else if(phase==='discharge'){st.classList.add('run');tt.textContent='방전 시뮬레이션 중';}
+ else tt.textContent=v===2?'충전 필요 · 도킹 권장':'대기 중 · 도킹';
+}
+
+/* ── 액션 ── */
+function stopClean(){if(timer)clearInterval(timer);timer=null;phase='idle';cleanOpt=null;elapsed=0;
+ toast('청소를 중단했습니다');draw()}
+function stopChargeManual(){if(timer)clearInterval(timer);timer=null;phase='idle';draw()}
+window.startClean=startClean;window.startCharge=startCharge;window.stopClean=stopClean;
+window.stopChargeManual=stopChargeManual;window.pickP=pickP;
+
+let tmo=null;
+function toast(t){const el=$('toast');el.textContent=t;el.classList.add('show');
+ clearTimeout(tmo);tmo=setTimeout(()=>el.classList.remove('show'),2200)}
+
+/* ── 키보드 ── */
+addEventListener('keydown',e=>{
+ const i=ORDER.indexOf(CUR);
+ if(e.target.tagName==='INPUT'&&e.target.type==='text')return;
+ if(e.code==='Space'){timer&&phase==='discharge'?stop():(phase==='idle'&&startDischarge());e.preventDefault()}
+ else if(e.key==='ArrowRight'){pickP(ORDER[(i+1)%5]);e.preventDefault()}
+ else if(e.key==='ArrowLeft'){pickP(ORDER[(i+4)%5]);e.preventDefault()}
+ else if(e.key==='ArrowUp'){stop();setSOC(SOC+2);e.preventDefault()}
+ else if(e.key==='ArrowDown'){stop();setSOC(SOC-2);e.preventDefault()}
+ else if(e.key==='1'||e.key==='2'){SUB=+e.key-1;stop();draw();e.preventDefault()}
+});
+
+draw();
+</script>
+</body>
+</html>
