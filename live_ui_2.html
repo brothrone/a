@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>파라써블 · 배터리 라이프 코칭 UI — 실시간</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--lg:#A50034;--ink:#14161a;--ink2:#464c55;--mut:#8b929c;--line:#e4e7eb;--line2:#f0f2f5;--bg:#f6f7f8}
+body{font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",Pretendard,"Malgun Gothic",sans-serif;
+ background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;min-height:100vh}
+.wrap{max-width:1440px;margin:0 auto;padding:20px 26px 32px}
+.top{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:19px;font-weight:800;letter-spacing:-.03em}h1 b{color:var(--lg)}
+.tsub{font-size:12.5px;color:var(--mut);margin-top:3px}
+.keys{margin-left:auto;font-size:11.5px;color:var(--mut);border:1px solid var(--line);background:#fff;border-radius:20px;padding:7px 14px}
+.keys b{color:var(--ink2);font-weight:700}
+.pchips{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px}
+.pchip{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:9px 15px;cursor:pointer;
+ font-family:inherit;font-size:13px;color:var(--ink2);transition:.14s;text-align:left;line-height:1.35}
+.pchip b{font-weight:800;margin-right:6px}
+.pchip small{display:block;font-size:10.5px;color:var(--mut);margin-top:2px}
+.pchip:hover{border-color:#cdd3da}
+.pchip.on{background:var(--lg);border-color:var(--lg);color:#fff}
+.pchip.on small{color:rgba(255,255,255,.72)}
+.grid{display:grid;grid-template-columns:minmax(400px,470px) 1fr;gap:32px;align-items:start}
+@media(max-width:920px){.grid{grid-template-columns:1fr}}
+
+/* ═══ 기기 — 시안 구조 ═══ */
+.stand{padding:8px 0 0}
+.bezel{border-radius:44px;padding:20px 20px 24px;transition:background-color .55s,box-shadow .55s;
+ box-shadow:0 20px 46px rgba(20,22,26,.17)}
+.brand{text-align:center;font-size:25px;font-weight:800;letter-spacing:-.035em;margin:6px 0 15px;transition:color .5s}
+.brand span{font-weight:400}
+.screen{position:relative;border-radius:34px;overflow:hidden;padding:20px 18px 16px;
+ transition:background-color .55s,box-shadow .55s;box-shadow:inset 0 2px 10px rgba(0,0,0,.09)}
+.glow{position:absolute;left:50%;top:26%;width:118%;height:62%;transform:translate(-50%,-50%);
+ border-radius:50%;transition:background .55s;pointer-events:none}
+.deco{position:absolute;inset:0;pointer-events:none}
+.deco i{position:absolute;display:block;transition:opacity .5s}
+.inner{position:relative}
+/* 배터리 행 */
+.brow{position:relative;height:26px;margin-bottom:6px;display:flex;align-items:center;justify-content:center}
+.batt{width:60px;height:22px;border-radius:6px;padding:3px;position:relative;transition:border-color .45s;border:2.5px solid}
+.batt:after{content:"";position:absolute;right:-6px;top:6px;width:4px;height:10px;border-radius:0 2px 2px 0;
+ background:currentColor;transition:background-color .45s}
+.batt i{display:block;height:100%;border-radius:2.5px;transition:width .16s linear,background-color .45s}
+.pw{position:absolute;right:2px;top:3px;width:21px;height:21px;border-radius:50%;border:2.5px solid;transition:border-color .45s}
+.pw:after{content:"";position:absolute;left:50%;top:1.5px;width:2.5px;height:8px;background:currentColor;transform:translateX(-50%)}
+.sideL,.sideR{position:absolute;top:-3px;line-height:1;transition:opacity .5s}
+.sideL{right:60%}.sideR{left:60%}
+.deco i.emo{filter:drop-shadow(0 1px 1px rgba(0,0,0,.10))}
+svg.plan text.emo{font-size:19px}
+/* 텍스트 */
+.socline{text-align:center;font-weight:800;letter-spacing:-.035em;font-variant-numeric:tabular-nums;
+ font-size:31px;line-height:1.1;transition:color .45s}
+.socline small{font-size:17px;font-weight:600;opacity:.82;margin-left:3px;letter-spacing:-.01em}
+.msg{text-align:center;font-size:19px;font-weight:700;line-height:1.4;letter-spacing:-.025em;
+ min-height:54px;display:flex;align-items:center;justify-content:center;margin:8px 2px 2px;transition:color .45s}
+.vrow{position:relative;text-align:center;margin:6px 0 0}
+.verd{display:inline-block;font-size:39px;font-weight:800;letter-spacing:-.055em;transition:color .45s}
+.slash{position:absolute;right:12%;top:-9px;transition:opacity .4s}
+.bar{height:11px;border-radius:6px;margin:11px 26px 15px;overflow:hidden;transition:background-color .5s}
+.bar i{display:block;height:100%;border-radius:6px;transition:width .16s linear,background-color .45s}
+/* 도면 */
+svg.plan{width:100%;height:190px;display:block}
+svg.plan .w{fill:none;transition:stroke .5s}
+svg.plan .fn{transition:fill .5s}
+svg.plan .rt{fill:none;stroke-width:5.5;stroke-linecap:round;stroke-linejoin="round";
+ transition:stroke .45s,stroke-dashoffset .18s linear}
+svg.plan .gh{fill:none;stroke-width:5.5;stroke-linecap:round;transition:stroke .5s}
+svg.plan text{font-size:11px;font-weight:600;transition:fill .5s}
+.cap{text-align:center;font-size:12.5px;font-weight:500;margin-top:8px;transition:color .45s}
+.vc{text-align:center;font-size:12px;margin-top:5px;transition:color .45s}
+
+/* ═══ 컨트롤 ═══ */
+.panel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:17px 19px;margin-bottom:13px}
+.ph{font-size:12.5px;font-weight:700;color:var(--ink2);margin-bottom:12px;display:flex;align-items:center;gap:9px}
+.ph .sp{margin-left:auto}
+.slrow{display:flex;align-items:center;gap:14px}
+input[type=range]{flex:1;accent-color:var(--lg);height:26px}
+.slval{font-size:29px;font-weight:800;letter-spacing:-.04em;font-variant-numeric:tabular-nums;min-width:92px;text-align:right}
+.btns{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.btn{border:1.5px solid var(--line);background:#fff;border-radius:9px;padding:9px 15px;font-family:inherit;
+ font-size:12.5px;font-weight:600;color:var(--ink2);cursor:pointer;transition:.14s}
+.btn:hover{border-color:#cdd3da}
+.btn.pri{background:var(--lg);border-color:var(--lg);color:#fff}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.kpi{border:1px solid var(--line2);background:#fbfcfd;border-radius:10px;padding:11px 13px}
+.kpi .k{font-size:11px;color:var(--mut);font-weight:600}
+.kpi .v{font-size:21px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;margin-top:3px}
+.kpi .v em{font-style:normal;font-size:12px;font-weight:600;color:var(--mut);margin-left:3px}
+.cmp{display:flex;gap:9px;flex-wrap:wrap}
+.tagx{border:1px solid var(--line);border-radius:9px;padding:9px 13px;font-size:12px;font-weight:600;color:var(--ink2)}
+.tagx b{font-weight:800}
+.tagx.g{border-color:#c5e6d3;background:#f2fbf6;color:#1c8b50}
+.tagx.a{border-color:#eedcba;background:#fdf7ec;color:#a3701c}
+.tagx.r{border-color:#f0ccd3;background:#fdf5f7;color:#d24457}
+.track{position:relative;height:84px;margin:10px 0 0}
+.zones{position:absolute;left:0;right:0;top:26px;height:26px;border-radius:7px;overflow:hidden;display:flex;border:1px solid var(--line)}
+.zones i{height:100%}
+.mk{position:absolute;transform:translateX(-50%);font-size:10px;color:var(--mut);white-space:nowrap;text-align:center;line-height:1.3}
+.mk.up{top:0}
+.mk.up:after{content:"";display:block;width:1.5px;height:9px;background:#9aa2ab;margin:3px auto 0}
+.mk.dn{top:56px;color:var(--lg);font-weight:700}
+.mk.dn:before{content:"";display:block;width:1.5px;height:9px;background:var(--lg);margin:0 auto 3px}
+.cur{position:absolute;top:20px;height:38px;width:3px;background:var(--ink);border-radius:2px;transform:translateX(-50%);
+ transition:left .18s linear;box-shadow:0 0 0 2px #fff}
+.tnote{font-size:11.5px;color:var(--mut);margin-top:14px;line-height:1.6}
+.stog{display:flex;gap:8px}
+.stog button{flex:1;border:1.5px solid var(--line);background:#fff;border-radius:9px;padding:10px 12px;
+ font-family:inherit;font-size:12.5px;cursor:pointer;color:var(--ink2);text-align:left;transition:.14s}
+.stog button b{font-weight:800;margin-right:5px}
+.stog button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:12.5px;line-height:1.65;margin-top:13px}
+.kv dt{color:var(--mut);white-space:nowrap}
+.kv dd{color:var(--ink2);font-variant-numeric:tabular-nums}
+.kv dd b{color:var(--ink);font-weight:700}
+.kv dd.rk{color:#b2403f}
+.foot{margin-top:20px;font-size:11.5px;color:var(--mut);line-height:1.75;border-top:1px solid var(--line);padding-top:14px}
+.foot b{color:var(--ink2)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div>
+      <h1>파라써블 · <b>배터리 라이프 코칭 UI</b></h1>
+      <div class="tsub">4차 UX 제안서 시안 디자인 · 잔량에 따라 화면이 실시간으로 변합니다</div>
+    </div>
+    <span class="keys"><b>Space</b> 자동 방전 · <b>← →</b> 페르소나 · <b>↑ ↓</b> 잔량 · <b>1 2</b> 서브타입</span>
+  </div>
+
+  <div class="pchips" id="pchips"></div>
+
+  <div class="grid">
+    <div class="stand">
+      <div class="bezel" id="bezel">
+        <div class="brand" id="brand">LG <span>CodeZero</span></div>
+        <div class="screen" id="scr">
+          <div class="glow" id="glow"></div>
+          <div class="deco" id="deco"></div>
+          <div class="inner">
+            <div class="brow">
+              <span class="batt" id="batt"><i id="batt-i"></i></span>
+              <span class="sideL" id="sideL"></span>
+              <span class="sideR" id="sideR"></span>
+              <span class="pw" id="pw"></span>
+            </div>
+            <div class="socline" id="s-soc"></div>
+            <div class="msg" id="s-msg"></div>
+            <div class="vrow"><span class="verd" id="s-verd"></span><span class="slash" id="slash"></span></div>
+            <div class="bar" id="bar"><i id="bar-i"></i></div>
+            <svg class="plan" viewBox="0 0 320 190" id="plan"></svg>
+            <div class="cap" id="s-cap"></div>
+            <div class="vc" id="s-voice"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel">
+        <div class="ph">배터리 잔량 <span class="sp" id="run-st"></span></div>
+        <div class="slrow">
+          <input type="range" id="soc" min="5" max="100" step="0.5" value="100">
+          <span class="slval" id="soc-v"></span>
+        </div>
+        <div class="btns">
+          <button class="btn pri" id="play">▶ 자동 방전</button>
+          <button class="btn" id="reset">만충으로</button>
+          <button class="btn" id="jump-ok">완주 경계</button>
+          <button class="btn" id="jump-ti">빠듯 경계</button>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="ph">실시간 계산</div>
+        <div class="kpis">
+          <div class="kpi"><div class="k">예상 사용 가능 시간</div><div class="v" id="k-tav"></div></div>
+          <div class="kpi"><div class="k">목표 시간 μ_T</div><div class="v" id="k-req"></div></div>
+          <div class="kpi"><div class="k">여유 margin</div><div class="v" id="k-mg"></div></div>
+          <div class="kpi"><div class="k">청소 후 예상 잔량</div><div class="v" id="k-end"></div></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="ph">판정 기준 비교 <span class="sp" id="cmp-tag"></span></div>
+        <div class="cmp" id="cmp"></div>
+        <div class="track" id="track"><div class="zones" id="zones"></div><div class="cur" id="cur"></div></div>
+        <div class="tnote">띠의 색은 <b>보정식 margin</b> 기준 판정입니다. <b>위 눈금</b>이 계산이 요구하는 경계, <b>아래 붉은 눈금</b>이 UX 제안서의 SOC 고정 임계값입니다. 두 눈금이 어긋난 구간이 4차에서 결정할 쟁점입니다.</div>
+      </div>
+      <div class="panel" style="margin-bottom:0">
+        <div class="ph">서브타입 (제어 모델) <span class="sp" id="sub-cur"></span></div>
+        <div class="stog" id="stog"></div>
+        <dl class="kv" id="sinfo"></dl>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <b>판정</b> margin = 예상 사용 가능 시간 − 목표 시간 · <b>+5분 이상</b> 완주 가능 / <b>0~5분</b> 빠듯함 / <b>미만</b> 충전 필요.
+    도면의 실선은 <b>현재 잔량으로 돌 수 있는 구간</b>이고, 흐린 선이 남는 구간입니다.<br>
+    <b>계산</b> 3차 보정식 — 기동 전력 e0 = 1.46% 세션 시작 시 차감 · 저잔량 가중 g(soc) = 1 + 2.2 × max(0, (25 − soc)/25) · 온도·SOH를 가용 용량이 아닌 소모 속도에 적용 · 0.25분 간격 방전 재현. 예약 잔량 5%.
+  </div>
+</div>
+
+<script>
+const M={"models":{"A-1":{"name":"가끔·방치형","r":2.34,"req":8,"k":1.0,"axes":"F1·D1·M2·L0·C3","risk":"저SOC 장기 보관 → 자가방전 열화","measured":2.75,"abort":7.5,"t100":36.5,"bOK":45.1,"bTI":33.4},"A-2":{"name":"가끔·상시거치형","r":2.34,"req":8,"k":1.0,"axes":"F1·D1·M2·L0·C1","risk":"만충 상시 유지 → 고SOC 스트레스","measured":2.64,"abort":0.0,"t100":36.5,"bOK":45.1,"bTI":33.4},"B-1":{"name":"짧고 잦은 터보상시","r":4.59,"req":9,"k":1.08,"axes":"F2·D1·M3·L1·C2","risk":"고전류 방전 및 발열 누적","measured":5.37,"abort":4.7,"t100":18.7,"bOK":78.6,"bTI":55.7},"B-2":{"name":"짧고 잦은 스팟터보","r":3.51,"req":8,"k":1.08,"axes":"F2·D1·M2→M3·L1·C2","risk":"특이 리스크 없음 (기준 그룹)","measured":4.09,"abort":1.0,"t100":24.4,"bOK":60.1,"bTI":42.6},"C-1":{"name":"장시간 완주형","r":1.94,"req":33,"k":1.0,"axes":"F3·D3·M1·L0·C2","risk":"1회 방전 심도(DoD) 과다","measured":2.38,"abort":50.0,"t100":44.0,"bOK":88.4,"bTI":78.7},"C-2":{"name":"장시간 분할형","r":1.94,"req":22,"k":1.0,"axes":"F3·D2·M1·L0·C1","risk":"등가 사이클 카운트 급증","measured":2.26,"abort":0.4,"t100":44.0,"bOK":67.1,"bTI":57.4},"D-1":{"name":"고빈도 다중세션형","r":5.0,"req":13,"k":1.25,"axes":"F3·D2·M3·L2·C2","risk":"완주 불가 + 급속충전 발열","measured":6.26,"abort":84.4,"t100":17.1,"bOK":100.0,"bTI":79.3},"D-2":{"name":"고빈도 팩교체형","r":5.0,"req":15,"k":1.25,"axes":"F3·D2·M3·L2·C1","risk":"팩별 사용 불균형","measured":6.23,"abort":80.2,"t100":17.1,"bOK":100.0,"bTI":89.3},"E-1":{"name":"주말 집중형","r":2.42,"req":22,"k":1.0,"axes":"F2·D3·M2·L0·C3","risk":"주중 방전 방치 + 여유 시간 부족","measured":3.01,"abort":89.8,"t100":35.3,"bOK":80.0,"bTI":67.9},"E-2":{"name":"균등 분산형","r":2.34,"req":19,"k":1.0,"axes":"F2·D2·M2·L0·C2","risk":"특이 리스크 없음 (기준 그룹)","measured":2.69,"abort":11.2,"t100":36.5,"bOK":70.8,"bTI":59.1}}}.models;
+const RES=5,E0=1.46,BETA=2.2,LOW=25,DT=0.25;
+function sim(soc,r){let s=soc-E0;if(s<=RES)return 0;let t=0;
+ while(t<600){const g=1+BETA*Math.max(0,(LOW-s)/LOW),st=r*g*DT;
+  if(s-st<=RES)return t+(s-RES)/(r*g);s-=st;t+=DT}return t}
+function simEnd(soc,r,tgt){let s=soc-E0;if(s<=RES)return RES;let t=0;
+ while(t<tgt){const g=1+BETA*Math.max(0,(LOW-s)/LOW),st=r*g*DT;
+  if(s-st<=RES)return RES;s-=st;t+=DT}return s}
+function boundary(r,req,tg){let lo=RES,hi=100;
+ for(let i=0;i<44;i++){const m=(lo+hi)/2;if(sim(m,r)-req>=tg)hi=m;else lo=m}return hi}
+const vOf=m=>m>=5?0:(m>=0?1:2);
+const josa=n=>!n?'':n+(((n.charCodeAt(n.length-1)-0xac00)%28)===0?'야':'아');
+const $=id=>document.getElementById(id);
+
+/* ── 시안 장식 아이콘 (SVG) ── */
+const ICO={
+ cloud:(c,s)=>`<svg width="${s}" height="${s*.62}" viewBox="0 0 40 25"><path d="M9 24h23a7 7 0 0 0 .6-13.9A9 9 0 0 0 15 8.2A6.5 6.5 0 0 0 9 24z" fill="#fff" stroke="${c}" stroke-width="1.8"/></svg>`,
+ star:(c,s)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24"><path d="M12 3l2.6 5.6 6.1.8-4.5 4.2 1.2 6-5.4-3-5.4 3 1.2-6L3.3 9.4l6.1-.8z" fill="#fff" stroke="${c}" stroke-width="1.7" stroke-linejoin="round"/></svg>`,
+ paw:(c,s)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="${c}"><ellipse cx="12" cy="16" rx="5.6" ry="4.6"/><ellipse cx="5.6" cy="10" rx="2.5" ry="3.2"/><ellipse cx="10" cy="6.2" rx="2.5" ry="3.3"/><ellipse cx="14.6" cy="6.2" rx="2.5" ry="3.3"/><ellipse cx="18.6" cy="10" rx="2.5" ry="3.2"/></svg>`,
+ bone:(c,s)=>`<svg width="${s}" height="${s*.55}" viewBox="0 0 34 19" fill="${c}"><rect x="8" y="6.5" width="18" height="6" rx="3"/><circle cx="6" cy="6" r="4.4"/><circle cx="6" cy="13" r="4.4"/><circle cx="28" cy="6" r="4.4"/><circle cx="28" cy="13" r="4.4"/></svg>`,
+ bowl:(c,s)=>`<svg width="${s}" height="${s*.62}" viewBox="0 0 34 21"><path d="M3 8h28l-3.4 10.5a3 3 0 0 1-2.8 2H9.2a3 3 0 0 1-2.8-2z" fill="#fff" stroke="${c}" stroke-width="1.8"/><ellipse cx="17" cy="7.6" rx="14" ry="3.6" fill="${c}" opacity=".45"/></svg>`,
+ crib:(c,s)=>`<svg width="${s}" height="${s*.72}" viewBox="0 0 40 29" stroke="${c}" stroke-width="1.8" fill="none"><path d="M4 8v15M36 8v15M4 10h32M4 22h32"/><path d="M11 10v12M18 10v12M25 10v12M32 10v12" stroke-width="1.4"/><path d="M6 23v4M34 23v4"/><rect x="4" y="16" width="32" height="6" fill="${c}" opacity=".3" stroke="none"/></svg>`,
+ house:(c,s)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 20z" fill="#fff" stroke="${c}" stroke-width="1.8" stroke-linejoin="round"/><path d="M9.5 21.5V14h5v7.5" stroke="${c}" stroke-width="1.6" fill="none"/></svg>`,
+ broom:(c,s)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" stroke="${c}" stroke-width="1.9" fill="none" stroke-linecap="round"><path d="M17 3L11 11"/><path d="M12.5 9.5l3.5 3.5-6.5 7.5-4-4z" fill="${c}" opacity=".28"/><path d="M12.5 9.5l3.5 3.5-6.5 7.5-4-4z"/><path d="M8 14l3 3" stroke-width="1.3"/></svg>`,
+ clock:(c,s)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="#fff" stroke="${c}" stroke-width="1.9"/><path d="M12 7v5.4l3.6 2.2" stroke="${c}" stroke-width="1.9" fill="none" stroke-linecap="round"/></svg>`,
+ warn:(c,s)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24"><path d="M12 3.5l9.2 16H2.8z" fill="#fff" stroke="${c}" stroke-width="1.9" stroke-linejoin="round"/><path d="M12 9v5" stroke="${c}" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.2" fill="${c}"/></svg>`,
+ baby:(c,s)=>`<svg width="${s}" height="${s}" viewBox="0 0 32 32"><circle cx="16" cy="11" r="7.6" fill="#fff" stroke="${c}" stroke-width="1.8"/><circle cx="13" cy="11" r="1.2" fill="${c}"/><circle cx="19" cy="11" r="1.2" fill="${c}"/><path d="M13.6 14.4a3.4 3.4 0 0 0 4.8 0" stroke="${c}" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M8.6 20c2-1.4 4.6-2.2 7.4-2.2s5.4.8 7.4 2.2v6a2 2 0 0 1-2 2h-10.8a2 2 0 0 1-2-2z" fill="${c}" opacity=".35" stroke="${c}" stroke-width="1.6"/></svg>`,
+ fam:(c,s)=>`<svg width="${s}" height="${s*.8}" viewBox="0 0 40 32" fill="none" stroke="${c}" stroke-width="1.8"><circle cx="10" cy="8" r="4.4" fill="#fff"/><path d="M3.4 30v-8a6.6 6.6 0 0 1 13.2 0v8"/><circle cx="26" cy="10" r="3.6" fill="#fff"/><path d="M20.6 30v-6.6a5.4 5.4 0 0 1 10.8 0V30"/><circle cx="35.5" cy="17" r="2.6" fill="#fff"/><path d="M32 30v-4a3.5 3.5 0 0 1 7 0v4"/></svg>`,
+};
+/* 페르소나별 장식 배치 [아이콘, left%, top%, 크기, 투명도] */
+const DECO={
+ A:[],
+ B:[['star',9,13,15,.75],['star',87,30,13,.6],['star',14,66,11,.5]],
+ C:[['cloud',5,10,42,.95],['cloud',6,61,34,.9],
+    ['e:⭐',88,20,19,.95],['e:🍼',18,32,21,1],['e:🌙',88,56,19,.95],['e:⭐',21,70,15,.85]],
+ D:[['e:🐾',8,11,21,.85],['e:🐾',88,15,17,.8],['e:🐾',13,34,17,.75],['e:🐾',86,62,19,.8],
+    ['e:🦴',75,9,23,1],['e:🥣',11,64,24,1],['e:🐕',85,36,20,.95]],
+ E:[['broom',9,12,20,.6],['clock',86,25,20,.6],['warn',88,36,17,.55],
+    ['fam',6,63,30,.55],['house',87,69,17,.5]],
+};
+
+/* ── 페르소나 ── */
+const P={
+ A:{label:'1인 가구 (남성)',mood:'다크 · 하이테크',models:['A-1','A-2'],name:'준우',skin:'dark',th:[70,40,15],
+  msg:['{n}, 누워있지말고\n오늘은 청소하자.','{n}, 오늘은\n짧게나마 청소하자','{n}, 나를\n충전시켜줘,,'],
+  voice:['오늘은 내가 집 전체 다 돌아볼게. 같이 시작하자!','배터리가 좀 빠듯한데, 거실만 먼저 할까?','나 잠깐 충전하고 올게. 조금만 기다려줘!'],
+  cap:['배터리 충분, 완주 권유','배터리 빠듯, 최적 경로','배터리 부족, 충전 유도'],
+  coach:['2주 미사용 시 55% 보관 충전 안내','만충 상시 유지 경고 · 80% 상한 제안']},
+ B:{label:'장모형 1인 가구 (여성)',mood:'파스텔 · 로즈골드',models:['B-1','B-2'],name:'지영',skin:'rose',th:[70,40,15],
+  msg:['{n}, 오늘은\n청소 어때?','{n}, 저소음모드로\n청소 한바퀴 어때?','{n},\n배고파, 밥줘'],
+  voice:['오늘 컨디션 좋아. 한 바퀴 돌고 올까?','조용히 거실만 먼저 정리할게.','배고파졌어. 밥 좀 줄래?'],
+  cap:['배터리 충분, 완주 권유','배터리 빠듯, 최적 경로','배터리 부족, 충전 유도'],
+  coach:['터보 8분 = 표준 15분 · 모드 다이어트 제안','주간 배터리 효율 점수 리포트 (기준 그룹)']},
+ C:{label:'영유아 가정',mood:'파스텔 · 키즈',models:['C-1','C-2'],name:'',skin:'kids',th:[88,42,7],
+  msg:['우리 아이 건강을 위해\n청소 할 준비가 됐어요!','우리 아이 건강을 위해\n저소음 모드로 가볍게 어떨까요?','우리 아이 건강을 위해\n청소기 충전을 해주세요'],
+  voice:['아이 방부터 깨끗하게 돌아볼게요.','낮잠 시간이라 저소음으로 조용히 할게요.','충전이 필요해요. 잠시 쉬었다 올게요.'],
+  cap:['배터리 충실, 전 구역 권유','배터리 부족, 저소음 모드 최적','배터리 긴급, 즉시 충전 유도'],
+  coach:['종료 예상 잔량 사전 표시 · DoD 70% 상한','분할 2회 = 0.9사이클, 통합 1회 = 0.7사이클 안내']},
+ D:{label:'반려동물 가정',mood:'우드 · 코지',models:['D-1','D-2'],name:'',skin:'wood',th:[92,45,8],
+  msg:['우리아이\n털 청소할시간이에요','가볍게\n털 청소 어때요?','우리강아지를 위해\n배터리를 충전해주세요'],
+  voice:['털 많은 곳부터 싹 치우고 올게요!','털이 제일 많은 구역만 집중해서 돌게요.','힘이 빠졌어요. 충전 좀 시켜주세요!'],
+  cap:['털 완벽 청소 권유','주요 털 구역 집중 권유','충전 필요'],
+  coach:['급속충전 직후 5분 냉각 대기 권고','팩별 사이클 편차 표시 · 교체 시점 예고']},
+ E:{label:'일반 가정',mood:'뉴트럴 · 홈',models:['E-1','E-2'],name:'',skin:'neutral',th:[70,40,15],
+  msg:['주말동안 미룬 청소를\n가족과 함께 어때요?','가족을 위해서\n가볍게 청소 어때요?','미룬 청소를 위해\n충전해주세요'],
+  voice:['주말이니까 집 전체 한 번 정리할게요.','가족들 많이 쓰는 곳부터 돌아볼게요.','충전하고 올게요. 곧 다시 시작할게요.'],
+  cap:['배터리 충분, 완주 권유','가족 주요 구역 최적 경로','배터리 부족, 충전 유도'],
+  coach:['예상 청소일 12시간 전 사전 충전 알림','경고 없이 주간 요약·예상 수명만 표시 (기준 그룹)']},
+};
+/* 스킨 — 시안의 베젤/스크린/글로우/벽/가구 톤 */
+const SK={
+ dark:{bez:['#1b1f23','#1f1c17','#1f1719'],scr:['#111417','#151310','#151011'],
+  glow:['radial-gradient(ellipse,rgba(62,207,130,.10),transparent 68%)','radial-gradient(ellipse,rgba(224,163,65,.09),transparent 68%)','radial-gradient(ellipse,rgba(240,87,108,.09),transparent 68%)'],
+  brand:'#eceef0',ink:'#f2f4f6',mut:'#8b939b',trk:['#222d26','#2b2418','#2a1a1d'],
+  wall:'#4b545e',furn:'#333a43',lab:'#6b7480',ghost:'#4f5861',ac:['#3ecf82','#e0a341','#f0576c']},
+ rose:{bez:['#dfeee3','#f6e6cd','#f8dee3'],scr:['#eef8f1','#fdf5e8','#fdf0f2'],
+  glow:['radial-gradient(ellipse,rgba(42,168,99,.13),transparent 68%)','radial-gradient(ellipse,rgba(194,135,44,.12),transparent 68%)','radial-gradient(ellipse,rgba(210,68,87,.11),transparent 68%)'],
+  brand:'#4a5a50',ink:'#2b3a31',mut:'#7b8a81',trk:['#d3e9da','#f2e2c6','#f4dbe0'],
+  wall:'#c2cdc6',furn:'#dbe4dd',lab:'#a9b4ad',ghost:'#c9cdca',ac:['#2aa863','#c2872c','#d24457']},
+ kids:{bez:['#c8ddc9','#eed9b4','#eec4cc'],scr:['#e4f2e5','#fdf2de','#fce9ed'],
+  glow:['radial-gradient(ellipse,rgba(42,168,99,.15),transparent 66%)','radial-gradient(ellipse,rgba(194,135,44,.13),transparent 66%)','radial-gradient(ellipse,rgba(210,68,87,.12),transparent 66%)'],
+  brand:'#3f5c45',ink:'#26362c',mut:'#71827a',trk:['#cfe8d4','#f3e0c2','#f4d4da'],
+  wall:'#bccdbe',furn:'#d7e3d8',lab:'#a3b1a5',ghost:'#c9cdca',ac:['#2aa863','#c2872c','#d24457']},
+ wood:{bez:['#cfdfc9','#eedcb6','#eecdc9'],scr:['#e8f2e4','#fbf0dd','#fbe9e9'],
+  glow:['radial-gradient(ellipse,rgba(42,168,99,.14),transparent 66%)','radial-gradient(ellipse,rgba(194,135,44,.13),transparent 66%)','radial-gradient(ellipse,rgba(210,68,87,.12),transparent 66%)'],
+  brand:'#4a5a44',ink:'#2a3629',mut:'#767f74',trk:['#d3e6ce','#f2e2c3','#f2d8d6',],
+  wall:'#c3cfbe',furn:'#dde5d8',lab:'#a8b3a4',ghost:'#cacdc8',ac:['#2aa863','#c2872c','#d24457']},
+ neutral:{bez:['#d2e2d3','#efdcbe','#efd0d2'],scr:['#e9f4ea','#fcf1e2','#fcebec'],
+  glow:['radial-gradient(ellipse,rgba(42,168,99,.14),transparent 66%)','radial-gradient(ellipse,rgba(194,135,44,.12),transparent 66%)','radial-gradient(ellipse,rgba(210,68,87,.12),transparent 66%)'],
+  brand:'#46584a',ink:'#283528',mut:'#78867a',trk:['#d4e8d7','#f3e2c8','#f3d8d9'],
+  wall:'#c3cfc5',furn:'#dce5dd',lab:'#a8b3a9',ghost:'#cacdca',ac:['#2aa863','#c2872c','#d24457']},
+};
+const VL=['완주 가능','빠듯함','충전 필요'], CC=['g','a','r'];
+
+/* 도면 — 시안 구조 (외벽 · 내벽 · 가구 · 8/10 라벨 · 경로) */
+const ROUTE='M30 168 L30 122 L98 122 L98 58 L152 58 L152 116 L198 116 L198 36 L266 36 L266 104 L300 104';
+$('plan').innerHTML=`
+ <g class="w" id="walls" stroke-width="1.5">
+  <rect x="8" y="8" width="304" height="174" rx="4"/>
+  <path d="M120 8 V98 M120 98 H8 M206 182 V98 M206 98 H312 M120 52 H176"/>
+  <rect x="18" y="112" width="88" height="62" rx="3"/>
+ </g>
+ <g class="fn" id="furn">
+  <rect x="28" y="134" width="48" height="34" rx="3"/>
+  <rect x="236" y="20" width="60" height="34" rx="3"/>
+  <rect x="132" y="142" width="52" height="26" rx="3"/>
+  <rect x="222" y="120" width="34" height="52" rx="3"/>
+ </g>
+ <rect id="cleaned" x="18" y="112" width="88" height="62" rx="3" opacity="0"/>
+ <text id="l10" x="26" y="30">10</text><text id="l8" x="26" y="46">8</text>
+ <path class="gh" id="ghost" d="${ROUTE}"/>
+ <path class="rt" id="route" d="${ROUTE}"/>
+ <circle id="dock" cx="30" cy="168" r="6"/>
+ <g id="props"></g>
+ <g id="charger" opacity="0"><rect x="286" y="140" width="16" height="26" rx="3"/><path d="M294 132v8" stroke-width="2.4" stroke-linecap="round"/></g>`;
+const LEN=$('route').getTotalLength();
+$('route').style.strokeDasharray=LEN;
+
+let CUR='A',SUB=0,SOC=100,timer=null;
+const ORDER=Object.keys(P);
+$('pchips').innerHTML=ORDER.map(k=>
+ `<button class="pchip${k===CUR?' on':''}" data-k="${k}"><b>${k}</b>${P[k].label}<small>${P[k].mood}</small></button>`).join('');
+$('pchips').onclick=e=>{const b=e.target.closest('.pchip');if(b)pick(b.dataset.k)};
+$('stog').onclick=e=>{const b=e.target.closest('button');if(b){SUB=+b.dataset.i;draw()}};
+$('soc').oninput=e=>{SOC=+e.target.value;stop();draw()};
+$('reset').onclick=()=>{stop();set(100)};
+$('play').onclick=()=>timer?stop():start();
+$('jump-ok').onclick=()=>{stop();set(cm().bOK)};
+$('jump-ti').onclick=()=>{stop();set(cm().bTI)};
+const cm=()=>{const m=M[P[CUR].models[SUB]];return {...m,bOK:boundary(m.r,m.req,5),bTI:boundary(m.r,m.req,0)}};
+function set(v){SOC=Math.max(5,Math.min(100,v));$('soc').value=SOC;draw()}
+function pick(k){CUR=k;SUB=0;stop();document.querySelectorAll('.pchip').forEach(x=>x.classList.toggle('on',x.dataset.k===k));set(100)}
+function start(){$('play').textContent='■ 정지';$('run-st').textContent='방전 중…';
+ timer=setInterval(()=>{SOC-=0.5;if(SOC<=5){SOC=5;stop()}$('soc').value=SOC;draw()},70)}
+function stop(){if(timer)clearInterval(timer);timer=null;$('play').textContent='▶ 자동 방전';$('run-st').textContent=''}
+
+let lastKey='';
+function draw(){
+  const p=P[CUR], m=cm(), sk=SK[p.skin];
+  const tAv=sim(SOC,m.r), mg=tAv-m.req, v=vOf(mg);
+  const ac=sk.ac[v], cov=Math.max(0,Math.min(1,tAv/Math.max(m.req,.1))), endSoc=simEnd(SOC,m.r,m.req);
+
+  /* 베젤 · 스크린 · 글로우 */
+  $('bezel').style.background=sk.bez[v];
+  $('brand').style.color=sk.brand;
+  $('scr').style.background=sk.scr[v];
+  $('glow').style.background=sk.glow[v];
+
+  /* 장식 — 페르소나 바뀔 때만 재생성 */
+  const key=CUR+'|'+v;
+  if(key!==lastKey){lastKey=key;
+   $('deco').innerHTML=DECO[CUR].map(([n,l,t,s,o])=>n.startsWith('e:')
+    ? `<i class="emo" style="left:${l}%;top:${t}%;opacity:${o};font-size:${s}px">${n.slice(2)}</i>`
+    : `<i style="left:${l}%;top:${t}%;opacity:${o}">${ICO[n](ac,s)}</i>`).join('');
+   const SD={C:['','👶'],D:['🐶','🐱']}[CUR]||['',''];
+   $('sideL').style.fontSize=$('sideR').style.fontSize='27px';
+   $('sideL').textContent=SD[0];$('sideR').textContent=SD[1];}
+  else{$('deco').querySelectorAll('i').forEach((el,i)=>{
+    const [n,,,s]=DECO[CUR][i];if(!n.startsWith('e:'))el.innerHTML=ICO[n](ac,s)})}
+
+  /* 배터리 · 텍스트 */
+  $('batt').style.borderColor=ac;$('batt').style.color=ac;
+  $('batt-i').style.width=Math.max(5,SOC)+'%';$('batt-i').style.background=ac;
+  $('pw').style.borderColor=ac;$('pw').style.color=ac;
+  $('s-soc').style.color=ac;
+  $('s-soc').innerHTML=`${SOC.toFixed(0)}<small>% ${v===2?'Empty':'Full'}</small>`;
+  $('s-msg').style.color=sk.ink;
+  $('s-msg').innerHTML=p.msg[v].replace('{n}',josa(p.name)).replace(/^,\s*/,'').split('\n').join('<br>');
+  $('s-verd').style.color=ac;$('s-verd').textContent=VL[v];
+  $('slash').style.opacity=v===0?1:0;
+  $('slash').innerHTML=`<svg width="26" height="26" viewBox="0 0 26 26" stroke="${ac}" stroke-width="3" stroke-linecap="round"><path d="M20 4l4-3M17 10l6-4M22 15l4-2"/></svg>`;
+  $('bar').style.background=sk.trk[v];
+  $('bar-i').style.width=(cov*100).toFixed(1)+'%';$('bar-i').style.background=ac;
+
+  /* 도면 */
+  $('walls').setAttribute('stroke',sk.wall);
+  $('furn').setAttribute('fill',sk.furn);
+  document.querySelectorAll('#l8,#l10').forEach(e=>e.setAttribute('fill',sk.lab));
+  $('ghost').setAttribute('stroke',sk.ghost);
+  $('route').setAttribute('stroke',ac);
+  $('route').style.strokeDashoffset=LEN*(1-cov);
+  $('dock').setAttribute('fill',ac);
+  $('cleaned').setAttribute('fill',ac);
+  $('cleaned').setAttribute('opacity',v===0?.2:0);
+  const PR={C:[['🛏️',250,50],['🧸',146,161]],D:[['🐈',252,50],['🐾',146,161]]}[CUR]||[];
+  $('props').innerHTML=PR.map(([e,x,y])=>`<text class="emo" x="${x}" y="${y}">${e}</text>`).join('');
+  $('charger').setAttribute('fill',ac);$('charger').setAttribute('stroke',ac);
+  $('charger').setAttribute('opacity',v===2?1:0);
+
+  $('s-cap').style.color=sk.mut;$('s-cap').textContent=p.cap[v];
+  $('s-voice').style.color=sk.mut;$('s-voice').textContent='♪ '+p.voice[v];
+
+  /* 수치 */
+  $('soc-v').innerHTML=`${SOC.toFixed(0)}<span style="font-size:16px">%</span>`;
+  $('k-tav').innerHTML=`${tAv.toFixed(1)}<em>분</em>`;
+  $('k-req').innerHTML=`${m.req}<em>분</em>`;
+  $('k-mg').innerHTML=`<span style="color:${ac}">${mg>=0?'+':''}${mg.toFixed(1)}</span><em>분</em>`;
+  $('k-end').innerHTML=cov>=1?`${endSoc.toFixed(0)}<em>%</em>`:`<span style="color:${sk.ac[2]}">완주 불가</span>`;
+
+  /* 기준 비교 */
+  const scr=SOC>=p.th[0]?0:(SOC>=p.th[1]?1:2);
+  $('cmp').innerHTML=`<span class="tagx ${CC[scr]}">제안서 기준 (SOC ${p.th.join('/')}) → <b>${VL[scr]}</b></span>
+   <span class="tagx ${CC[v]}">계산 기준 (margin) → <b>${VL[v]}</b></span>`;
+  $('cmp-tag').innerHTML=scr===v?'<span class="tagx g" style="padding:4px 10px;font-size:11px">일치</span>'
+   :'<span class="tagx r" style="padding:4px 10px;font-size:11px">불일치</span>';
+  const pos=x=>((x-5)/95*100);
+  const zOK=Math.max(0,100-pos(m.bOK)),zTI=Math.max(0,pos(m.bOK)-pos(m.bTI));
+  $('zones').innerHTML=`<i style="width:${(100-zOK-zTI).toFixed(2)}%;background:${sk.ac[2]}33"></i>
+   <i style="width:${zTI.toFixed(2)}%;background:${sk.ac[1]}44"></i>
+   <i style="width:${zOK.toFixed(2)}%;background:${sk.ac[0]}3d"></i>`;
+  $('track').querySelectorAll('.mk').forEach(x=>x.remove());
+  [{v:m.bTI,t:'빠듯 '+m.bTI.toFixed(0)+'%',up:1},
+   {v:m.bOK,t:'완주 '+(m.bOK>=99.5?'100%':m.bOK.toFixed(0)+'%'),up:1},
+   ...p.th.map(t=>({v:t,t:t+'%',up:0}))].forEach(x=>{
+    const e=document.createElement('div');e.className='mk '+(x.up?'up':'dn');
+    e.style.left=Math.max(3,Math.min(97,pos(x.v)))+'%';e.textContent=x.t;$('track').appendChild(e)});
+  $('cur').style.left=pos(SOC)+'%';
+
+  /* 서브타입 */
+  $('sub-cur').innerHTML=`<span style="font-size:12.5px;font-weight:800">${P[CUR].models[SUB]} · ${m.name}</span>`;
+  $('stog').innerHTML=P[CUR].models.map((x,i)=>
+   `<button data-i="${i}" class="${i===SUB?'on':''}"><b>${x}</b>${M[x].name}</button>`).join('');
+  $('sinfo').innerHTML=`<dt>실효 소모율</dt><dd><b>${m.r.toFixed(2)}</b> %/분 · 실측 ${m.measured.toFixed(2)} · k ${m.k.toFixed(2)}</dd>
+   <dt>축 조합</dt><dd>${m.axes}</dd>
+   <dt>완주 실패율</dt><dd><b>${m.abort.toFixed(1)}%</b> · 만충 ${m.t100.toFixed(1)}분</dd>
+   <dt>핵심 리스크</dt><dd class="rk">${m.risk}</dd>
+   <dt>수명 코칭</dt><dd>${p.coach[SUB]}</dd>`;
+}
+addEventListener('keydown',e=>{
+ const i=ORDER.indexOf(CUR),k=e.key.toLowerCase();
+ if(e.code==='Space'){timer?stop():start();e.preventDefault()}
+ else if(e.key==='ArrowRight'){pick(ORDER[(i+1)%5]);e.preventDefault()}
+ else if(e.key==='ArrowLeft'){pick(ORDER[(i+4)%5]);e.preventDefault()}
+ else if(e.key==='ArrowUp'){stop();set(SOC+2);e.preventDefault()}
+ else if(e.key==='ArrowDown'){stop();set(SOC-2);e.preventDefault()}
+ else if(k==='1'||k==='2'){SUB=+k-1;draw()}
+});
+draw();
+</script>
+</body>
+</html>

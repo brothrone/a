@@ -28,6 +28,14 @@ header{background:#fff;border-bottom:1px solid var(--line);padding:18px 28px;
 .pill{font-size:11px;padding:5px 11px;border-radius:99px;background:var(--line2);
   color:var(--ink2);font-weight:600;border:1px solid var(--line)}
 .pill.on{background:#fdf2f5;color:var(--brand);border-color:#f3d3dc}
+/* 실시간 UI 이동 버튼 */
+.golive{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;
+  padding:9px 16px;border-radius:99px;background:var(--brand);color:#fff;border:1px solid var(--brand);
+  text-decoration:none;letter-spacing:-.01em;transition:.15s;box-shadow:0 2px 8px rgba(165,0,52,.22)}
+.golive:hover{filter:brightness(1.1);box-shadow:0 3px 12px rgba(165,0,52,.3)}
+.golive .gi{display:inline-grid;place-items:center;width:17px;height:17px;border-radius:4px;
+  background:rgba(255,255,255,.22);font-size:10px}
+.golive .ga{font-size:14px;line-height:1}
 
 /* ── layout ─────────────────────────────── */
 main{max-width:1240px;margin:0 auto;padding:26px 28px 70px}
@@ -216,6 +224,7 @@ footer{border-top:1px solid var(--line);padding:22px 28px;text-align:center;
       <div class="hd-s">로봇청소기 사용자 맞춤형 배터리 라이프 코칭 UX 시스템 — 과제2</div>
     </div>
     <div class="hd-meta">
+      <a class="golive" href="live_ui_2.html"><span class="gi">▶</span>실시간 기기 화면<span class="ga">→</span></a>
       <span class="pill on">로봇청소기 · LG CodeZero</span>
       <span class="pill">3차 보정식 적용</span>
       <span class="pill">10개 모델 · 5개 페르소나</span>
