@@ -63,8 +63,6 @@ h1{font-size:19px;font-weight:800;letter-spacing:-.03em}h1 b{color:var(--lg)}
 .phone{position:relative;width:352px;height:730px;border-radius:52px;
  background:linear-gradient(160deg,#20242a,#0e1013);padding:13px;
  box-shadow:0 40px 90px -30px rgba(20,22,26,.55),0 0 0 2px #2a2f36,inset 0 0 0 1.5px rgba(255,255,255,.05);flex:0 0 auto}
-.phone::after{content:"";position:absolute;top:18px;left:50%;transform:translateX(-50%);
- width:118px;height:30px;background:#0b0d10;border-radius:0 0 18px 18px;z-index:6}
 .scrn{position:relative;width:100%;height:100%;border-radius:40px;overflow:hidden;display:flex;flex-direction:column;
  /* 앱 내부 테마 — 기존 변수명을 그대로 덮어써서 하위 규칙이 자동으로 따라오게 한다.
     상태 3색(--g/--a/--r)은 모델과 무관하게 고정이므로 건드리지 않는다. */
@@ -82,9 +80,7 @@ h1{font-size:19px;font-weight:800;letter-spacing:-.03em}h1 b{color:var(--lg)}
  --line:#ece0cd;--line2:#f6ede0;--lg:#C08A4B;--accSoft:#f7ecdb;--accRing:rgba(192,138,75,.16)}
 .scrn[data-m="E"]{--bg-app:#FAF7F2;--ink:#22241f;--ink2:#4b4f45;--mut:#7f8377;
  --line:#e6e3db;--line2:#f2efe9;--lg:#6F7F65;--accSoft:#eff2ec;--accRing:rgba(111,127,101,.16)}
-.stat{height:44px;flex:0 0 44px;display:flex;align-items:flex-end;justify-content:space-between;
- padding:0 24px 7px;font-size:13px;font-weight:700;color:var(--ink);z-index:5}
-.stat .rt{display:flex;gap:6px;align-items:center;font-size:12px}
+.stat{height:20px;flex:0 0 20px}       /* 화면 상단 여백 — 모서리 라운드에 헤더가 물리지 않게 */
 .app{flex:1 1 auto;overflow-y:auto;overflow-x:hidden}
 .app::-webkit-scrollbar{width:0}
 
@@ -376,7 +372,6 @@ h1{font-size:19px;font-weight:800;letter-spacing:-.03em}h1 b{color:var(--lg)}
  .stage{display:block;padding:0;gap:0}
  .phone{width:100%;height:auto;min-height:100vh;min-height:100dvh;
   border-radius:0;padding:0;box-shadow:none;background:#fbfbfc}
- .phone::after{display:none}            /* 가짜 노치 제거 — 실기기 노치가 있다 */
  .scrn{border-radius:0;height:auto;min-height:100vh;min-height:100dvh;
   padding-top:env(safe-area-inset-top,0px)}
  .stat{display:none}                    /* 가짜 상태바(9:41) 제거 */
