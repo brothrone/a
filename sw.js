@@ -1,7 +1,7 @@
 /* 파라써블 코칭 데모 — 오프라인 캐시 서비스워커
    발표장 네트워크가 끊겨도 데모가 그대로 돌아가야 하므로 전체를 미리 캐시한다.
    캐시를 갱신하려면 VERSION 을 올린다. */
-const VERSION = 'coach-v4';
+const VERSION = 'coach-v5';
 const PRECACHE = [
   './',
   './index.html',
@@ -24,7 +24,9 @@ const LINES = [
   "D-0","D-1","D-2","E-0","E-1","E-2",
   "sys-stranded","sys-split1","sys-split2","sys-done","sys-charged",
 ];
-const PACKS = ["lua","jay","harin","yuna","dohyun"];
+const PACKS = ["iu","hanni","karina","jk","san","bogum",
+  "tiniping","pororo","jjanggu","dog","cat","petetc",
+  "lyw","hyunbin","sks"];
 for (const l of LINES) PRECACHE.push(`./audio/lines/${l}.m4a`);
 for (const p of PACKS) PRECACHE.push(`./audio/preview/${p}.m4a`);
 

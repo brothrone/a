@@ -65,7 +65,23 @@ h1{font-size:19px;font-weight:800;letter-spacing:-.03em}h1 b{color:var(--lg)}
  box-shadow:0 40px 90px -30px rgba(20,22,26,.55),0 0 0 2px #2a2f36,inset 0 0 0 1.5px rgba(255,255,255,.05);flex:0 0 auto}
 .phone::after{content:"";position:absolute;top:18px;left:50%;transform:translateX(-50%);
  width:118px;height:30px;background:#0b0d10;border-radius:0 0 18px 18px;z-index:6}
-.scrn{position:relative;width:100%;height:100%;border-radius:40px;overflow:hidden;background:#fbfbfc;display:flex;flex-direction:column}
+.scrn{position:relative;width:100%;height:100%;border-radius:40px;overflow:hidden;display:flex;flex-direction:column;
+ /* 앱 내부 테마 — 기존 변수명을 그대로 덮어써서 하위 규칙이 자동으로 따라오게 한다.
+    상태 3색(--g/--a/--r)은 모델과 무관하게 고정이므로 건드리지 않는다. */
+ --bg-app:#fbfbfc;--card:#ffffff;--accRing:rgba(165,0,52,.09);
+ --ink:#14161a;--ink2:#464c55;--mut:#6f7680;--line:#e7e9ec;--line2:#f1f3f5;--lg:#A50034;--accSoft:#fdf5f7;
+ background:var(--bg-app);color:var(--ink);transition:background .3s,color .3s}
+/* 모델별 무드 (HANDOFF 2.4) */
+.scrn[data-m="A"]{--bg-app:#12171F;--card:#1a212b;--ink:#eef2f6;--ink2:#c3ccd6;--mut:#8d99a6;
+ --line:#2b3542;--line2:#1f2733;--lg:#3ddb84;--accSoft:#17242c;--accRing:rgba(61,219,132,.16)}
+.scrn[data-m="B"]{--bg-app:#FDF6F3;--ink:#2b1f1c;--ink2:#5c4a43;--mut:#8d7b74;
+ --line:#efe1db;--line2:#f8efeb;--lg:#C79A8E;--accSoft:#fbeee9;--accRing:rgba(199,154,142,.16)}
+.scrn[data-m="C"]{--bg-app:#F4FAF2;--ink:#1d2a20;--ink2:#415446;--mut:#7a8a7e;
+ --line:#dceadd;--line2:#eef7ef;--lg:#4E9E72;--accSoft:#e9f5ec;--accRing:rgba(78,158,114,.16)}
+.scrn[data-m="D"]{--bg-app:#FAF3E8;--ink:#2b2318;--ink2:#574936;--mut:#8b7b66;
+ --line:#ece0cd;--line2:#f6ede0;--lg:#C08A4B;--accSoft:#f7ecdb;--accRing:rgba(192,138,75,.16)}
+.scrn[data-m="E"]{--bg-app:#FAF7F2;--ink:#22241f;--ink2:#4b4f45;--mut:#7f8377;
+ --line:#e6e3db;--line2:#f2efe9;--lg:#6F7F65;--accSoft:#eff2ec;--accRing:rgba(111,127,101,.16)}
 .stat{height:44px;flex:0 0 44px;display:flex;align-items:flex-end;justify-content:space-between;
  padding:0 24px 7px;font-size:13px;font-weight:700;color:var(--ink);z-index:5}
 .stat .rt{display:flex;gap:6px;align-items:center;font-size:12px}
@@ -90,9 +106,9 @@ h1{font-size:19px;font-weight:800;letter-spacing:-.03em}h1 b{color:var(--lg)}
 .wtag{font-size:11px;font-weight:800;color:var(--lg);letter-spacing:.03em}
 
 .mcard{display:flex;align-items:center;gap:13px;border:1.5px solid var(--line);border-radius:16px;
- padding:14px;margin-bottom:10px;cursor:pointer;transition:.14s;background:#fff}
+ padding:14px;margin-bottom:10px;cursor:pointer;transition:.14s;background:var(--card)}
 .mcard:hover{border-color:#cdd2d8}
-.mcard.on{border-color:var(--lg);background:#fdf5f7;box-shadow:0 0 0 3px #a5003415}
+.mcard.on{border-color:var(--lg);background:var(--accSoft);box-shadow:0 0 0 3px var(--accRing)}
 .mcard .mi{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;flex:0 0 auto;
  font-size:15px;font-weight:800;color:#fff}
 .mcard .mt{flex:1}
@@ -116,11 +132,11 @@ h1{font-size:19px;font-weight:800;letter-spacing:-.03em}h1 b{color:var(--lg)}
 .pfield input[type=range]{width:100%;accent-color:var(--lg);margin-top:11px}
 .pfield .ticks{display:flex;justify-content:space-between;font-size:10.5px;color:var(--mut);font-weight:700;margin-top:3px}
 .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:11px}
-.chip-t{border:1.5px solid var(--line);background:#fff;border-radius:11px;padding:9px 13px;font-size:12px;
+.chip-t{border:1.5px solid var(--line);background:var(--card);border-radius:11px;padding:9px 13px;font-size:12px;
  font-weight:700;color:var(--ink2);cursor:pointer;transition:.14s}
-.chip-t.on{border-color:var(--lg);background:#fdf5f7;color:var(--lg)}
+.chip-t.on{border-color:var(--lg);background:var(--accSoft);color:var(--lg)}
 .seg{display:flex;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:11px}
-.seg button{flex:1;border:0;background:#fff;padding:11px 6px;font-size:12px;font-weight:700;color:var(--mut);cursor:pointer;border-left:1px solid var(--line)}
+.seg button{flex:1;border:0;background:var(--card);padding:11px 6px;font-size:12px;font-weight:700;color:var(--mut);cursor:pointer;border-left:1px solid var(--line)}
 .seg button:first-child{border-left:0}
 .seg button.on{background:var(--lg);color:#fff}
 .derived{background:var(--line2);border-radius:14px;padding:13px 15px;margin-top:18px;display:flex;gap:8px}
@@ -130,21 +146,56 @@ h1{font-size:19px;font-weight:800;letter-spacing:-.03em}h1 b{color:var(--lg)}
 .derived .d .v em{font-size:11px;font-style:normal;color:var(--mut);font-weight:700}
 
 .vcard{display:flex;align-items:center;gap:13px;border:1.5px solid var(--line);border-radius:16px;
- padding:12px 14px;margin-bottom:10px;cursor:pointer;transition:.14s;background:#fff;position:relative;overflow:hidden}
-.vcard.on{border-color:var(--lg);background:#fdf5f7}
+ padding:12px 14px;margin-bottom:10px;cursor:pointer;transition:.14s;background:var(--card);position:relative;overflow:hidden}
+.vcard.on{border-color:var(--lg);background:var(--accSoft);box-shadow:0 0 0 3px var(--accRing)}
 .vcard .av{width:46px;height:46px;border-radius:99px;flex:0 0 auto;display:grid;place-items:center;
  color:#fff;font-size:20px;box-shadow:inset 0 -6px 14px rgba(0,0,0,.12)}
 .vcard .vt{flex:1}
 .vcard .vt .a{font-size:14.5px;font-weight:800}
 .vcard .vt .b{font-size:11.5px;color:var(--mut);font-weight:600;margin-top:2px}
-.vcard .play{width:34px;height:34px;border-radius:99px;border:1.5px solid var(--line);background:#fff;
+.vcard .play{width:34px;height:34px;border-radius:99px;border:1.5px solid var(--line);background:var(--card);
  display:grid;place-items:center;flex:0 0 auto;cursor:pointer;color:var(--lg);font-size:12px}
 .vcard.on .play{border-color:var(--lg);background:var(--lg);color:#fff}
 .vnote{font-size:11px;color:var(--mut);font-weight:600;line-height:1.5;background:var(--as);border-radius:11px;padding:11px 13px;margin-top:6px}
 .vnote b{color:#96610b}
 
+/* ── 한 화면에 질문 하나 ── */
+.prog{height:4px;border-radius:99px;background:var(--line);overflow:hidden;margin:2px 0 18px}
+.prog i{display:block;height:100%;background:var(--lg);border-radius:99px;transition:width .28s cubic-bezier(.32,.72,0,1)}
+.qnum{font-size:11px;font-weight:800;color:var(--lg);letter-spacing:.03em}
+.qq{font-size:21px;font-weight:800;letter-spacing:-.03em;margin:5px 0 6px;line-height:1.34;word-break:keep-all}
+.qs{font-size:12.5px;color:var(--mut);font-weight:600;line-height:1.55;margin-bottom:18px;word-break:keep-all}
+.opts{display:flex;flex-direction:column;gap:9px}
+.opts.two{display:grid;grid-template-columns:1fr 1fr}
+.opt{display:flex;align-items:center;gap:12px;border:1.5px solid var(--line);border-radius:16px;
+ padding:16px 15px;cursor:pointer;background:var(--card);transition:.14s;text-align:left}
+.opt:hover{border-color:var(--mut)}
+.opt.on{border-color:var(--lg);background:var(--accSoft);box-shadow:0 0 0 3px var(--accRing)}
+.opt .oi{font-size:21px;flex:0 0 auto;width:28px;text-align:center}
+.opt .ob{flex:1;min-width:0}
+.opt .ot{font-size:14.5px;font-weight:800;color:var(--ink);letter-spacing:-.02em}
+.opt .od{font-size:11.5px;font-weight:600;color:var(--mut);margin-top:2px;word-break:keep-all}
+.opts.two .opt{flex-direction:column;align-items:flex-start;gap:7px;padding:15px 13px}
+.opts.two .opt .ot{font-size:14px}
+
+/* ── 결과 요약 ── */
+.rsum{border:1px solid var(--line);background:var(--card);border-radius:18px;padding:16px;margin-bottom:11px}
+.rsum .rt{font-size:11px;font-weight:800;color:var(--mut);letter-spacing:.03em}
+.rsum .rv{font-size:19px;font-weight:800;letter-spacing:-.03em;margin-top:4px;color:var(--ink)}
+.rsum .rv em{font-style:normal;color:var(--lg)}
+.rsum .rw{font-size:12px;font-weight:600;color:var(--ink2);line-height:1.55;margin-top:8px;
+ background:var(--accSoft);border-radius:11px;padding:10px 12px;word-break:keep-all}
+.rlist{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}
+.rlist span{font-size:11px;font-weight:700;color:var(--ink2);background:var(--line2);
+ border-radius:9px;padding:6px 10px}
+.rcalc{display:flex;gap:8px;margin-bottom:11px}
+.rcalc .c{flex:1;background:var(--line2);border-radius:13px;padding:11px 8px;text-align:center}
+.rcalc .c .k{font-size:10px;color:var(--mut);font-weight:700}
+.rcalc .c .v{font-size:16px;font-weight:800;margin-top:3px;color:var(--ink)}
+.rcalc .c .v em{font-size:10.5px;font-style:normal;color:var(--mut);font-weight:700}
+
 .wnav{display:flex;gap:10px;margin-top:20px}
-.wnav button{flex:1;border-radius:15px;padding:15px;font-size:14.5px;font-weight:800;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink2);transition:.14s}
+.wnav button{flex:1;border-radius:15px;padding:15px;font-size:14.5px;font-weight:800;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink2);transition:.14s}
 .wnav button.next{flex:2;background:var(--lg);color:#fff;border-color:var(--lg)}
 .wnav button.next:disabled{opacity:.4;cursor:not-allowed}
 
@@ -169,32 +220,20 @@ h1{font-size:19px;font-weight:800;letter-spacing:-.03em}h1 b{color:var(--lg)}
 .hstat .c .v{font-size:16px;font-weight:800;margin-top:2px}
 .hstat .c .v em{font-size:10.5px;font-style:normal;font-weight:700;opacity:.85;margin-left:1px}
 
-/* 보이스 재생 바 */
-.voicebar{display:flex;align-items:center;gap:11px;background:#111417;border-radius:16px;padding:12px 14px;margin-top:12px}
-.voicebar .av{width:38px;height:38px;border-radius:99px;flex:0 0 auto;display:grid;place-items:center;color:#fff;font-size:17px}
-.voicebar .vinfo{flex:1;min-width:0}
-.voicebar .vinfo .nm{font-size:11px;font-weight:800;color:#cfd5db}
-.voicebar .vinfo .ln{font-size:12.5px;font-weight:600;color:#fff;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.voicebar.muted{background:#20242a}
-.voicebar.muted .vinfo .ln{color:#9aa3ab;white-space:normal;line-height:1.45}
-.eq{display:flex;align-items:flex-end;gap:2.5px;height:22px;flex:0 0 auto}
-.eq i{width:3px;background:#7ee2a8;border-radius:2px;height:5px}
-.eq.spk i{animation:eqb .7s infinite ease-in-out}
-.eq.spk i:nth-child(2){animation-delay:.1s}.eq.spk i:nth-child(3){animation-delay:.25s}.eq.spk i:nth-child(4){animation-delay:.15s}.eq.spk i:nth-child(5){animation-delay:.3s}
-@keyframes eqb{0%,100%{height:5px}50%{height:20px}}
-
 /* CTA */
+.mutebar{background:var(--as);color:#96610b;border-radius:13px;padding:12px 14px;margin-top:12px;
+ font-size:12px;font-weight:800;line-height:1.5;word-break:keep-all}
 .cta{margin-top:13px;display:flex;flex-direction:column;gap:9px}
 .big{width:100%;border:0;border-radius:15px;padding:16px;font-size:15px;font-weight:800;letter-spacing:-.02em;
  cursor:pointer;transition:.14s;display:flex;align-items:center;justify-content:center;gap:8px}
 .big:active{transform:translateY(1px)}
 .big:disabled{opacity:.45;cursor:not-allowed}
 .big.gr{background:var(--g);color:#fff}.big.am{background:#bf7c10;color:#fff}.big.rd{background:var(--r);color:#fff}
-.sub{width:100%;border:1px solid var(--line);background:#fff;border-radius:15px;padding:13px;font-size:13.5px;font-weight:700;color:var(--ink2);cursor:pointer;transition:.14s}
+.sub{width:100%;border:1px solid var(--line);background:var(--card);border-radius:15px;padding:13px;font-size:13.5px;font-weight:700;color:var(--ink2);cursor:pointer;transition:.14s}
 .sub:hover{border-color:#cdd2d8}
 
 /* 카드 */
-.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:15px 16px;margin-top:13px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:15px 16px;margin-top:13px}
 .card .ct{font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:space-between;gap:8px}
 .card .ct .tag{font-size:11px;font-weight:800;padding:3px 9px;border-radius:99px;white-space:nowrap}
 .tag.g{background:var(--gs);color:var(--g)}.tag.a{background:var(--as);color:#96610b}.tag.r{background:var(--rs);color:var(--r)}
@@ -206,7 +245,9 @@ h1{font-size:19px;font-weight:800;letter-spacing:-.03em}h1 b{color:var(--lg)}
 .zones .z .zi{font-size:19px}
 .zones .z .zn{font-size:10.5px;font-weight:700;color:var(--ink2);margin-top:3px}
 .zones .z .zt{font-size:9px;font-weight:700;color:var(--mut);margin-top:1px}
-.zones .z.sel{border-color:#bfe6cd;background:#eef8f1}
+.zones .z.sel{border-color:var(--g);background:var(--gs)}
+.zones .z.sel .zn{color:#14663f}
+.zones .z.sel .zt{color:#3a7f5e}
 .zones .z.sel::after{content:"✓";position:absolute;top:4px;right:6px;font-size:10px;font-weight:800;color:var(--g)}
 .zones .z.done{border-color:var(--g);background:var(--g)}
 .zones .z.done .zn,.zones .z.done .zt{color:#fff}
@@ -215,25 +256,16 @@ h1{font-size:19px;font-weight:800;letter-spacing:-.03em}h1 b{color:var(--lg)}
 .znote{font-size:11.5px;color:var(--mut);font-weight:600;line-height:1.55;margin-top:11px}
 .znote b{color:var(--ink2)}
 .zquick{display:flex;gap:6px}
-.zquick button{border:1px solid var(--line);background:#fff;border-radius:9px;padding:4px 10px;font-size:10.5px;font-weight:700;color:var(--ink2);cursor:pointer}
-
-/* 완주 리포트 */
-.report{background:linear-gradient(140deg,#eef8f1,#fff);border:1px solid #cfe9d9;border-radius:18px;padding:15px 16px;margin-top:13px}
-.report .rh{font-size:13px;font-weight:800;color:var(--g)}
-.report .rrow{display:flex;gap:8px;margin-top:11px}
-.report .rc{flex:1;background:#fff;border:1px solid var(--line2);border-radius:12px;padding:9px 11px;text-align:center}
-.report .rc .k{font-size:10px;font-weight:700;color:var(--mut)}
-.report .rc .v{font-size:15px;font-weight:800;margin-top:2px}
-.report .rfoot{font-size:11px;color:var(--mut);font-weight:600;margin-top:10px;line-height:1.5}
+.zquick button{border:1px solid var(--line);background:var(--card);border-radius:9px;padding:4px 10px;font-size:10.5px;font-weight:700;color:var(--ink2);cursor:pointer}
 
 /* 수명 코칭 */
-.coach{background:linear-gradient(140deg,#fbeef2,#fff);border:1px solid #f0d9e0;border-radius:16px;padding:13px 15px;margin-top:12px}
+.coach{background:var(--accSoft);border:1px solid var(--line);border-radius:16px;padding:13px 15px;margin-top:12px}
 .coach .ch{font-size:12px;font-weight:800;color:var(--lg);display:flex;align-items:center;gap:7px}
 .coach .cb{font-size:12px;font-weight:600;line-height:1.5;margin-top:6px;color:var(--ink2)}
 .coach .cb b{color:var(--ink);font-weight:800}
 
 .opfoot{display:flex;gap:9px;margin-top:14px}
-.opfoot button{flex:1;border:1px solid var(--line);background:#fff;border-radius:13px;padding:12px 6px;font-size:12px;font-weight:700;color:var(--ink2);cursor:pointer}
+.opfoot button{flex:1;border:1px solid var(--line);background:var(--card);border-radius:13px;padding:12px 6px;font-size:12px;font-weight:700;color:var(--ink2);cursor:pointer}
 .opfoot button:hover{border-color:#cdd2d8}
 
 /* 토스트 */
@@ -353,10 +385,10 @@ h1{font-size:19px;font-weight:800;letter-spacing:-.03em}h1 b{color:var(--lg)}
 
  /* 앱 헤더 — 뒤로가기 + 배터리 */
  .ahead{position:sticky;top:env(safe-area-inset-top,0px);z-index:8;
-  background:rgba(251,251,252,.92);backdrop-filter:saturate(180%) blur(12px);
+  background:var(--bg-app);
   padding:12px 16px;border-bottom:1px solid var(--line2)}
  .mback{display:grid;place-items:center;width:34px;height:34px;flex:0 0 auto;
-  border-radius:99px;border:1px solid var(--line);background:#fff;
+  border-radius:99px;border:1px solid var(--line);background:var(--card);
   color:var(--ink2);font-size:15px;font-weight:800;text-decoration:none}
  .ahead .logo{font-size:15px}
  .conn{font-size:10.5px}
@@ -585,27 +617,57 @@ const P={
     voice:['주말이니까 집 전체 한 번 정리할게요.','가족들 많이 쓰는 곳부터 돌아볼게요.','충전하고 올게요. 곧 다시 시작할게요.']},
 };
 
-/* 아이돌 AI 보이스팩 — 전원 가상 아티스트 (실존 인물 아님)
-   실명·실제 음성은 초상권/음성권 문제로 데모에서도 사용하지 않는다.
-   톤 차이는 브라우저 TTS의 rate/pitch 조합으로만 표현한다. */
+/* 아이돌 AI 보이스팩 — 모드별로 선택지가 다르다.
+   ※ 표기된 인물·캐릭터는 적용 예시이며, 실제 서비스에는 음성권·저작권 계약이 선행되어야 한다.
+      데모의 소리는 시스템 TTS 합성음이고 실제 인물의 목소리를 복제한 것이 아니다. */
 const VOICE={
- lua:{name:'루아 (LUA)',tone:'감성적이고 따뜻한 톤',c:'#d06b86',emoji:'🎤',shift:1.00,tts:{rate:.95,pitch:1.25},
-     pv:'안녕하세요, 루아예요. 오늘 청소, 저랑 같이 시작해요!'},
- jay:{name:'제이 (JAY)',tone:'부드럽고 감미로운 톤',c:'#6a63c9',emoji:'🎧',shift:0.90,tts:{rate:.95,pitch:.9},
-     pv:'제이예요. 오늘도 깔끔하게 정리해볼까요?'},
- harin:{name:'하린 (HARIN)',tone:'밝고 경쾌한 톤',c:'#e08a3a',emoji:'🐰',shift:1.14,tts:{rate:1.12,pitch:1.3},
-     pv:'하린이에요! 우리 같이 반짝반짝하게 만들어요!'},
- yuna:{name:'유나 (YUNA)',tone:'사랑스럽고 환한 톤',c:'#cf6bad',emoji:'💖',shift:1.07,tts:{rate:1.05,pitch:1.35},
-     pv:'유나예요! 오늘도 기분 좋게 청소 완주해봐요!'},
- dohyun:{name:'도현 (DOHYUN)',tone:'편안하고 든든한 톤',c:'#4a86b0',emoji:'🎙️',shift:0.84,tts:{rate:.92,pitch:.75},
-     pv:'도현입니다. 오늘도 든든하게 함께하겠습니다.'},
+ /* A — 1인 가구 (남성) */
+ iu      :{name:'아이유',       tone:'감성적이고 따뜻한 톤', c:'#d06b86',emoji:'🎤',shift:1.02,tts:{rate:.98,pitch:1.25},
+           pv:'안녕하세요, 아이유예요. 오늘 청소, 저랑 같이 시작해요!'},
+ hanni   :{name:'뉴진스 하니',   tone:'밝고 경쾌한 톤',      c:'#e08a3a',emoji:'🐰',shift:1.14,tts:{rate:1.12,pitch:1.30},
+           pv:'하니예요! 우리 같이 반짝반짝하게 만들어요!'},
+ karina  :{name:'카리나',       tone:'시크하고 세련된 톤',   c:'#6aa7d0',emoji:'❄️',shift:1.06,tts:{rate:1.02,pitch:1.10},
+           pv:'카리나예요. 오늘도 깔끔하게 끝내볼까요?'},
+ /* B — 1인 가구 (여성) */
+ jk      :{name:'BTS 정국',     tone:'부드럽고 감미로운 톤', c:'#6a63c9',emoji:'🎧',shift:0.90,tts:{rate:.95,pitch:.90},
+           pv:'정국이에요. 오늘도 깔끔하게 정리해볼까요?'},
+ san     :{name:'에이티즈 최산', tone:'시원하고 활기찬 톤',   c:'#3f9e8c',emoji:'🌊',shift:0.88,tts:{rate:1.00,pitch:.88},
+           pv:'에이티즈 산이에요. 오늘 청소 같이 해요!'},
+ bogum   :{name:'박보검',       tone:'차분하고 다정한 톤',   c:'#a8875f',emoji:'🌿',shift:0.84,tts:{rate:.92,pitch:.82},
+           pv:'박보검입니다. 오늘도 기분 좋게 시작해요.'},
+ /* C — 영유아 가정 */
+ tiniping:{name:'티니핑',       tone:'사랑스럽고 발랄한 톤', c:'#ef8fb8',emoji:'💗',shift:1.28,tts:{rate:1.15,pitch:1.60},
+           pv:'반가워핑! 오늘도 깨끗하게 만들어핑!'},
+ pororo  :{name:'뽀로로',       tone:'친근하고 씩씩한 톤',   c:'#4a86b0',emoji:'🐧',shift:1.20,tts:{rate:1.10,pitch:1.45},
+           pv:'안녕! 나는 뽀로로야. 같이 청소하러 가자!'},
+ jjanggu :{name:'짱구',         tone:'장난스럽고 유쾌한 톤', c:'#e0b13a',emoji:'✏️',shift:1.16,tts:{rate:1.08,pitch:1.40},
+           pv:'나는 짱구예요! 청소 시작해볼까요?'},
+ /* D — 반려동물 가정 */
+ dog     :{name:'강아지',       tone:'반갑고 활기찬 톤',     c:'#c08a4b',emoji:'🐶',shift:1.18,tts:{rate:1.10,pitch:1.35},
+           pv:'멍멍! 산책 대신 청소부터 같이 가요!'},
+ cat     :{name:'고양이',       tone:'나른하고 도도한 톤',   c:'#8d8f96',emoji:'🐱',shift:1.24,tts:{rate:.95,pitch:1.50},
+           pv:'야옹. 털 날리기 전에 얼른 치워요.'},
+ petetc  :{name:'그 외 동물',   tone:'차분하고 다정한 톤',   c:'#7bb3a0',emoji:'🐾',shift:1.00,tts:{rate:1.00,pitch:1.15},
+           pv:'우리 아이 털, 제가 책임질게요!'},
+ /* E — 일반 가정 */
+ lyw     :{name:'임영웅',       tone:'편안하고 든든한 톤',   c:'#4a86b0',emoji:'🎙️',shift:0.86,tts:{rate:.92,pitch:.75},
+           pv:'임영웅입니다. 오늘도 든든하게 함께하겠습니다.'},
+ hyunbin :{name:'현빈',         tone:'낮고 부드러운 톤',     c:'#5f6b78',emoji:'🎬',shift:0.82,tts:{rate:.90,pitch:.72},
+           pv:'현빈입니다. 오늘 집 정리, 같이 해볼까요?'},
+ sks     :{name:'성시경',       tone:'따뜻하고 차분한 톤',   c:'#a0785c',emoji:'☕',shift:0.88,tts:{rate:.94,pitch:.80},
+           pv:'성시경이에요. 편안하게 한 바퀴 돌아볼게요.'},
 };
-const VORDER=['lua','jay','harin','yuna','dohyun'];
+/* 모드별 선택 가능한 보이스팩 */
+const VOICE_OF={
+ A:['iu','hanni','karina'],
+ B:['jk','san','bogum'],
+ C:['tiniping','pororo','jjanggu'],
+ D:['dog','cat','petetc'],
+ E:['lyw','hyunbin','sks'],
+};
 
 const LOADS={'카펫':0.15,'반려동물':0.10,'장모':0.08};
-const LOAD_LABEL={'카펫':'카펫·러그','반려동물':'반려동물 털','장모':'긴 머리 엉킴'};
 function kOf(loads){let s=0;loads.forEach(l=>s+=LOADS[l]||0);return Math.min(1.40,1+s)}
-const TIMES=['아침','오후','저녁','심야'];
 const ROOMS=[{n:'거실',i:'🛋️'},{n:'주방',i:'🍽️'},{n:'침실',i:'🛏️'},{n:'복도',i:'🚪'},{n:'현관',i:'🧹'}];
 
 /* ── 3차 최종 보정식 (결과보고 슬라이드 9) ── */
@@ -622,7 +684,49 @@ const CC=['g','a','r'];
 const reqFromArea=py=>Math.max(5,Math.round(py*0.82+2));
 
 /* ══════════ 상태 ══════════ */
-let W={step:1,model:null,sub:0,area:7,loads:[],time:'저녁',voice:null};
+/* 답변은 하나씩 쌓이고, 세부 유형(A-1/A-2 …)은 코드가 답변에서 추론한다 */
+let W={step:1,model:null,sub:0,voice:null,
+       area:7,carpet:false,pet:false,hair:false,time:null,session:null,dock:null};
+
+/* 질문 — 한 화면에 하나씩 */
+const QS=[
+ {k:'area',   q:'집 평수는 어떻게 되나요?',            s:'청소할 면적에 따라 완주 가능 여부가 달라져요.'},
+ {k:'carpet', q:'카펫이나 러그를 사용하나요?',          s:'카펫 위에서는 흡입 부하가 커져 배터리가 더 빨리 줄어요.'},
+ {k:'pet',    q:'반려동물을 키우나요?',                s:'날리는 털이 브러시 부하를 높여요.'},
+ {k:'hair',   q:'머리카락이 많이 떨어지나요?',          s:'긴 머리카락은 브러시에 엉켜 소모를 늘려요.'},
+ {k:'time',   q:'주로 언제 청소하시나요?',              s:'시간대에 따라 음성을 끄고 화면으로만 안내해요.'},
+ {k:'session',q:'한 번에 몰아서 청소하시나요?',          s:'청소 습관에 따라 배터리에 걸리는 부담이 달라져요.'},
+ {k:'dock',   q:'청소기를 거치대에 항상 꽂아두나요?',     s:'보관 습관은 배터리 열화 속도에 직접 영향을 줘요.'},
+];
+const STEP_Q0=2, STEP_VOICE=STEP_Q0+QS.length, STEP_RESULT=STEP_VOICE+1, STEP_LAST=STEP_RESULT;
+
+/* 세부 유형 추론 — 답변에서 A-1/A-2 를 가른다.
+   A 는 보관 습관이, 나머지는 한 번에 하는지 나눠 하는지가 갈림점이다. */
+const SUB_RULE={
+ A:{k:'dock',   map:{always:1,ondemand:0},
+    why:{1:'거치대에 항상 꽂아두는 습관 → 만충이 오래 유지되어 고SOC 스트레스가 쌓입니다',
+         0:'쓸 때만 꺼내 두는 습관 → 낮은 잔량으로 방치되어 자가방전 열화가 진행됩니다'}},
+ B:{k:'session',map:{batch:0,split:1},
+    why:{0:'한 번에 몰아서 청소 → 고전류로 길게 쓰는 터보 상시형에 가깝습니다',
+         1:'나눠서 여러 번 청소 → 필요한 곳만 짧게 쓰는 스팟형에 가깝습니다'}},
+ C:{k:'session',map:{batch:0,split:1},
+    why:{0:'한 번에 몰아서 청소 → 1회 방전 심도가 깊은 완주형입니다',
+         1:'나눠서 여러 번 청소 → 등가 사이클이 빠르게 늘어나는 분할형입니다'}},
+ D:{k:'session',map:{batch:1,split:0},
+    why:{1:'한 번에 몰아서 청소 → 여분 팩을 갈아 끼우며 이어 쓰는 팩교체형입니다',
+         0:'나눠서 여러 번 청소 → 급속충전이 잦아지는 다중세션형입니다'}},
+ E:{k:'session',map:{batch:0,split:1},
+    why:{0:'한 번에 몰아서 청소 → 주말에 집중하는 유형입니다',
+         1:'나눠서 여러 번 청소 → 주중에 고르게 나누는 유형입니다'}},
+};
+function inferSub(){
+ const r=SUB_RULE[W.model]; if(!r) return 0;
+ const a=W[r.k]; return a==null?0:r.map[a];
+}
+function subWhy(){const r=SUB_RULE[W.model];return r?r.why[inferSub()]:''}
+
+/* 부하 조건은 예/아니오 답변에서 만든다 */
+const loadsOf=()=>[W.carpet&&'카펫',W.pet&&'반려동물',W.hair&&'장모'].filter(Boolean);
 let SOC=100,phase='idle',started=false,elapsed=0;
 let sel=new Set([0,1,2,3,4]);                 // 선택된 청소 구역
 let SES=null;                                  // 진행 중 세션 {zones,req,rbar,eco,mi,predT,predEnd}
@@ -676,74 +780,147 @@ function speak(text,force,clip){
 }
 
 /* ══════════ 위저드 ══════════ */
+const YN=(k,yes,no)=>[{v:true,i:'⭕',t:'네',d:yes},{v:false,i:'✖️',t:'아니요',d:no}];
+const OPTS={
+ carpet :YN('carpet','카펫·러그가 있어요','전부 맨바닥이에요'),
+ pet    :YN('pet','강아지나 고양이를 키워요','키우지 않아요'),
+ hair   :YN('hair','머리카락이 자주 보여요','거의 없어요'),
+ time   :[{v:'아침',i:'🌅',t:'아침',d:'출근 전'},{v:'오후',i:'☀️',t:'오후',d:'한낮'},
+          {v:'저녁',i:'🌆',t:'저녁',d:'퇴근 후'},{v:'심야',i:'🌙',t:'심야',d:'밤늦게'}],
+ session:[{v:'batch',i:'🧹',t:'한 번에 몰아서',d:'시작하면 집 전체를 끝내요'},
+          {v:'split',i:'🔁',t:'나눠서 여러 번',d:'생각날 때 조금씩 해요'}],
+ dock   :[{v:'always',i:'🔌',t:'항상 꽂아둬요',d:'거치대에 늘 올려둡니다'},
+          {v:'ondemand',i:'📦',t:'쓸 때만 꺼내요',d:'평소엔 따로 보관합니다'}],
+};
+
 function renderWiz(){
- const bars=[1,2,3].map(i=>`<div class="s ${W.step===i?'on':W.step>i?'done':''}"></div>`).join('');
+ const scrn=document.querySelector('.scrn');
+ scrn.dataset.m=W.model||'';                       // 모델별 테마 적용
+ const pct=Math.round((W.step-1)/(STEP_LAST-1)*100);
+ const bar=`<div class="prog"><i style="width:${pct}%"></i></div>`;
  let body='';
+
+ /* ── 1. 유형 선택 (세부 유형은 뒤에서 추론한다) ── */
  if(W.step===1){
-  body=`<div class="wtag">STEP 1 · 프로필</div>
-   <div class="wtitle">우리 집은 어떤 유형인가요?</div>
-   <div class="wsub">가구 유형에 따라 말투·화면·수명 코칭이 달라져요. 하나를 선택하세요.</div>
+  body=`<div class="qnum">STEP 1 · 유형</div>
+   <div class="qq">우리 집은 어떤 유형인가요?</div>
+   <div class="qs">유형에 따라 말투·화면 테마·보이스팩이 달라져요.</div>
    ${Object.entries(P).map(([k,p])=>`
     <div class="mcard ${W.model===k?'on':''}" onclick="pickModel('${k}')">
       <div class="mi" style="background:${p.color}">${k}</div>
-      <div class="mt"><div class="a"><em>${k}</em>${p.label}</div><div class="b">${p.mood} · ${p.tone}</div></div>
-      <div class="chk"></div></div>`).join('')}
-   ${W.model?`<div class="subtog">${P[W.model].models.map((x,i)=>`
-      <button class="${W.sub===i?'on':''}" onclick="W.sub=${i};renderWiz()"><b>${x} · ${M[x].name}</b><small>${M[x].axes}</small></button>`).join('')}</div>`:''}`;
+      <div class="mt"><div class="a"><em>${k}</em>${p.label}</div><div class="b">${p.mood}</div></div>
+      <div class="chk"></div></div>`).join('')}`;
  }
- else if(W.step===2){
-  const req=reqFromArea(W.area),k=kOf(W.loads),base=baseOf(),r=rbarAt(100,base,k);
-  body=`<div class="wtag">STEP 2 · 사용 환경</div>
-   <div class="wtitle">청소 조건을 설정하세요</div>
-   <div class="wsub">같은 1인 가구라도 원룸인지 넓은 집인지에 따라 완주 판정이 달라져요.</div>
-   <div class="pfield">
-     <div class="pl"><span>집 평수 · 청소 면적</span><span class="pv">${W.area}<small>평</small></span></div>
+ /* ── 2~8. 질문 하나씩 ── */
+ else if(W.step<STEP_VOICE){
+  const qi=W.step-STEP_Q0, Q=QS[qi];
+  const head=`<div class="qnum">질문 ${qi+1} / ${QS.length}</div>
+   <div class="qq">${Q.q}</div><div class="qs">${Q.s}</div>`;
+  if(Q.k==='area'){
+   const req=reqFromArea(W.area);
+   body=head+`<div class="pfield" style="margin-top:0">
+     <div class="pl"><span>청소 면적</span><span class="pv">${W.area}<small>평</small></span></div>
      <input type="range" min="5" max="45" step="1" value="${W.area}" oninput="W.area=+this.value;renderWiz()">
      <div class="ticks"><span>원룸 5평</span><span>25평</span><span>45평</span></div>
    </div>
-   <div class="pfield">
-     <div class="pl"><span>바닥·부하 조건</span><span class="pv" style="font-size:12px">k = ${k.toFixed(2)}</span></div>
-     <div class="chips">${Object.keys(LOADS).map(l=>`
-       <div class="chip-t ${W.loads.includes(l)?'on':''}" onclick="toggleLoad('${l}')">${LOAD_LABEL[l]} +${LOADS[l].toFixed(2)}</div>`).join('')}</div>
-   </div>
-   <div class="pfield">
-     <div class="pl"><span>주 청소 시간대</span></div>
-     <div class="seg">${TIMES.map(t=>`<button class="${W.time===t?'on':''}" onclick="W.time='${t}';renderWiz()">${t}</button>`).join('')}</div>
-     ${(W.time==='심야'||(W.model==='C'&&W.time==='오후'))?`<div style="font-size:11px;color:#96610b;font-weight:700;margin-top:8px">🔇 상황 인지 무음 — 이 시간대엔 음성을 끄고 앱 알림으로만 전달해요.</div>`:''}
-   </div>
-   <div class="derived">
-     <div class="d"><div class="k">필요 청소시간</div><div class="v">${req}<em>분</em></div></div>
-     <div class="d"><div class="k">기본 소모율</div><div class="v">${(base*k).toFixed(2)}<em>%/분</em></div></div>
-     <div class="d"><div class="k">만충 가동</div><div class="v">${tAvail(100,base,k).toFixed(0)}<em>분</em></div></div>
+   <div class="rcalc" style="margin-top:18px">
+     <div class="c"><div class="k">전체 청소에 필요한 시간</div><div class="v">${req}<em>분</em></div></div>
    </div>`;
+  }else{
+   const cur=W[Q.k], two=Q.k!=='time';
+   body=head+`<div class="opts ${two?'two':''}">${OPTS[Q.k].map(o=>`
+     <div class="opt ${cur===o.v?'on':''}" onclick="answer('${Q.k}',${JSON.stringify(o.v)})">
+       <div class="oi">${o.i}</div>
+       <div class="ob"><div class="ot">${o.t}</div><div class="od">${o.d}</div></div>
+     </div>`).join('')}</div>`;
+   if(Q.k==='time'&&(W.time==='심야'||(W.model==='C'&&W.time==='오후')))
+     body+=`<div class="vnote" style="margin-top:12px">🔇 이 시간대엔 음성을 끄고 화면으로만 안내해요.</div>`;
+  }
  }
- else if(W.step===3){
-  body=`<div class="wtag">STEP 3 · 아이돌 AI 보이스팩</div>
-   <div class="wtitle">누구 목소리로 들을까요?</div>
-   <div class="wsub">판정은 그대로, 문장·억양만 좋아하는 목소리로 전달돼요.</div>
-   ${VORDER.map(id=>{const v=VOICE[id];return `
+ /* ── 9. 보이스팩 (모드별 목록) ── */
+ else if(W.step===STEP_VOICE){
+  const list=VOICE_OF[W.model]||[];
+  body=`<div class="qnum">STEP · 보이스팩</div>
+   <div class="qq">누구 목소리로 들을까요?</div>
+   <div class="qs">판정은 그대로, 문장을 읽어주는 목소리만 달라져요.</div>
+   ${list.map(id=>{const v=VOICE[id];return `
      <div class="vcard ${W.voice===id?'on':''}" onclick="pickVoice('${id}')">
        <div class="av" style="background:${v.c}">${v.emoji}</div>
        <div class="vt"><div class="a">${v.name}</div><div class="b">${v.tone}</div></div>
        <div class="play" onclick="event.stopPropagation();preview('${id}')">▶</div></div>`}).join('')}
-   <div class="vnote">※ 위 아티스트는 모두 <b>데모용 가상 인물</b>이며 실존 인물이 아닙니다.
-     이 데모의 소리는 <b>시스템 음성으로 미리 렌더링한 샘플</b>이고, 실제 서비스에는 <b>아티스트·소속사와의 음성권 계약</b>이 선행되어야 합니다.</div>`;
+   <div class="vnote">※ 표기된 인물·캐릭터는 <b>적용 예시</b>이며, 데모의 소리는 <b>시스템 음성으로 만든 샘플</b>입니다.
+     실제 서비스에는 <b>음성권·저작권 계약</b>이 선행되어야 합니다.</div>`;
  }
- const canNext=(W.step===1&&W.model)||(W.step===2)||(W.step===3&&W.voice);
- const nextLabel=W.step===3?'설정 완료 · 코칭 시작':'다음';
+ /* ── 10. 최종 결과 ── */
+ else{
+  const k=kOf(loadsOf()),base=BASE[P[W.model].models[inferSub()]],req=reqFromArea(W.area);
+  const sid=P[W.model].models[inferSub()];
+  const tags=[`${W.area}평`,
+    W.carpet?'카펫·러그 있음':'맨바닥',
+    W.pet?'반려동물 있음':'반려동물 없음',
+    W.hair?'머리카락 많음':'머리카락 적음',
+    `주로 ${W.time}`,
+    W.session==='batch'?'한 번에 몰아서':'나눠서 여러 번',
+    W.dock==='always'?'거치대 상시 거치':'쓸 때만 꺼냄'];
+  body=`<div class="qnum">분석 완료</div>
+   <div class="qq">이렇게 파악했어요</div>
+   <div class="qs">답변을 바탕으로 세부 유형까지 판정했어요. 코칭에 그대로 반영됩니다.</div>
+   <div class="rsum">
+     <div class="rt">우리 집 유형</div>
+     <div class="rv"><em>${sid}</em> · ${M[sid].name}</div>
+     <div class="rw">${subWhy()}</div>
+     <div class="rlist">${tags.map(t=>`<span>${t}</span>`).join('')}</div>
+   </div>
+   <div class="rcalc">
+     <div class="c"><div class="k">필요 청소시간</div><div class="v">${req}<em>분</em></div></div>
+     <div class="c"><div class="k">소모율</div><div class="v">${(base*k).toFixed(2)}<em>%/분</em></div></div>
+     <div class="c"><div class="k">만충 가동</div><div class="v">${tAvail(100,base,k).toFixed(0)}<em>분</em></div></div>
+   </div>
+   <div class="rsum">
+     <div class="rt">배터리 수명 코칭</div>
+     <div class="rv" style="font-size:14px;line-height:1.5">${M[sid].coach}</div>
+     <div class="rw"><b>주의할 점</b> — ${M[sid].risk}</div>
+   </div>
+   ${W.voice?`<div class="rsum"><div class="rt">보이스팩</div>
+     <div class="rv">${VOICE[W.voice].emoji} ${VOICE[W.voice].name}</div></div>`:''}`;
+ }
+
+ const canNext = W.step===1 ? !!W.model
+   : W.step<STEP_VOICE ? (QS[W.step-STEP_Q0].k==='area' || W[QS[W.step-STEP_Q0].k]!=null)
+   : W.step===STEP_VOICE ? !!W.voice : true;
+ const label = W.step===STEP_RESULT?'이 설정으로 코칭 시작':'다음';
  const nav=`<div class="wnav">
-   ${W.step>1?`<button onclick="W.step--;renderWiz()">이전</button>`:''}
-   <button class="next" ${canNext?'':'disabled'} onclick="wizNext()">${nextLabel}</button></div>`;
- $('wiz').innerHTML=`<div class="steps">${bars}</div>${body}${nav}`;
+   ${W.step>1?`<button onclick="wizPrev()">이전</button>`:''}
+   <button class="next" ${canNext?'':'disabled'} onclick="wizNext()">${label}</button></div>`;
+ $('wiz').innerHTML=bar+body+nav;
  renderDevice();
 }
-function pickModel(k){W.model=k;W.sub=0;const p=P[k];W.area=p.area;W.loads=[...p.baseLoad];renderWiz()}
-function toggleLoad(l){const i=W.loads.indexOf(l);if(i<0)W.loads.push(l);else W.loads.splice(i,1);renderWiz()}
+
+function pickModel(k){
+ W.model=k;W.voice=null;
+ const p=P[k];
+ W.area=p.area;                                   // 유형별 기본 평수에서 시작
+ W.carpet=p.baseLoad.includes('카펫');
+ W.pet=p.baseLoad.includes('반려동물');
+ W.hair=p.baseLoad.includes('장모');
+ renderWiz();
+}
+/* 선택형 질문은 답하면 바로 다음 화면으로 넘어간다 */
+function answer(k,v){
+ W[k]=v;renderWiz();
+ setTimeout(()=>{if(W.step<STEP_VOICE&&W[k]===v)wizNext()},190);
+}
 function pickVoice(id){W.voice=id;renderWiz()}
 function preview(id){const v=VOICE[id];W.voice=id;renderWiz();
- speak(v.pv,true,'preview');toast(`▶ ${v.name} — 보이스 샘플 재생`)}
+ speak(v.pv||'',true,'preview');toast(`▶ ${v.name} — 보이스 샘플 재생`)}
+function wizPrev(){if(W.step>1){W.step--;renderWiz()}}
 function wizNext(){
- if(W.step<3){W.step++;renderWiz();return}
+ if(W.step<STEP_RESULT){
+  W.step++;
+  if(W.step===STEP_RESULT)W.sub=inferSub();       // 결과 화면 진입 시 세부 유형 확정
+  renderWiz();return;
+ }
+ W.sub=inferSub();
  const first=!started;
  started=true;phase='idle';SES=null;SPLIT={active:false,first:[],second:[],stage:0};
  sel=new Set(ROOMS.map((_,i)=>i));
@@ -758,7 +935,7 @@ function reopen(step){stopTimers();started=false;W.step=step;
 
 /* ══════════ 판정 ══════════ */
 function judge(){
- const base=baseOf(),k=kOf(W.loads),reqAll=reqFromArea(W.area);
+ const base=baseOf(),k=kOf(loadsOf()),reqAll=reqFromArea(W.area);
  const n=sel.size,reqSel=reqAll*n/ROOMS.length;
  const tAv=tAvail(SOC,base,k),r=rbarAt(SOC,base,k);
  const mg=tAv-reqSel,fullMg=tAvail(100,base,k)-reqSel;
@@ -787,7 +964,8 @@ function clearOpCache(){['op-hero','op-voice','op-cta','op-coach','op-zones','op
 
 function draw(){
  if(!started)return;
- const p=P[W.model],c=judge(),muted=isMuted(),vv=VOICE[W.voice];
+ const p=P[W.model],c=judge(),muted=isMuted();
+ document.querySelector('.scrn').dataset.m=W.model||'';   // 모델별 테마 유지
  $('soc-v').textContent=SOC.toFixed(0)+'%';$('statbatt').textContent=SOC.toFixed(0)+'%';
 
  /* ── 진행 중 세션 표시값 ── */
@@ -850,13 +1028,9 @@ function draw(){
  }
  setH('op-hero',heroHTML);
 
- /* ── 보이스 바 ── */
+ /* ── 무음 배너 — 무음 시간대에만 노출 (평상시엔 화면을 비워 둔다) ── */
  setH('op-voice',muted
-  ? `<div class="voicebar muted"><div class="av" style="background:#3a4148">🔇</div>
-      <div class="vinfo"><div class="nm">${vv.name} · 상황 인지 무음 — 앱 알림으로만 전달</div><div class="ln">"${voiceLine}"</div></div></div>`
-  : `<div class="voicebar"><div class="av" style="background:${vv.c}">${vv.emoji}</div>
-      <div class="vinfo"><div class="nm">🎙 ${vv.name} 보이스 · ${vv.tone}</div><div class="ln">"${voiceLine}"</div></div>
-      <div class="eq ${eqOn?'spk':''}"><i></i><i></i><i></i><i></i><i></i></div></div>`);
+  ? `<div class="mutebar">🔇 무음 시간대 — 음성 대신 화면으로 안내합니다</div>` : '');
 
  /* ── CTA ── */
  let cta='';
@@ -916,31 +1090,16 @@ function draw(){
    <div class="zones">${zHTML}</div>
    <div class="znote">${phase==='clean'?'청소가 끝난 구역부터 초록으로 채워져요.':zNote}</div></div>`);
 
- /* ── 완주 리포트 ── */
- if(phase==='done'&&SES){
-  const errT=Math.abs(elapsed-SES.predT),errE=Math.abs(SOC-SES.predEnd);
-  setH('op-foot',`<div class="report"><div class="rh">📊 예측 vs 실제 — 코칭 엔진 검증</div>
-    <div class="rrow">
-      <div class="rc"><div class="k">예측 소요</div><div class="v">${SES.predT.toFixed(1)}분</div></div>
-      <div class="rc"><div class="k">실제 소요</div><div class="v">${elapsed.toFixed(1)}분</div></div>
-      <div class="rc"><div class="k">예측 잔량</div><div class="v">${SES.predEnd.toFixed(0)}%</div></div>
-      <div class="rc"><div class="k">실제 잔량</div><div class="v">${SOC.toFixed(0)}%</div></div>
-    </div>
-    <div class="rfoot">오차 ${errT.toFixed(1)}분 · ${errE.toFixed(1)}%p — 14,014세션 검증 평균 오차 <b>0.98분</b> 기반 보정식.</div></div>
-   <div class="opfoot">
-    <button data-act="goto1">유형 바꾸기</button>
-    <button data-act="goto2">환경 바꾸기</button>
-    <button data-act="goto3">보이스 바꾸기</button></div>`);
- }else{
-  setH('op-foot',`<div class="opfoot">
-    <button data-act="goto1">유형 바꾸기</button>
-    <button data-act="goto2">환경 바꾸기</button>
-    <button data-act="goto3">보이스 바꾸기</button></div>`);
- }
+ /* ── 하단 네비게이션 ── */
+ setH('op-foot',`<div class="opfoot">
+   <button data-act="goto1">유형 바꾸기</button>
+   <button data-act="goto2">조건 다시 답하기</button>
+   <button data-act="goto3">보이스 바꾸기</button></div>`);
 
  renderDevice();
  const spk=$('spk');spk.className='spk-unit'+((phase==='clean'&&!muted)?' on':muted?' muted':'');
- $('spk-t').textContent=muted?'무음 (앱 알림)':phase==='clean'?`${vv.name} 재생 중`:`${vv.name} 대기`;
+ const vn=(VOICE[W.voice]||{}).name||'보이스';
+ $('spk-t').textContent=muted?'무음 (앱 알림)':phase==='clean'?`${vn} 재생 중`:`${vn} 대기`;
 }
 
 /* ── 기기 LCD ── */
@@ -1059,8 +1218,8 @@ $('op').addEventListener('click',e=>{
  else if(act==='zRec'){const c=judge(),per=zoneMin();let n=Math.max(1,Math.min(5,Math.floor((c.tAv-0.5)/per)));
    sel=new Set(ROOMS.map((_,i)=>i).slice(0,n));clearOpCache();draw()}
  else if(act==='goto1')reopen(1);
- else if(act==='goto2')reopen(2);
- else if(act==='goto3')reopen(3);
+ else if(act==='goto2')reopen(STEP_Q0);
+ else if(act==='goto3')reopen(STEP_VOICE);
 });
 
 let tmo=null;
