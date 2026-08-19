@@ -518,8 +518,7 @@ h1{font-size:19px;font-weight:800;letter-spacing:-.03em}h1 b{color:var(--lg)}
     <!-- ══ 폰 ══ -->
     <div class="phone">
       <div class="scrn">
-        <div class="stat"><span>9:41</span>
-          <span class="rt">CordZero 📶 <span id="statbatt">100%</span> ▮</span></div>
+        <div class="stat"></div>
         <div class="app">
           <div class="ahead">
             <a class="mback" href="index.html" aria-label="대시보드로 돌아가기">←</a>
@@ -793,6 +792,15 @@ const OPTS={
           {v:'ondemand',i:'📦',t:'쓸 때만 꺼내요',d:'평소엔 따로 보관합니다'}],
 };
 
+/* 선택지 클릭 — 현재 질문 키를 단계에서 되찾아 값을 적용한다 */
+$('wiz').addEventListener('click',e=>{
+ const el=e.target.closest('[data-oi]'); if(!el)return;
+ if(W.step<STEP_Q0||W.step>=STEP_VOICE)return;
+ const Q=QS[W.step-STEP_Q0], list=OPTS[Q.k]; if(!list)return;
+ const o=list[+el.dataset.oi]; if(!o)return;
+ answer(Q.k,o.v);
+});
+
 function renderWiz(){
  const scrn=document.querySelector('.scrn');
  scrn.dataset.m=W.model||'';                       // 모델별 테마 적용
@@ -828,8 +836,9 @@ function renderWiz(){
    </div>`;
   }else{
    const cur=W[Q.k], two=Q.k!=='time';
-   body=head+`<div class="opts ${two?'two':''}">${OPTS[Q.k].map(o=>`
-     <div class="opt ${cur===o.v?'on':''}" onclick="answer('${Q.k}',${JSON.stringify(o.v)})">
+   /* 값에 한글·따옴표가 들어가도 안전하도록 인덱스만 넘기고 위임으로 처리한다 */
+   body=head+`<div class="opts ${two?'two':''}">${OPTS[Q.k].map((o,i)=>`
+     <div class="opt ${cur===o.v?'on':''}" data-oi="${i}">
        <div class="oi">${o.i}</div>
        <div class="ob"><div class="ot">${o.t}</div><div class="od">${o.d}</div></div>
      </div>`).join('')}</div>`;
@@ -966,7 +975,7 @@ function draw(){
  if(!started)return;
  const p=P[W.model],c=judge(),muted=isMuted();
  document.querySelector('.scrn').dataset.m=W.model||'';   // 모델별 테마 유지
- $('soc-v').textContent=SOC.toFixed(0)+'%';$('statbatt').textContent=SOC.toFixed(0)+'%';
+ $('soc-v').textContent=SOC.toFixed(0)+'%';
 
  /* ── 진행 중 세션 표시값 ── */
  let heroHTML,voiceLine=p.voice[c.mi],eqOn=false;
