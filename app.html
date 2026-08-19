@@ -589,15 +589,15 @@ const P={
    실명·실제 음성은 초상권/음성권 문제로 데모에서도 사용하지 않는다.
    톤 차이는 브라우저 TTS의 rate/pitch 조합으로만 표현한다. */
 const VOICE={
- lua:{name:'루아 (LUA)',tone:'감성적이고 따뜻한 톤',c:'#d06b86',emoji:'🎤',tts:{rate:.95,pitch:1.25},
+ lua:{name:'루아 (LUA)',tone:'감성적이고 따뜻한 톤',c:'#d06b86',emoji:'🎤',shift:1.00,tts:{rate:.95,pitch:1.25},
      pv:'안녕하세요, 루아예요. 오늘 청소, 저랑 같이 시작해요!'},
- jay:{name:'제이 (JAY)',tone:'부드럽고 감미로운 톤',c:'#6a63c9',emoji:'🎧',tts:{rate:.95,pitch:.9},
+ jay:{name:'제이 (JAY)',tone:'부드럽고 감미로운 톤',c:'#6a63c9',emoji:'🎧',shift:0.90,tts:{rate:.95,pitch:.9},
      pv:'제이예요. 오늘도 깔끔하게 정리해볼까요?'},
- harin:{name:'하린 (HARIN)',tone:'밝고 경쾌한 톤',c:'#e08a3a',emoji:'🐰',tts:{rate:1.12,pitch:1.3},
+ harin:{name:'하린 (HARIN)',tone:'밝고 경쾌한 톤',c:'#e08a3a',emoji:'🐰',shift:1.14,tts:{rate:1.12,pitch:1.3},
      pv:'하린이에요! 우리 같이 반짝반짝하게 만들어요!'},
- yuna:{name:'유나 (YUNA)',tone:'사랑스럽고 환한 톤',c:'#cf6bad',emoji:'💖',tts:{rate:1.05,pitch:1.35},
+ yuna:{name:'유나 (YUNA)',tone:'사랑스럽고 환한 톤',c:'#cf6bad',emoji:'💖',shift:1.07,tts:{rate:1.05,pitch:1.35},
      pv:'유나예요! 오늘도 기분 좋게 청소 완주해봐요!'},
- dohyun:{name:'도현 (DOHYUN)',tone:'편안하고 든든한 톤',c:'#4a86b0',emoji:'🎙️',tts:{rate:.92,pitch:.75},
+ dohyun:{name:'도현 (DOHYUN)',tone:'편안하고 든든한 톤',c:'#4a86b0',emoji:'🎙️',shift:0.84,tts:{rate:.92,pitch:.75},
      pv:'도현입니다. 오늘도 든든하게 함께하겠습니다.'},
 };
 const VORDER=['lua','jay','harin','yuna','dohyun'];
@@ -634,18 +634,45 @@ const baseOf=()=>BASE[mid()];
 const zoneMin=()=>reqFromArea(W.area)/ROOMS.length;   // 구역당 시간
 const isMuted=()=>(W.time==='심야')||(W.model==='C'&&W.time==='오후');
 
-/* ── TTS — 브라우저 음성 합성(톤 프로토타입) ── */
+/* ── 음성 재생 ──
+   1순위: 보이스팩별로 미리 렌더링한 오디오 클립(audio/{pack}/{clip}.m4a)
+   2순위: 클립이 없거나 재생에 실패하면 브라우저 TTS
+   기기마다 음질이 달라지는 문제와, 오프라인에서 TTS 음성이 없는 문제를 클립이 막아준다. */
 let koVoice=null;
 function loadVoices(){const vs=speechSynthesis.getVoices();koVoice=vs.find(v=>/^ko/i.test(v.lang))||null}
 if('speechSynthesis' in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices}
-function speak(text,force){
+
+let curAudio=null;
+function stopVoice(){
+ if(curAudio){try{curAudio.pause()}catch(_){}curAudio=null}
+ if('speechSynthesis' in window)speechSynthesis.cancel();
+}
+function ttsSpeak(text){
  if(!('speechSynthesis' in window))return;
- if(!force&&isMuted())return;
  speechSynthesis.cancel();
  const u=new SpeechSynthesisUtterance(text);
  u.lang='ko-KR';if(koVoice)u.voice=koVoice;
  const t=VOICE[W.voice]?.tts||{rate:1,pitch:1};u.rate=t.rate;u.pitch=t.pitch;u.volume=1;
  speechSynthesis.speak(u);
+}
+function speak(text,force,clip){
+ if(!force&&isMuted())return;
+ stopVoice();
+ if(clip&&W.voice){
+  const v=VOICE[W.voice];
+  const a=new Audio(clip==='preview'?'audio/preview/'+W.voice+'.m4a':'audio/lines/'+clip+'.m4a');
+  /* 대사는 한 벌만 굽고, 보이스팩 음색은 재생 속도로 만든다.
+     피치 보정을 끄면 속도와 함께 목소리 높낮이도 이동한다(테이프 방식). */
+  a.preservesPitch=false;a.webkitPreservesPitch=false;a.mozPreservesPitch=false;
+  a.playbackRate=(v&&v.shift)||1;
+  curAudio=a;
+  const fall=()=>{if(curAudio===a){curAudio=null;ttsSpeak(text)}};
+  a.onerror=fall;
+  a.onended=()=>{if(curAudio===a)curAudio=null};
+  a.play().catch(fall);
+  return;
+ }
+ ttsSpeak(text);
 }
 
 /* ══════════ 위저드 ══════════ */
@@ -700,7 +727,7 @@ function renderWiz(){
        <div class="vt"><div class="a">${v.name}</div><div class="b">${v.tone}</div></div>
        <div class="play" onclick="event.stopPropagation();preview('${id}')">▶</div></div>`}).join('')}
    <div class="vnote">※ 위 아티스트는 모두 <b>데모용 가상 인물</b>이며 실존 인물이 아닙니다.
-     이 데모의 소리는 <b>브라우저 TTS 톤 프로토타입</b>이고, 실제 서비스에는 <b>아티스트·소속사와의 음성권 계약</b>이 선행되어야 합니다.</div>`;
+     이 데모의 소리는 <b>시스템 음성으로 미리 렌더링한 샘플</b>이고, 실제 서비스에는 <b>아티스트·소속사와의 음성권 계약</b>이 선행되어야 합니다.</div>`;
  }
  const canNext=(W.step===1&&W.model)||(W.step===2)||(W.step===3&&W.voice);
  const nextLabel=W.step===3?'설정 완료 · 코칭 시작':'다음';
@@ -714,7 +741,7 @@ function pickModel(k){W.model=k;W.sub=0;const p=P[k];W.area=p.area;W.loads=[...p
 function toggleLoad(l){const i=W.loads.indexOf(l);if(i<0)W.loads.push(l);else W.loads.splice(i,1);renderWiz()}
 function pickVoice(id){W.voice=id;renderWiz()}
 function preview(id){const v=VOICE[id];W.voice=id;renderWiz();
- speak(v.pv,true);toast(`▶ ${v.name} — 톤 프로토타입 재생`)}
+ speak(v.pv,true,'preview');toast(`▶ ${v.name} — 보이스 샘플 재생`)}
 function wizNext(){
  if(W.step<3){W.step++;renderWiz();return}
  const first=!started;
@@ -724,7 +751,7 @@ function wizNext(){
  $('wiz').style.display='none';$('op').classList.add('on');
  clearOpCache();draw();
  toast('설정 완료 — 기기·스피커가 연결됐어요');
- const p=P[W.model];if(!isMuted())speak(p.voice[0]);
+ const p=P[W.model];if(!isMuted())speak(p.voice[0],false,W.model+'-0');
 }
 function reopen(step){stopTimers();started=false;W.step=step;
  $('op').classList.remove('on');$('wiz').style.display='';renderWiz()}
@@ -953,12 +980,13 @@ function startClean(eco,zones){
  const req=reqFromArea(W.area)*zs.length/ROOMS.length;
  const rbar=rbarAt(SOC,c.base,c.k)*(eco?0.78:1);
  SOC=Math.max(RES,SOC-C0);                       // 기동 전력 c₀
+ const li=c.state==='ok'?0:c.state==='charge'?2:1;      // 코칭 대사 인덱스 = 클립 ID
  SES={zones:zs,req,rbar,eco,predT:req,predEnd:Math.max(RES,SOC-rbar*req),
-      line:P[W.model].voice[c.state==='ok'?0:c.state==='charge'?2:1]};
+      line:P[W.model].voice[li],lineId:W.model+'-'+li};
  elapsed=0;phase='clean';
  if(timer)clearInterval(timer);
  toast(`${eco?'저소음':'표준'} 모드 · ${zs.length}구역 청소 시작`);
- speak(SES.line);
+ speak(SES.line,false,SES.lineId);
  clearOpCache();
  /* 타임스탬프 기반 진행 — 탭 전환으로 setInterval이 스로틀돼도 경과를 따라잡는다.
     실제 80ms = 시뮬레이션 0.3분 (SPEED 분/초) */
@@ -967,11 +995,11 @@ function startClean(eco,zones){
   elapsed=Math.min(SES.req,(performance.now()-t0)/1000*SPEED);
   SOC=Math.max(RES,soc0-SES.rbar*elapsed);$('soc').value=SOC.toFixed(0);
   if(SOC<=RES&&elapsed<SES.req-1e-9){phase='stranded';clearInterval(timer);timer=null;
-   toast('⚠ 청소 도중 배터리 부족 — 거치대 충전');speak('배터리가 부족해요. 충전 후 이어서 청소할게요.');clearOpCache();draw();return}
+   toast('⚠ 청소 도중 배터리 부족 — 거치대 충전');speak('배터리가 부족해요. 충전 후 이어서 청소할게요.',false,'sys-stranded');clearOpCache();draw();return}
   if(elapsed>=SES.req){phase='done';clearInterval(timer);timer=null;
-   if(SPLIT.active&&SPLIT.stage===0){SPLIT.stage=1;toast('✓ 1차 청소 완료 — 충전 후 2차');speak('1차 청소를 끝냈어요. 충전하고 이어서 할게요.')}
-   else if(SPLIT.active&&SPLIT.stage===1){SPLIT.stage=2;toast('✓ 분할 완주 완료 — 5구역 모두 청소');speak('나머지 구역까지 모두 끝냈어요!')}
-   else{toast('✓ 청소 완주 완료');speak('청소를 모두 끝냈어요!')}
+   if(SPLIT.active&&SPLIT.stage===0){SPLIT.stage=1;toast('✓ 1차 청소 완료 — 충전 후 2차');speak('1차 청소를 끝냈어요. 충전하고 이어서 할게요.',false,'sys-split1')}
+   else if(SPLIT.active&&SPLIT.stage===1){SPLIT.stage=2;toast('✓ 분할 완주 완료 — 5구역 모두 청소');speak('나머지 구역까지 모두 끝냈어요!',false,'sys-split2')}
+   else{toast('✓ 청소 완주 완료');speak('청소를 모두 끝냈어요!',false,'sys-done')}
    clearOpCache();draw();return}
   draw();
  },80);
@@ -987,7 +1015,7 @@ function startSplit1(){
  startClean(false,SPLIT.first);
 }
 function startSplit2(){sel=new Set(SPLIT.second);startClean(false,SPLIT.second)}
-function stopClean(){if(timer)clearInterval(timer);timer=null;phase='idle';elapsed=0;SES=null;
+function stopClean(){if(timer)clearInterval(timer);timer=null;phase='idle';elapsed=0;SES=null;stopVoice();
  toast('청소를 중단했어요');clearOpCache();draw()}
 function startCharge(){phase='charge';if(timer)clearInterval(timer);
  toast('거치대 충전 시작');clearOpCache();
@@ -995,7 +1023,7 @@ function startCharge(){phase='charge';if(timer)clearInterval(timer);
  timer=setInterval(()=>{
   SOC=Math.min(100,soc0+(performance.now()-t0)/1000*CHG);$('soc').value=SOC.toFixed(0);
   if(SOC>=100){SOC=100;clearInterval(timer);timer=null;phase='idle';
-   if(SPLIT.active&&SPLIT.stage===1){toast('✓ 충전 완료 — 2차 청소를 시작할 수 있어요');speak('충전 끝! 남은 구역 이어서 청소할까요?')}
+   if(SPLIT.active&&SPLIT.stage===1){toast('✓ 충전 완료 — 2차 청소를 시작할 수 있어요');speak('충전 끝! 남은 구역 이어서 청소할까요?',false,'sys-charged')}
    else toast('✓ 충전 완료');clearOpCache()}
   draw()},60)}
 function stopCharge(){if(timer)clearInterval(timer);timer=null;phase='idle';clearOpCache();draw()}
@@ -1064,17 +1092,21 @@ $('fab').onclick=()=>sheet(!$('demo').classList.contains('open'));
 $('scrim').onclick=()=>sheet(false);
 $('sheet-x').onclick=()=>sheet(false);
 
-/* ── iOS Safari — speechSynthesis 는 사용자 제스처 안에서 한 번 깨워둬야
-   이후 타이머에서 호출한 speak() 가 소리를 낸다 ── */
-let ttsPrimed=false;
-function primeTTS(){
- if(ttsPrimed||!('speechSynthesis' in window))return;
- ttsPrimed=true;
- const u=new SpeechSynthesisUtterance(' ');u.volume=0;u.lang='ko-KR';
- try{speechSynthesis.speak(u)}catch(_){}
+/* ── iOS Safari — 음성 합성과 오디오 재생 모두 사용자 제스처 안에서 한 번
+   깨워둬야 이후 타이머에서 호출한 speak() 가 소리를 낸다 ── */
+let voicePrimed=false;
+const SILENT='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAgD4AAAB9AAACABAAZGF0YQAAAAA=';
+function primeVoice(){
+ if(voicePrimed)return;
+ voicePrimed=true;
+ if('speechSynthesis' in window){
+  const u=new SpeechSynthesisUtterance(' ');u.volume=0;u.lang='ko-KR';
+  try{speechSynthesis.speak(u)}catch(_){}
+ }
+ try{const a=new Audio(SILENT);a.volume=0;a.play().catch(()=>{})}catch(_){}
 }
-addEventListener('pointerdown',primeTTS,{once:true});
-addEventListener('touchstart',primeTTS,{once:true});
+addEventListener('pointerdown',primeVoice,{once:true});
+addEventListener('touchstart',primeVoice,{once:true});
 
 addEventListener('keydown',e=>{
  if(e.target.tagName==='INPUT')return;               // 슬라이더 포커스 중엔 네이티브 동작 우선

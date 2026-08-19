@@ -4,7 +4,10 @@
     {
       "name": "a-repo-static",
       "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "4173"],
+      "runtimeArgs": [
+        "-c",
+        "import functools,http.server as h;h.ThreadingHTTPServer(('',4173),h.SimpleHTTPRequestHandler).serve_forever()"
+      ],
       "port": 4173
     }
   ]

@@ -1,7 +1,7 @@
 /* 파라써블 코칭 데모 — 오프라인 캐시 서비스워커
    발표장 네트워크가 끊겨도 데모가 그대로 돌아가야 하므로 전체를 미리 캐시한다.
    캐시를 갱신하려면 VERSION 을 올린다. */
-const VERSION = 'coach-v1';
+const VERSION = 'coach-v4';
 const PRECACHE = [
   './',
   './index.html',
@@ -18,11 +18,37 @@ const PRECACHE = [
   './figs/fig4_waterfall.png',
 ];
 
+/* 보이스팩 음성 클립 — 오프라인에서 시스템 TTS 음성이 없어도 소리가 나오도록 전부 캐시한다 */
+const LINES = [
+  "A-0","A-1","A-2","B-0","B-1","B-2","C-0","C-1","C-2",
+  "D-0","D-1","D-2","E-0","E-1","E-2",
+  "sys-stranded","sys-split1","sys-split2","sys-done","sys-charged",
+];
+const PACKS = ["lua","jay","harin","yuna","dohyun"];
+for (const l of LINES) PRECACHE.push(`./audio/lines/${l}.m4a`);
+for (const p of PACKS) PRECACHE.push(`./audio/preview/${p}.m4a`);
+
+/* 한 번에 몰아서 요청하면 느린 회선이나 단순한 서버에서 상당수가 실패하는데,
+   실패를 삼키면 '캐시된 줄 알았는데 오프라인에서 안 열리는' 상태가 된다.
+   소량씩 나눠 받고, 실패한 것만 한 번 더 시도한다. */
+const BATCH = 6;
+async function precache(c, urls) {
+  const failed = [];
+  for (let i = 0; i < urls.length; i += BATCH) {
+    const part = urls.slice(i, i + BATCH);
+    const res = await Promise.all(part.map(u => c.add(u).then(() => null, () => u)));
+    res.forEach(u => { if (u) failed.push(u); });
+  }
+  return failed;
+}
+
 self.addEventListener('install', e => {
   e.waitUntil((async () => {
     const c = await caches.open(VERSION);
-    // 개별 실패가 전체 설치를 막지 않도록 하나씩 담는다
-    await Promise.all(PRECACHE.map(u => c.add(u).catch(() => {})));
+    let failed = await precache(c, PRECACHE);
+    if (failed.length) failed = await precache(c, failed);   // 실패분 재시도
+    if (failed.length) console.warn('[sw] 캐시 실패', failed.length, '개', failed.slice(0, 5));
+    else console.log('[sw] 프리캐시 완료', PRECACHE.length, '개');
     await self.skipWaiting();
   })());
 });
