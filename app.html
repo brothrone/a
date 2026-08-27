@@ -278,6 +278,8 @@ h1{font-size:19px;font-weight:800;letter-spacing:-.03em}h1 b{color:var(--lg)}
 .coach .ch{font-size:12px;font-weight:800;color:var(--lg);display:flex;align-items:center;gap:7px}
 .coach .cb{font-size:12px;font-weight:600;line-height:1.5;margin-top:6px;color:var(--ink2)}
 .coach .cb b{color:var(--ink);font-weight:800}
+.coach .sohwarn{margin-top:8px;padding:9px 11px;border-radius:10px;background:var(--rs);color:var(--r)}
+.coach .sohwarn b{color:var(--r)}
 
 .opfoot{display:flex;gap:9px;margin-top:14px}
 .opfoot button{flex:1;border:1px solid var(--line);background:var(--card);border-radius:13px;padding:12px 6px;font-size:12px;font-weight:700;color:var(--ink2);cursor:pointer}
@@ -1094,7 +1096,7 @@ function draw(){
  }else{
   const line=p.msg[c.mi].replace('{n}',josa(p.name)).replace(/^,\s*/,'');
   heroHTML=`<div class="hero" style="background:${GRAD[c.ci]}">
-   <div class="htop"><span>${mid()} · ${W.area}평 · ${c.n}구역 선택</span><span class="badge">실시간 예측</span></div>
+   <div class="htop"><span>${mid()} · ${W.area}평 · ${c.n}구역 선택</span><span class="badge">${SOH<100?`SOH ${SOH}% · `:''}실시간 예측</span></div>
    <div class="ringrow">
      <div class="ring">${ringSVG(SOC)}<div class="pc"><b>${SOC.toFixed(0)}</b><span>배터리</span></div></div>
      <div class="hmsg"><div class="vd">${LBL[c.state]}</div><div class="ln">${line}</div></div>
@@ -1138,7 +1140,8 @@ function draw(){
 
  /* ── 수명 코칭 (핵심 주제 — CTA 바로 아래) ── */
  setH('op-coach',`<div class="coach"><div class="ch">💡 ${mid()} 맞춤 수명 코칭</div>
-   <div class="cb">${M[mid()].coach}. <b>핵심 리스크</b> — ${M[mid()].risk}</div></div>`);
+   <div class="cb">${M[mid()].coach}. <b>핵심 리스크</b> — ${M[mid()].risk}</div>
+   ${SOH<80?`<div class="cb sohwarn">🔋 배터리 건강도 ${SOH}% — 통상 80% 미만은 수명 종료 구간이에요. <b>교체를 검토할 시점</b>입니다.</div>`:''}</div>`);
 
  /* ── 구역 선택/진행 ── */
  const lock=phase!=='idle'&&phase!=='done';
