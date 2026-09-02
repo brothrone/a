@@ -177,6 +177,21 @@ h1{font-size:19px;font-weight:800;letter-spacing:-.03em}h1 b{color:var(--lg)}
 .opts.two .opt{flex-direction:column;align-items:flex-start;gap:7px;padding:15px 13px}
 .opts.two .opt .ot{font-size:14px}
 
+/* ── 코칭 화면 프리셋 바 ── */
+.psbar{margin-bottom:12px}
+.psrow{display:flex;gap:7px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.psrow::-webkit-scrollbar{display:none}
+.pschip{flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-start;gap:1px;
+ border:1.5px solid var(--line);background:var(--card);border-radius:13px;padding:8px 13px;
+ cursor:pointer;transition:.14s;text-align:left}
+.pschip .n{font-size:12.5px;font-weight:800;color:var(--ink);white-space:nowrap}
+.pschip .d{font-size:10px;font-weight:700;color:var(--mut);white-space:nowrap}
+.pschip.on{border-color:var(--lg);background:var(--accSoft);box-shadow:0 0 0 3px var(--accRing)}
+.pschip.on .n{color:var(--lg)}
+.pschip.add{justify-content:center;border-style:dashed;color:var(--ink2);font-size:12px;font-weight:800;padding:11px 13px}
+.pschip:disabled{opacity:.4;cursor:default}
+.pshint{font-size:10.5px;font-weight:600;color:var(--mut);margin-top:6px}
+
 /* ── 프리셋 ── */
 .psbox{border:1px solid var(--line);background:var(--card);border-radius:16px;padding:12px 13px;margin-bottom:14px}
 .pshead{font-size:10.5px;font-weight:800;color:var(--mut);letter-spacing:.02em;margin-bottom:9px}
@@ -284,6 +299,25 @@ h1{font-size:19px;font-weight:800;letter-spacing:-.03em}h1 b{color:var(--lg)}
 .opfoot{display:flex;gap:9px;margin-top:14px}
 .opfoot button{flex:1;border:1px solid var(--line);background:var(--card);border-radius:13px;padding:12px 6px;font-size:12px;font-weight:700;color:var(--ink2);cursor:pointer}
 .opfoot button:hover{border-color:#cdd2d8}
+
+/* 앱 내부 모달 — 브라우저 팝업 대신 화면 안에서 처리한다 */
+.modal{position:absolute;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;
+ padding:26px;background:rgba(12,15,18,.5);backdrop-filter:blur(2px)}
+.modal[hidden]{display:none}
+.mbox{width:100%;max-width:296px;background:var(--card);border-radius:20px;padding:20px 18px 16px;
+ box-shadow:0 24px 60px -14px rgba(0,0,0,.5)}
+.mbox .mt{font-size:16px;font-weight:800;color:var(--ink);letter-spacing:-.02em}
+.mbox .md{font-size:12px;font-weight:600;color:var(--mut);margin-top:7px;line-height:1.55;word-break:keep-all}
+.mbox input{width:100%;margin-top:15px;border:1.5px solid var(--line);border-radius:13px;
+ padding:13px 14px;font-size:14.5px;font-weight:700;color:var(--ink);background:var(--bg-app);
+ font-family:inherit;-webkit-appearance:none}
+.mbox input:focus{outline:none;border-color:var(--lg);box-shadow:0 0 0 3px var(--accRing)}
+.mbtns{display:flex;gap:8px;margin-top:16px}
+.mbtns button{flex:1;border-radius:14px;padding:13px 8px;font-size:13.5px;font-weight:800;cursor:pointer;
+ border:1px solid var(--line);background:var(--card);color:var(--ink2);transition:.14s}
+.mbtns button.pri{background:var(--lg);color:#fff;border-color:var(--lg)}
+.mbtns button.danger{background:var(--r);color:#fff;border-color:var(--r)}
+.mbtns button:disabled{opacity:.45;cursor:not-allowed}
 
 /* 토스트 */
 .toast{position:absolute;left:50%;bottom:26px;transform:translateX(-50%) translateY(8px);
@@ -420,6 +454,8 @@ h1{font-size:19px;font-weight:800;letter-spacing:-.03em}h1 b{color:var(--lg)}
  .seg button,.chip-t{padding:13px 8px}
  input[type=range]{height:32px}
 
+ .modal{position:fixed}
+
  /* 토스트 — 문서가 아닌 화면 기준으로 고정 */
  .toast{position:fixed;bottom:calc(90px + env(safe-area-inset-bottom,0px));white-space:normal;text-align:center;line-height:1.4}
 
@@ -486,7 +522,7 @@ h1{font-size:19px;font-weight:800;letter-spacing:-.03em}h1 b{color:var(--lg)}
   border:0;background:rgba(255,255,255,.14);color:#fff;font-size:11px;font-weight:800;cursor:pointer}
 
  /* 탭 시 텍스트 선택·하이라이트 방지 */
- .mcard,.vcard,.zones .z,.chip-t,.seg button,.subtog button,.big,.sub,.opt,.ps,.px,.savebtn,
+ .mcard,.vcard,.zones .z,.chip-t,.seg button,.subtog button,.big,.sub,.opt,.ps,.px,.savebtn,.pschip,
  .opfoot button,.btn,.zquick button,.fab,.sheet-x,.mback{
   -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
 }
@@ -554,6 +590,7 @@ h1{font-size:19px;font-weight:800;letter-spacing:-.03em}h1 b{color:var(--lg)}
           <div class="op" id="op"></div>
         </div>
         <div class="toast" id="toast"></div>
+        <div class="modal" id="modal" hidden></div>
       </div>
     </div>
 
@@ -706,7 +743,7 @@ const reqFromArea=py=>Math.max(5,Math.round(py*0.82+2));
 /* ══════════ 상태 ══════════ */
 /* 답변은 하나씩 쌓이고, 세부 유형(A-1/A-2 …)은 코드가 답변에서 추론한다 */
 let W={step:1,model:null,sub:0,voice:null,
-       area:7,carpet:false,pet:false,hair:false,time:null,session:null,dock:null};
+       area:7,carpet:false,pet:false,hair:false,time:null,session:null,dock:null,presetName:null};
 /* 배터리 건강도(SOH) — 신품 100 기준. 수명이 닳으면 같은 잔량이라도 쓸 수 있는 시간이 줄어든다.
    대시보드에서 검증한 방식 그대로 실효 소모율의 분모로 들어간다. */
 let SOH=100;
@@ -765,12 +802,21 @@ function presetAdd(name){
  data.sub=inferSub(); data.soh=SOH;
  const list=presetsLoad().filter(p=>p.name!==name);
  list.unshift({name,data});
- presetsStore(list); return list;
+ presetsStore(list); W.presetName=name; return list;
 }
 function presetApply(p){
  PFIELDS.forEach(k=>{if(p.data[k]!==undefined)W[k]=p.data[k]});
  if(p.data.soh!=null){SOH=p.data.soh;const el=$('soh');if(el){el.value=SOH;$('soh-v').textContent=SOH+'%'}}
- W.sub=inferSub();
+ W.sub=inferSub(); W.presetName=p.name;
+}
+/* 코칭 화면에서 프리셋을 갈아끼운다 — 화면을 벗어나지 않고 판정·테마·문구가 함께 바뀐다 */
+function presetSwitch(name){
+ const p=presetsLoad().find(x=>x.name===name); if(!p)return;
+ stopTimers(); presetApply(p);
+ phase='idle'; SES=null; SPLIT={active:false,first:[],second:[],stage:0};
+ sel=new Set(ROOMS.map((_,i)=>i));
+ clearOpCache(); draw(); renderDevice();
+ toast(`“${p.name}” 설정으로 바꿨어요`);
 }
 function presetDel(name){presetsStore(presetsLoad().filter(p=>p.name!==name))}
 function presetLabel(p){const d=p.data;
@@ -847,7 +893,8 @@ $('wiz').addEventListener('click',e=>{
  /* 프리셋 삭제 */
  const del=e.target.closest('[data-psdel]');
  if(del){e.stopPropagation();const p0=presetsLoad()[+del.dataset.psdel];
-  if(p0&&confirm(`"${p0.name}" 프리셋을 삭제할까요?`)){presetDel(p0.name);renderWiz();toast('프리셋을 삭제했어요')}
+  if(p0)openModal({title:'프리셋을 삭제할까요?',desc:`“${p0.name}” 설정이 사라집니다.`,
+    ok:'삭제',danger:true,onOk:()=>{presetDel(p0.name);renderWiz();toast('프리셋을 삭제했어요')}});
   return;}
  /* 프리셋 불러오기 — 답변을 되살리고 결과 화면으로 바로 이동 */
  const ld=e.target.closest('[data-ps]');
@@ -856,9 +903,10 @@ $('wiz').addEventListener('click',e=>{
   return;}
  /* 프리셋 저장 */
  if(e.target.closest('[data-savepreset]')){
-  const def=P[W.model]?P[W.model].label:'내 설정';
-  const name=(prompt('프리셋 이름을 입력하세요',def)||'').trim();
-  if(name){presetAdd(name);renderWiz();toast(`"${name}" 프리셋으로 저장했어요`)}
+  const def=W.presetName||(P[W.model]?P[W.model].label:'내 설정');
+  openModal({title:'프리셋으로 저장',desc:'이름을 붙여 저장하면 첫 화면이나 코칭 화면에서 바로 불러올 수 있어요.',
+    input:true,value:def,placeholder:'예: 우리집',ok:'저장',
+    onOk:name=>{presetAdd(name);renderWiz();toast(`“${name}” 프리셋으로 저장했어요`)}});
   return;}
  const el=e.target.closest('[data-oi]'); if(!el)return;
  if(W.step<STEP_Q0||W.step>=STEP_VOICE)return;
@@ -1041,7 +1089,7 @@ function ringSVG(pct){const R=50,C=2*Math.PI*R,off=C*(1-pct/100);
    stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}" transform="rotate(-90 58 58)"/></svg>`}
 const GRAD=['linear-gradient(150deg,#22a85e,#12894a)','linear-gradient(150deg,#c98413,#a86b0e)','linear-gradient(150deg,#e3536b,#c53350)'];
 
-function clearOpCache(){['op-hero','op-voice','op-cta','op-coach','op-zones','op-foot'].forEach(id=>{const el=$(id);if(el)el.__h=null})}
+function clearOpCache(){['op-ps','op-hero','op-voice','op-cta','op-coach','op-zones','op-foot'].forEach(id=>{const el=$(id);if(el)el.__h=null})}
 
 function draw(){
  if(!started)return;
@@ -1107,6 +1155,18 @@ function draw(){
      <div class="c"><div class="k">청소 후 잔량</div><div class="v">${c.mg>=0&&c.n>0?c.endS.toFixed(0)+'<em>%</em>':'—'}</div></div>
    </div></div>`;
  }
+ /* ── 프리셋 바 — 저장된 집을 눌러 바로 전환한다 ── */
+ {const ps=presetsLoad(), lock=(phase==='clean'||phase==='charge');
+  setH('op-ps', ps.length||!lock ? `<div class="psbar">
+    <div class="psrow">${ps.map(x=>`
+      <button class="pschip ${W.presetName===x.name?'on':''}" data-psuse="${encodeURIComponent(x.name)}" ${lock?'disabled':''}>
+        <span class="n">${x.name}</span><span class="d">${x.data.model} · ${x.data.area}평</span>
+      </button>`).join('')}
+      ${ps.length<6?`<button class="pschip add" data-pssave="1" ${lock?'disabled':''}>＋ 현재 설정 저장</button>`:''}
+    </div>
+    <div class="pshint">${ps.length?'저장된 설정을 눌러 바로 전환할 수 있어요':'지금 설정을 저장해두면 다음에 바로 불러올 수 있어요'}</div>
+  </div>` : '');}
+
  setH('op-hero',heroHTML);
 
  /* ── 무음 배너 — 무음 시간대에만 노출 (평상시엔 화면을 비워 둔다) ── */
@@ -1284,6 +1344,15 @@ $('op').addEventListener('click',e=>{
   if(phase==='done'){phase='idle';SES=null;SPLIT={active:false,first:[],second:[],stage:0}}
   clearOpCache();draw();return;
  }
+ /* 프리셋 전환 / 저장 */
+ const use=e.target.closest('[data-psuse]');
+ if(use&&!use.disabled){presetSwitch(decodeURIComponent(use.dataset.psuse));return}
+ if(e.target.closest('[data-pssave]')){
+  const def=W.presetName||(P[W.model]?P[W.model].label:'내 설정');
+  openModal({title:'현재 설정 저장',desc:'지금 화면의 유형 · 환경 · 보이스 · 수명 설정을 그대로 저장합니다.',
+    input:true,value:def,placeholder:'예: 부모님댁',ok:'저장',
+    onOk:name=>{presetAdd(name);clearOpCache();draw();toast(`“${name}” 프리셋으로 저장했어요`)}});
+  return;}
  if(!act)return;
  if(act==='start')startClean(false);
  else if(act==='startEco')startClean(true);
@@ -1302,6 +1371,41 @@ $('op').addEventListener('click',e=>{
  else if(act==='goto1')reopen(1);
  else if(act==='goto2')reopen(STEP_Q0);
  else if(act==='goto3')reopen(STEP_VOICE);
+});
+
+/* ── 앱 내부 모달 — prompt/confirm 을 대체한다 ── */
+let modalOk=null;
+function modalClose(){const m=$('modal');m.hidden=true;m.innerHTML='';modalOk=null}
+function openModal(o){
+ const m=$('modal');
+ const esc=t=>String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+ m.innerHTML=`<div class="mbox">
+   <div class="mt">${o.title}</div>
+   ${o.desc?`<div class="md">${o.desc}</div>`:''}
+   ${o.input?`<input id="m-in" type="text" maxlength="20" value="${esc(o.value||'')}" placeholder="${esc(o.placeholder||'')}">`:''}
+   <div class="mbtns">
+     <button data-mno>${o.cancel||'취소'}</button>
+     <button class="${o.danger?'danger':'pri'}" data-myes>${o.ok||'확인'}</button>
+   </div></div>`;
+ m.hidden=false;
+ modalOk=o.onOk||null;
+ const inp=$('m-in');
+ if(inp){
+  const sync=()=>{m.querySelector('[data-myes]').disabled=!inp.value.trim()};
+  inp.oninput=sync; sync();
+  inp.onkeydown=e=>{e.stopPropagation();
+    if(e.key==='Enter')m.querySelector('[data-myes]').click();
+    if(e.key==='Escape')modalClose()};
+  setTimeout(()=>{inp.focus();inp.select()},30);
+ }
+}
+$('modal').addEventListener('click',e=>{
+ if(e.target.closest('[data-mno]')||e.target===$('modal')){modalClose();return}
+ if(e.target.closest('[data-myes]')){
+  const inp=$('m-in'), v=inp?inp.value.trim():true, cb=modalOk;
+  if(inp&&!v)return;
+  modalClose(); if(cb)cb(v);
+ }
 });
 
 let tmo=null;
@@ -1332,7 +1436,9 @@ $('jump-ti').onclick=()=>{if(!started)return;stopTimers();const c=judge();
  if(c.n===0)return toast('구역을 먼저 선택하세요');
  if(c.fullMg<0)return toast('만충으로도 이 범위는 완주가 안 돼요 — 분할 청소 대상');
  SOC=Math.ceil(boundary(c.base,c.k,c.reqSel,0));$('soc').value=SOC;clearOpCache();draw()};
-$('restart').onclick=()=>{if(confirm('설정(유형·환경·보이스)을 초기화할까요?'))location.reload()};
+$('restart').onclick=()=>openModal({title:'설정부터 다시 할까요?',
+  desc:'유형 · 환경 · 보이스 선택이 초기화됩니다. 저장한 프리셋은 그대로 남습니다.',
+  ok:'다시 시작',danger:true,onOk:()=>location.reload()});
 
 /* ── 모바일 — 데모 제어 하단 시트 ── */
 function sheet(open){
@@ -1363,13 +1469,14 @@ addEventListener('pointerdown',primeVoice,{once:true});
 addEventListener('touchstart',primeVoice,{once:true});
 
 addEventListener('keydown',e=>{
- if(e.target.tagName==='INPUT')return;               // 슬라이더 포커스 중엔 네이티브 동작 우선
+ if(e.target.tagName==='INPUT')return;
+ if(!$('modal').hidden){if(e.key==='Escape')modalClose();return}               // 슬라이더 포커스 중엔 네이티브 동작 우선
  if(e.code==='Space'&&started){
    phase==='clean'?stopClean():(phase==='idle'&&startClean(judge().state==='tight'));e.preventDefault()}
  else if(e.key==='ArrowRight'||e.key==='ArrowUp'){stopTimers();SOC=Math.min(100,SOC+2);$('soc').value=SOC;clearOpCache();draw();renderDevice();e.preventDefault()}
  else if(e.key==='ArrowLeft'||e.key==='ArrowDown'){stopTimers();SOC=Math.max(5,SOC-2);$('soc').value=SOC;clearOpCache();draw();renderDevice();e.preventDefault()}
  else if(e.key==='r'||e.key==='R'){
-   if(e.shiftKey){if(confirm('설정까지 전부 초기화할까요?'))location.reload()}
+   if(e.shiftKey){openModal({title:'설정까지 전부 초기화할까요?',ok:'초기화',danger:true,onOk:()=>location.reload()})}
    else{softReset();toast('배터리·상태 리셋 (설정 유지)')}
  }
 });
@@ -1399,7 +1506,7 @@ if('serviceWorker' in navigator && location.protocol.startsWith('http')){
 })();
 
 /* 동작 화면 골격 */
-$('op').innerHTML=`<div id="op-hero"></div><div id="op-voice"></div><div id="op-cta"></div>
+$('op').innerHTML=`<div id="op-ps"></div><div id="op-hero"></div><div id="op-voice"></div><div id="op-cta"></div>
  <div id="op-coach"></div><div id="op-zones"></div><div id="op-foot"></div>`;
 
 renderWiz();
