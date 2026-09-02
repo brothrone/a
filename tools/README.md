@@ -22,3 +22,10 @@ python3 tools/qa.py 발표자료_배터리코칭.pptx   # 넘침·겹침·여백
 
 캡처는 `shots/`, 분석 그래프는 `figs/`에서 읽는다.
 캡처 크기는 PNG 헤더에서 직접 읽으므로 다시 떠도 표가 어긋나지 않는다.
+
+캡처를 다시 뜨려면 로컬 서버가 필요하다.
+
+```bash
+python3 -m http.server 4173 &
+node tools/shots.js
+```

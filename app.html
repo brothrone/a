@@ -979,8 +979,7 @@ function renderWiz(){
        <div class="av" style="background:${v.c}">${v.emoji}</div>
        <div class="vt"><div class="a">${v.name}</div><div class="b">${v.tone}</div></div>
        <div class="play" onclick="event.stopPropagation();preview('${id}')">▶</div></div>`}).join('')}
-   <div class="vnote">※ 표기된 인물·캐릭터는 <b>적용 예시</b>이며, 데모의 소리는 <b>시스템 음성으로 만든 샘플</b>입니다.
-     실제 서비스에는 <b>음성권·저작권 계약</b>이 선행되어야 합니다.</div>`;
+`;
  }
  /* ── 10. 최종 결과 ── */
  else{
@@ -1240,8 +1239,7 @@ function draw(){
 
  renderDevice();
  const spk=$('spk');spk.className='spk-unit'+((phase==='clean'&&!muted)?' on':muted?' muted':'');
- const vn=(VOICE[W.voice]||{}).name||'보이스';
- $('spk-t').textContent=muted?'무음 (앱 알림)':phase==='clean'?`${vn} 재생 중`:`${vn} 대기`;
+ $('spk-t').textContent=muted?'무음 (앱 알림)':phase==='clean'?'음성 재생 중':'음성 대기';
 }
 
 /* ── 기기 LCD ── */
