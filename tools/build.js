@@ -9,13 +9,13 @@ const {P,S_,D_,head,bullets,shot,cap,node,arrow,vArrow,hline,chip,apx,demo,tbl,f
  shot(s,'08_coach_ok_C',{x:9.32,y:0.6,h:6.3});
  s.addText('파라써블 × 부산대학교 · 미래 AX 생활가전 리빙 솔루션+',{x:M,y:1.85,w:7.2,h:0.3,fontFace:H,fontSize:10.5,bold:true,color:'7FD9A8',margin:0,charSpacing:1.2});
  s.addText('잔량은 기기의 언어,\n코칭 문장은 사용자의 언어',{x:M,y:2.45,w:7.5,h:1.9,fontFace:H,fontSize:38,bold:true,color:W,margin:0,lineSpacing:51,charSpacing:-1});
- s.addText('무선 스틱형 청소기의 배터리 잔량을 “지금 할 행동”으로 번역하는 AX 프로토타입',{x:M,y:4.4,w:7.2,h:0.4,fontFace:B,fontSize:13,color:'A9B5BF',margin:0,lineSpacing:19});
+ s.addText('배터리 잔량 → 지금 할 행동 · LG AI Home 기반 코칭 UI',{x:M,y:4.4,w:7.2,h:0.4,fontFace:B,fontSize:13,color:'A9B5BF',margin:0,lineSpacing:19});
  s.addText('오늘 보여드리는 화면은 전부 실제로 도는 앱 화면입니다',{x:M,y:4.95,w:7.2,h:0.3,fontFace:B,fontSize:11.5,color:'7A8892',margin:0});
  s.addNotes('[15초] 안녕하십니까, 파라써블입니다. 저희는 배터리 잔량을 사용자의 행동으로 번역하는 코칭 UI를 만들었습니다. 오른쪽은 지금 실제로 동작하는 앱 화면입니다.');}
 
 /* ══ 2. 서론 1 ══ */
 {const s=S_();
- head(s,'서론 1','문제 정의','기기가 주는 것은 % 하나, 사용자가 묻는 것은 “지금 시작해도 되나”');
+ head(s,'서론 1','문제 정의','잔량 82% vs 81% · 판정은 반대');
  const a=shot(s,'08_coach_ok_C',{x:M,y:CY,h:3.4}); cap(s,a,'C-1 · 24평 · 82%','여유 +15분 → 완주 가능',GD);
  const b=shot(s,'09_coach_tight_E',{x:2.66,y:CY,h:3.4}); cap(s,b,'E-1 · 28평 · 81%','여유 +2분 → 빠듯함',AD);
  bullets(s,['사용자가 던지는 질문 — 지금 시작하면 끝까지 되나 / 어디까지 가능한가 / 중간에 꺼지면 어떡하나',
@@ -30,7 +30,7 @@ const {P,S_,D_,head,bullets,shot,cap,node,arrow,vArrow,hline,chip,apx,demo,tbl,f
 
 /* ══ 3. 서론 2 ══ */
 {const s=S_();
- head(s,'서론 2','SOC와 SOH','둘은 독립적이다. 함께 읽어야 “지금 할 수 있는 일”이 나온다');
+ head(s,'서론 2','SOC와 SOH','SOC 잔량 · SOH 수명 · 서로 다른 두 축');
  [['SOC','State of Charge · 충전 상태','지금 얼마나 남았나. 쓰면 줄고 충전하면 다시 100%가 된다.','오늘 이 청소를 끝낼 수 있는가',G,GD],
   ['SOH','State of Health · 건강 상태','배터리가 얼마나 늙었나. 신품이 100%이고, 한 번 줄면 돌아오지 않는다.','앞으로 이 배터리를 얼마나 더 쓸 수 있는가',A,AD]].forEach((v,i)=>{
   const x=M+i*4.2;
@@ -56,7 +56,7 @@ const {P,S_,D_,head,bullets,shot,cap,node,arrow,vArrow,hline,chip,apx,demo,tbl,f
 
 /* ══ 4. 본론 1 — 전체 설계 ══ */
 {const s=S_();
- head(s,'본론 1','전체 설계','실선 = 사용자가 손대는 지점 · 점선 = 앱이 자동으로 처리하는 지점');
+ head(s,'본론 1','전체 설계','실선 = 사용자 입력 4곳 · 점선 = 앱 자동 처리');
  [['온보딩',2.25],['코칭',3.62],['실행',5.35]].forEach(v=>{
   s.addShape(P.ShapeType.rect,{x:M,y:v[1],w:CW,h:v[0]==='코칭'?1.6:0.84,fill:{color:v[0]==='코칭'?'FAFBFC':W},line:{width:0}});
   s.addText(v[0],{x:M,y:v[1]+0.27,w:0.7,h:0.3,fontFace:H,fontSize:9.5,bold:true,color:MUT,margin:0,align:'center'});});
@@ -83,7 +83,7 @@ const {P,S_,D_,head,bullets,shot,cap,node,arrow,vArrow,hline,chip,apx,demo,tbl,f
 
 /* ══ 5. 본론 2 — 묻는 방식 ══ */
 {const s=S_();
- head(s,'본론 2 · 개선 ①','질문형 온보딩과 프리셋','개인화에 필요한 정보는 반드시 있어야 하는데, 사용자는 자기 유형을 모른다');
+ head(s,'본론 2 · 개선 ①','질문형 온보딩과 프리셋','생활 언어 질문 7개 → 유형 자동 추론 → 프리셋 저장');
  flow3(s,M,CY,5.5,
   '세부 유형은 계산에 반드시 필요하다. 그런데 사용자는 자기가 어떤 유형인지 알 방법이 없다.',
   '생활 언어 질문 7개로 묻고, 답변에서 유형을 규칙 기반으로 추론한다. 한 번 답한 설정은 이름을 붙여 프리셋으로 저장한다.',
@@ -102,7 +102,7 @@ const {P,S_,D_,head,bullets,shot,cap,node,arrow,vArrow,hline,chip,apx,demo,tbl,f
 
 /* ══ 6. 본론 3 — 재는 자 ══ */
 {const s=S_();
- head(s,'본론 3 · 개선 ②','여유 시간 기반 판정','출력은 숫자가 아니라 행동이어야 한다 — 그래서 색이 셋이다');
+ head(s,'본론 3 · 개선 ②','여유 시간 기반 판정','판정 기준: 잔량 → 여유 시간 · 상태 3색');
  flow3(s,M,CY,5.5,
   'SOC 고정 임계값은 틀린다. 같은 70%라도 평수·바닥 조건·모드가 다르면 완주 여부가 뒤집힌다.',
   '잔량이 아니라 여유 시간으로 판정한다. 임계 잔량은 고정값이 아니라 목표 여유 시간에서 역산해 얻는다.',
@@ -125,7 +125,7 @@ const {P,S_,D_,head,bullets,shot,cap,node,arrow,vArrow,hline,chip,apx,demo,tbl,f
 
 /* ══ 7. 본론 4 — 수명 반영 ══ */
 {const s=S_();
- head(s,'본론 4 · 개선 ③','배터리 수명(SOH) 반영','수명을 넣자 “오늘 할 수 있는 일”이 배터리 나이까지 반영하게 됐다');
+ head(s,'본론 4 · 개선 ③','배터리 수명(SOH) 반영','같은 잔량 82% · SOH만 다름 → 37분 vs 29분');
  flow3(s,M,CY,5.5,
   '기존 안내는 SOC만 본다. 배터리가 늙어도 같은 82%면 같은 시간을 쓸 수 있다고 말한다 — 그래서 중간에 꺼진다.',
   'SOH를 실효 소모율에 반영했다. SOH가 낮을수록 소모 속도가 커져 가용 시간이 짧게 산출된다.',
@@ -146,12 +146,12 @@ const {P,S_,D_,head,bullets,shot,cap,node,arrow,vArrow,hline,chip,apx,demo,tbl,f
 
 /* ══ 8. 본론 5 — 기기·IoT 연동 (AX 핵심) ══ */
 {const s=S_();
- head(s,'본론 5 · 개선 ④','기기 · IoT 연동','판정은 한 곳에서, 표현은 세 곳에서 — 화면을 보지 않아도 안내가 닿는다');
+ head(s,'본론 5 · 개선 ④','LG AI Home 연동','판정 1곳 · 표현 3곳 (앱 · 기기 LCD · 허브 음성)');
  const d=shot(s,'20_desktop_link',{x:M,y:CY,h:3.55});
- s.addText('앱에서 설정하면 기기 LCD와 IoT 스피커가 함께 반응한다',{x:M,y:d.by+0.12,w:d.w,h:0.26,fontFace:B,fontSize:9.5,color:MUT,align:'center',margin:0});
- const AX=[['① 판정','앱이 잔량 · 수명 · 환경을 읽어 상태를 확정한다',INK],
-           ['② 동기화','같은 판정이 기기 LCD에 그대로 표시된다 — 폰을 켜지 않아도 본체에서 확인',G],
-           ['③ 발화','IoT 스피커가 유형별 문장을 읽어준다 — 청소하면서 손을 쓰지 않고 듣는다',A],
+ s.addText('LG ThinQ 앱 · 씽큐 온 허브 · 코드제로 A9 — 하나의 판정이 셋으로 나간다',{x:M,y:d.by+0.12,w:d.w,h:0.26,fontFace:B,fontSize:9.5,color:MUT,align:'center',margin:0});
+ const AX=[['① 판정','ThinQ 앱이 잔량 · 수명 · 환경을 읽어 상태를 확정한다',INK],
+           ['② 동기화','같은 판정이 코드제로 LCD에 그대로 — 폰을 켜지 않아도 본체에서 확인',G],
+           ['③ 발화','씽큐 온이 유형별 문장을 읽어준다 — 청소하면서 손을 쓰지 않고 듣는다',A],
            ['④ 상황 인지','심야이거나 영유아 가정의 낮잠 시간대면 소리를 끄고 화면 안내만 남긴다',R]];
  AX.forEach((v,i)=>{const y=CY+i*0.78;
   s.addShape(P.ShapeType.roundRect,{x:8.0,y,w:4.7,h:0.68,rectRadius:0.09,fill:{color:WASH},line:{width:0}});
@@ -159,20 +159,20 @@ const {P,S_,D_,head,bullets,shot,cap,node,arrow,vArrow,hline,chip,apx,demo,tbl,f
   s.addText(v[0],{x:8.42,y,w:0.9,h:0.68,fontFace:H,fontSize:10,bold:true,color:INK,valign:'middle',margin:0});
   s.addText(v[1],{x:9.35,y,w:3.2,h:0.68,fontFace:B,fontSize:9,color:INK2,valign:'middle',margin:0,lineSpacing:12});});
  s.addShape(P.ShapeType.roundRect,{x:8.0,y:CY+3.2,w:4.7,h:0.86,rectRadius:0.09,fill:{color:'EDF6F1'},line:{width:0}});
- s.addText('네트워크 없이도 전 구간 동작',{x:8.2,y:CY+3.3,w:4.3,h:0.26,fontFace:H,fontSize:10,bold:true,color:GD,margin:0});
- s.addText('설치형 웹앱(PWA)으로 음성 클립까지 캐시해, 발표장 네트워크가 끊겨도 온보딩부터 코칭·음성까지 그대로 돈다.',
+ s.addText('AI Home 위에 얹히는 코칭 계층',{x:8.2,y:CY+3.3,w:4.3,h:0.26,fontFace:H,fontSize:10,bold:true,color:GD,margin:0});
+ s.addText('AI Home 허브는 생성형 AI로 집 안 상태를 상시 모니터링한다. 우리 판정은 그 위에 얹히는 코칭 계층이고, 허브가 없어도 앱 단독으로 동작한다.',
   {x:8.2,y:CY+3.56,w:4.3,h:0.44,fontFace:B,fontSize:8.5,color:INK2,margin:0,lineSpacing:12});
  demo(s,'앱에서 바꾼 설정이 기기 화면과 음성으로 함께 나가는 것을 데모에서 보여드리겠습니다.');
  s.addNotes('[25초] 판정은 앱 한 곳에서 하고, 표현은 세 곳으로 나눕니다. 같은 판정이 기기 LCD에 그대로 뜨고, IoT 스피커가 유형별 문장을 읽어줍니다. 심야나 낮잠 시간대에는 소리를 끄고 화면 안내만 남깁니다. 네트워크가 없어도 전 구간 동작합니다.');}
 
 /* ══ 9. 결론 1 — 개선 전후 ══ */
 {const s=S_();
- head(s,'결론 1','개선 전후 비교','여기서부터 실제 앱을 띄워놓고 보여드립니다');
+ head(s,'결론 1','개선 전후 비교','정보 · 입력 · 수명 · 전달 · 정확도 · 실패 처리');
  const rows=[['축','기존','지금'],
   ['정보','잔량 % + LED 칸 수','3색 판정 + 세 지표 + 행동 문장'],
   ['입력','자기 유형을 알아야 함','생활 언어 질문 7개 · 프리셋 재사용'],
   ['수명','사용자 시야 밖','SOH 반영 예측 + 교체 시점 안내'],
-  ['전달','기기 화면 하나','앱 · 기기 LCD · IoT 스피커 동시 반응'],
+  ['전달','기기 화면 하나','ThinQ 앱 · 기기 LCD · 씽큐 온 음성'],
   ['정확도','예측 오차 3.56분 · 판정 90.0%','예측 오차 0.98분 · 판정 96.0%'],
   ['실패 처리','방전되면 그냥 멈춤','분할 청소 · 도중 방전 복귀까지 설계']];
  tbl(s,M,CY,6.6,rows,[0.14,0.35,0.51],{header:true,rh:0.47,fs:9.5,colColor:[INK,MUT,GD]});
@@ -193,12 +193,12 @@ const {P,S_,D_,head,bullets,shot,cap,node,arrow,vArrow,hline,chip,apx,demo,tbl,f
 
 /* ══ 10. 결론 2 — AX 활용 ══ */
 {const s=D_();
- head(s,'결론 2','AX 활용','왼쪽은 AI가 한 일, 오른쪽은 그래서 사용자가 안 해도 되는 일',true);
+ head(s,'결론 2','AX 활용','AI 개입 5지점 → 사용자가 안 해도 되는 일',true);
  const AI=[['①','유형 추론','답변 7개 → 세부 유형','자기 유형을 몰라도 개인화가 성립한다'],
            ['②','소모율 예측','잔량 · 평수 · 구역 → 여유 시간','“완주 가능”이라는 말을 믿을 수 있게 됐다'],
            ['③','수명 반영','SOH 78% → 가용 시간 −20%','배터리가 늙어도 안내가 계속 맞는다'],
            ['④','잔차 진단으로 식 수정','한쪽 쏠림 → 누락 항 신설','중간 방전이 사라졌다 (오차 3.56 → 0.98분)'],
-           ['⑤','상황 인지 · IoT 연동','시간대 · 유형 → 음성/화면 전환','알림이 민폐가 되지 않고, 손을 쓰지 않아도 된다']];
+           ['⑤','상황 인지 · AI Home 연동','시간대 · 유형 → 음성/화면 전환','알림이 민폐가 되지 않고, 손을 쓰지 않아도 된다']];
  AI.forEach((v,i)=>{const y=CY+0.1+i*0.72;
   s.addShape(P.ShapeType.roundRect,{x:M,y,w:5.85,h:0.62,rectRadius:0.08,fill:{color:'1E252C'},line:{width:0}});
   s.addText(v[0],{x:M+0.14,y,w:0.36,h:0.62,fontFace:H,fontSize:13,bold:true,color:'7FD9A8',valign:'middle',margin:0});
@@ -220,12 +220,12 @@ const {P,S_,D_,head,bullets,shot,cap,node,arrow,vArrow,hline,chip,apx,demo,tbl,f
 
 /* ══ 11. 결론 3 — 확장성 ══ */
 {const s=S_();
- head(s,'결론 3','파급효과와 확장성','판정 · 문장 · 음성을 분리해 두어, 확장은 데이터와 계약만 있으면 된다');
+ head(s,'결론 3','파급효과와 확장성','재검증 · 타 가전 이식 · 콘텐츠 · 배터리 케어');
  const C4=[
   ['실기기 재검증','사용 이력 → 재계산 → 결과 검증 파이프라인을 실측 로그에 그대로 적용 — 설계 잠정치를 실측값으로 대체한다',G],
   ['타 배터리 가전 이식','판정 로직이 화면과 분리된 순수 함수라, 로봇청소기 등 다른 배터리 가전에 동일 구조로 이식할 수 있다',A],
   ['콘텐츠 확장','보이스팩·코칭 문장은 판정 로직 수정 없이 데이터 추가만으로 확장 — 이번 구현에서 15종까지 확인했다',INK],
-  ['배터리 케어 서비스','SOH 기반 교체 시점 안내를 소모품 구독·AS 예약으로 연결 — IoT 스피커·기기 LCD 연동은 이미 동작한다',R]];
+  ['배터리 케어 서비스','SOH 기반 교체 시점 안내를 소모품 구독·AS 예약으로 연결 — 허브·기기 LCD 연동은 이미 동작한다',R]];
  C4.forEach((v,i)=>{const x=M+(i%2)*6.15, y=CY+Math.floor(i/2)*1.58;
   s.addShape(P.ShapeType.roundRect,{x,y,w:5.9,h:1.42,rectRadius:0.1,fill:{color:WASH},line:{width:0}});
   s.addShape(P.ShapeType.rect,{x:x+0.22,y:y+0.2,w:0.09,h:0.3,fill:{color:v[2]},line:{width:0}});

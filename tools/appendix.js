@@ -25,7 +25,7 @@ const {P,S_,head,bullets,shot,node,arrow,vArrow,chip,apx,tbl,
 
 /* A2 */
 {const s=S_();
- head(s,'Appendix A2','유형 추론 규칙','자동 추론은 임의 분류가 아니라 명시적 규칙이다');
+ head(s,'Appendix A2','유형 추론 규칙','질문 7개 → 분기 2 · 예측 파라미터 4 · 무음 1');
  const qs=[['집 평수','예측 파라미터',G],['카펫 · 러그','예측 파라미터',G],['반려동물','예측 파라미터',G],
            ['머리카락','예측 파라미터',G],['청소 시간대','무음 정책',A],['한 번에 몰아서?','세부 유형 분기',R],['거치대 상시?','세부 유형 분기',R]];
  qs.forEach((v,i)=>{const y=CY+i*0.55;
@@ -52,7 +52,7 @@ const {P,S_,head,bullets,shot,node,arrow,vArrow,chip,apx,tbl,
 
 /* A3 */
 {const s=S_();
- head(s,'Appendix A3','계산식 구조 변경','항을 신설하고, 항이 붙는 위치를 옮겼다');
+ head(s,'Appendix A3','계산식 구조 변경','항 신설 · 값 재추정 · 위치 이동');
  s.addShape(P.ShapeType.roundRect,{x:M,y:CY,w:5.9,h:1.3,rectRadius:0.1,fill:{color:WASH},line:{width:0}});
  s.addText('정의서 원문식',{x:M+0.24,y:CY+0.12,w:5.4,h:0.26,fontFace:H,fontSize:10,bold:true,color:MUT,margin:0,charSpacing:1});
  s.addText('(잔량 − 예비 잔량) × 온도·SOH 보정\n÷ 모드별 소모율 (설계 잠정 1.7 / 2.5 / 5.0)',
@@ -111,7 +111,7 @@ const {P,S_,head,bullets,shot,node,arrow,vArrow,chip,apx,tbl,
 
 /* A5 */
 {const s=S_();
- head(s,'Appendix A5','오차 요인 분해','진단이 처방을 지목했다 — 튜닝으로는 최대 33.9%까지만');
+ head(s,'Appendix A5','오차 요인 분해','식에 없는 항 47.5% · 값 33.9% · 위치 18.5%');
  s.addImage({path:F+'fig4_waterfall.png',x:M,y:CY,w:5.9,h:3.35});
  const dz=[['47.5%','식에 없는 항','기동 전력 · 전압강하 항 신설',R,RD],
            ['33.9%','값이 틀린 항','모드별 소모율 재추정',A,AD],
@@ -152,7 +152,7 @@ const {P,S_,head,bullets,shot,node,arrow,vArrow,chip,apx,tbl,
  s.addShape(P.ShapeType.roundRect,{x:9.6,y:CY+1.65,w:3.1,h:0.85,rectRadius:0.08,fill:{color:'EDF6F1'},line:{width:0}});
  s.addText('최대 개선 — E-1',{x:9.78,y:CY+1.76,w:2.8,h:0.26,fontFace:H,fontSize:9.5,bold:true,color:GD,margin:0});
  s.addText('완주 판정 정확도 50% → 97%',{x:9.78,y:CY+2.04,w:2.8,h:0.4,fontFace:B,fontSize:9,color:INK2,margin:0,lineSpacing:12});
- const env=[['설치형 웹앱 · 오프라인','단일 HTML 기반 PWA. 서비스워커가 음성 클립까지 전 자산을 캐시해 네트워크가 끊겨도 전 구간 동작'],
+ const env=[['설치형 웹앱 · 오프라인','단일 HTML 기반 PWA. 음성 클립까지 전 자산 캐시 — 네트워크 없이 전 구간 동작'],
             ['데모 제어','“완주 경계” · “빠듯 경계” 버튼은 목표 여유 시간을 만족하는 잔량을 역산해 즉시 점프시킨다'],
             ['검증 재현','사용 이력 → 재계산 스크립트 → 결과 데이터로 수치 전량 재현 가능']];
  env.forEach((v,i)=>{const x=M+i*4.15;
