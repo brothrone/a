@@ -383,14 +383,32 @@ h1{font-size:19px;font-weight:800;letter-spacing:-.03em}h1 b{color:var(--lg)}
 @keyframes blink{50%{opacity:.3}}
 
 .speaker{display:flex;flex-direction:column;align-items:center;gap:12px}
-.spk-unit{position:relative;width:104px;height:118px;border-radius:26px;
- background:linear-gradient(160deg,#3b4148,#20242a);box-shadow:0 24px 40px -20px rgba(20,22,26,.5),inset 0 0 0 1.5px rgba(255,255,255,.06)}
-.spk-unit .mesh{position:absolute;inset:12px 12px 34px;border-radius:18px;
- background:repeating-linear-gradient(115deg,#2a2f35 0 3px,#23272d 3px 6px);opacity:.9}
-.spk-unit .ledring{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);width:56px;height:8px;border-radius:99px;background:#3a4750;transition:.3s}
-.spk-unit .top{position:absolute;left:50%;top:-8px;transform:translateX(-50%);width:60px;height:16px;border-radius:99px;background:linear-gradient(180deg,#454b52,#2a2f35)}
-.spk-unit.on .ledring{background:#3ecf82;box-shadow:0 0 16px #3ecf82aa}
-.spk-unit.muted .ledring{background:#d08a1e;box-shadow:0 0 12px #d08a1e88}
+.spk-unit{position:relative;width:150px;height:96px}
+.spk-unit .su-top{position:absolute;left:0;top:0;width:150px;height:64px;border-radius:50%/34px;
+ background:linear-gradient(155deg,#ffffff,#f2efe9 60%,#e6e1d7);
+ box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 -1px 6px rgba(0,0,0,.05) inset;z-index:3}
+.spk-unit .su-logo{position:absolute;left:50%;top:13px;transform:translateX(-50%);
+ width:13px;height:13px;z-index:4;opacity:.72}
+.spk-unit .su-logo svg{width:100%;height:100%;display:block}
+.spk-unit .su-pm{position:absolute;top:29px;font-size:12px;font-weight:700;color:#8b8577;z-index:4;letter-spacing:-.02em}
+.spk-unit .su-minus{left:25px}
+.spk-unit .su-plus{right:23px}
+.spk-unit .su-mic{position:absolute;left:50%;top:42px;transform:translateX(-50%);
+ display:flex;align-items:center;gap:3px;font-size:6.5px;font-weight:700;color:#9b9585;
+ white-space:nowrap;z-index:4;letter-spacing:-.01em}
+.spk-unit .su-mic i{width:8px;height:8px;border:1.1px solid #9b9585;border-radius:3px;
+ display:inline-block;position:relative;flex:0 0 auto}
+.spk-unit .su-mic i::after{content:"";position:absolute;inset:1.6px;border-radius:1px;background:#9b9585}
+.spk-unit .su-body{position:absolute;left:3px;top:30px;width:144px;height:56px;border-radius:0 0 30px 30px;
+ background:repeating-linear-gradient(115deg,#efece4 0 2.4px,#e3dfd4 2.4px 4.8px),
+   linear-gradient(180deg,#ece8de,#ddd8cb);
+ box-shadow:inset 0 10px 14px -10px rgba(0,0,0,.1),inset 0 -6px 10px -6px rgba(0,0,0,.12);z-index:1}
+.spk-unit .su-cable{position:absolute;left:66px;top:-9px;width:3px;height:12px;border-radius:2px;
+ background:linear-gradient(180deg,#e6e1d7,#cfc9bb);z-index:2}
+.spk-unit .ledring{position:absolute;left:9px;bottom:1px;width:132px;height:6px;border-radius:99px;
+ background:#cac4b5;transition:.3s;z-index:2;filter:blur(.2px)}
+.spk-unit.on .ledring{background:#3ecf82;box-shadow:0 0 14px 1px #3ecf82cc}
+.spk-unit.muted .ledring{background:#d08a1e;box-shadow:0 0 12px 1px #d08a1e99}
 .spk-label{font-size:11px;font-weight:800;color:var(--ink2);text-align:center}
 .spk-label small{display:block;font-size:10px;color:var(--mut);font-weight:600;margin-top:2px}
 
@@ -627,7 +645,17 @@ h1{font-size:19px;font-weight:800;letter-spacing:-.03em}h1 b{color:var(--lg)}
       <div class="dev-status" id="devst"><span class="d"></span><span id="devst-t">거치대 대기 중</span></div>
 
       <div class="speaker">
-        <div class="spk-unit" id="spk"><div class="top"></div><div class="mesh"></div><div class="ledring"></div></div>
+        <div class="spk-unit" id="spk">
+          <div class="su-cable"></div>
+          <div class="su-body"></div>
+          <div class="su-top">
+            <div class="su-logo"><svg viewBox="0 0 24 24" fill="none" stroke="#7d7768" stroke-width="1.6"><path d="M12 3l8 4.6v8.8L12 21l-8-4.6V7.6L12 3z"/></svg></div>
+            <div class="su-pm su-minus">&minus;</div>
+            <div class="su-pm su-plus">+</div>
+            <div class="su-mic"><i></i>Mic Off (3s)</div>
+          </div>
+          <div class="ledring"></div>
+        </div>
         <div class="spk-label">LG 씽큐 온 · AI홈 허브<small id="spk-t">음성 대기</small></div>
       </div>
     </div>
