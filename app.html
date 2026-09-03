@@ -148,7 +148,7 @@ h1{font-size:19px;font-weight:800;letter-spacing:-.03em}h1 b{color:var(--lg)}
  padding:12px 14px;margin-bottom:10px;cursor:pointer;transition:.14s;background:var(--card);position:relative;overflow:hidden}
 .vcard.on{border-color:var(--lg);background:var(--accSoft);box-shadow:0 0 0 3px var(--accRing)}
 .vcard .av{width:46px;height:46px;border-radius:99px;flex:0 0 auto;display:grid;place-items:center;
- color:#fff;font-size:20px;box-shadow:inset 0 -6px 14px rgba(0,0,0,.12)}
+ color:#fff;font-size:18px;font-weight:800;letter-spacing:0;box-shadow:inset 0 -6px 14px rgba(0,0,0,.12)}
 .vcard .vt{flex:1}
 .vcard .vt .a{font-size:14.5px;font-weight:800}
 .vcard .vt .b{font-size:11.5px;color:var(--mut);font-weight:600;margin-top:2px}
@@ -170,7 +170,8 @@ h1{font-size:19px;font-weight:800;letter-spacing:-.03em}h1 b{color:var(--lg)}
  padding:16px 15px;cursor:pointer;background:var(--card);transition:.14s;text-align:left}
 .opt:hover{border-color:var(--mut)}
 .opt.on{border-color:var(--lg);background:var(--accSoft);box-shadow:0 0 0 3px var(--accRing)}
-.opt .oi{font-size:21px;flex:0 0 auto;width:28px;text-align:center}
+.opt.on .oi{color:var(--lg)}
+.opt .oi{display:flex;align-items:center;justify-content:center;flex:0 0 auto;width:28px;color:var(--ink2)}
 .opt .ob{flex:1;min-width:0}
 .opt .ot{font-size:14.5px;font-weight:800;color:var(--ink);letter-spacing:-.02em}
 .opt .od{font-size:11.5px;font-weight:600;color:var(--mut);margin-top:2px;word-break:keep-all}
@@ -272,7 +273,7 @@ h1{font-size:19px;font-weight:800;letter-spacing:-.03em}h1 b{color:var(--lg)}
 .zones{display:flex;gap:7px;margin-top:13px}
 .zones .z{flex:1;border-radius:12px;padding:11px 4px;text-align:center;border:1.5px solid var(--line2);background:var(--line2);
  transition:.18s;cursor:pointer;position:relative;user-select:none}
-.zones .z .zi{font-size:19px}
+.zones .z .zi{display:flex;justify-content:center;color:var(--ink2)}
 .zones .z .zn{font-size:10.5px;font-weight:700;color:var(--ink2);margin-top:3px}
 .zones .z .zt{font-size:9px;font-weight:700;color:var(--mut);margin-top:1px}
 .zones .z.sel{border-color:var(--g);background:var(--gs)}
@@ -281,7 +282,7 @@ h1{font-size:19px;font-weight:800;letter-spacing:-.03em}h1 b{color:var(--lg)}
 .zones .z.sel::after{content:"✓";position:absolute;top:4px;right:6px;font-size:10px;font-weight:800;color:var(--g)}
 .zones .z.done{border-color:var(--g);background:var(--g)}
 .zones .z.done .zn,.zones .z.done .zt{color:#fff}
-.zones .z.done .zi{filter:grayscale(1) brightness(3)}
+.zones .z.done .zi{color:#fff}
 .zones .z.lock{cursor:default}
 .znote{font-size:11.5px;color:var(--mut);font-weight:600;line-height:1.55;margin-top:11px}
 .znote b{color:var(--ink2)}
@@ -587,7 +588,7 @@ h1{font-size:19px;font-weight:800;letter-spacing:-.03em}h1 b{color:var(--lg)}
     </div>
   </div>
   <div class="scrim" id="scrim"></div>
-  <button class="fab" id="fab" aria-label="데모 제어 열기">⚙</button>
+  <button class="fab" id="fab" aria-label="데모 제어 열기"></button>
 
   <div class="stage">
     <!-- ══ 폰 ══ -->
@@ -702,44 +703,78 @@ const P={
     voice:['주말이니까 집 전체 한 번 정리할게요.','가족들 많이 쓰는 곳부터 돌아볼게요.','충전하고 올게요. 곧 다시 시작할게요.']},
 };
 
+/* ── 아이콘 — 이모지 대신 선 굵기가 통일된 SVG 한 벌을 쓴다 ── */
+const ICON={
+ plug   :'<path d="M8 2v6M16 2v6M6 8h12v4a6 6 0 0 1-12 0V8Z"/><path d="M12 18v4"/>',
+ box    :'<path d="M3 8l9-5 9 5-9 5-9-5Z"/><path d="M3 8v9l9 5 9-5V8"/><path d="M12 13v9"/>',
+ sunrise:'<path d="M12 2v3"/><path d="M5.6 8.6l1.4 1.4"/><path d="M18.4 8.6l-1.4 1.4"/><path d="M2 18h20"/><path d="M6 18a6 6 0 0 1 12 0"/><path d="M9 22l3-3 3 3"/>',
+ sun    :'<circle cx="12" cy="12" r="5"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>',
+ sunset :'<path d="M12 9V6"/><path d="M5.6 11.4l1.4-1.4"/><path d="M18.4 11.4l-1.4-1.4"/><path d="M2 18h20"/><path d="M6 18a6 6 0 0 1 12 0"/><path d="M9 14l3 3 3-3"/>',
+ moon   :'<path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z"/>',
+ batch  :'<rect x="4" y="4" width="16" height="17" rx="2"/><path d="M9 2v4M15 2v4"/><path d="M8.5 12.5l2.3 2.3L16 10"/>',
+ broom  :'<path d="M19 3 9 13"/><path d="M6 11l4 4-2 6.2a1.4 1.4 0 0 1-1.3 1H6a1.4 1.4 0 0 1-1.3-1L3 15l3-4Z"/><path d="M5 21.3 6 19M9 21.3l1-2.3"/>',
+ split  :'<path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>',
+ yes    :'<circle cx="12" cy="12" r="9"/><path d="M7.5 12.5l3 3L16.5 9"/>',
+ no     :'<circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/>',
+ sofa   :'<path d="M6 11V8a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v3"/><rect x="3" y="11" width="18" height="6" rx="2"/><path d="M5 17v3M19 17v3"/>',
+ dish   :'<path d="M8 2v6a2 2 0 1 1-4 0V2"/><path d="M6 8v14"/><path d="M17 2c-1.7 0-3 2.5-3 5.5S15.3 12 17 12M17 2v20"/>',
+ bed    :'<path d="M3 18v-7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v7"/><path d="M3 18h18M3 15h18"/><path d="M7 11V7a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v2"/>',
+ door   :'<rect x="5" y="3" width="14" height="18" rx="1"/><circle cx="15" cy="12" r="1" fill="currentColor" stroke="none"/>',
+ home   :'<path d="M4 21V10l8-6 8 6v11"/><path d="M9 21v-8h6v8"/>',
+ mute   :'<path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M16 9l6 6M22 9l-6 6"/>',
+ warn   :'<path d="M12 3 2 20h20L12 3Z"/><path d="M12 10v4"/><path d="M12 17h.01"/>',
+ bolt   :'<path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/>',
+ bulb   :'<path d="M9 18h6M10 21h4"/><path d="M12 3a6.5 6.5 0 0 0-3.8 11.8c.6.4.8.9.8 1.7v.5h6v-.5c0-.8.2-1.3.8-1.7A6.5 6.5 0 0 0 12 3Z"/>',
+ battery:'<rect x="2" y="7" width="17" height="10" rx="2"/><path d="M22 10.5v3"/><path d="M6 10v4"/>',
+ dogface:'<path d="M4.5 9c0-1.3 1-4 2.8-4s1.7 2.6 1.7 3.4"/><path d="M19.5 9c0-1.3-1-4-2.8-4s-1.7 2.6-1.7 3.4"/><circle cx="12" cy="13" r="7"/><circle cx="9.3" cy="12.2" r=".9" fill="currentColor" stroke="none"/><circle cx="14.7" cy="12.2" r=".9" fill="currentColor" stroke="none"/><path d="M10.3 15.8c.6.5 2.8.5 3.4 0"/>',
+ catface:'<path d="M5 3.5 7 8M19 3.5 17 8"/><circle cx="12" cy="13" r="7"/><circle cx="9.5" cy="12" r=".8" fill="currentColor" stroke="none"/><circle cx="14.5" cy="12" r=".8" fill="currentColor" stroke="none"/><path d="M12 14v1M9.2 16.3c.9.6 3.7.6 4.6 0"/>',
+ paw    :'<circle cx="6.5" cy="10" r="2"/><circle cx="17.5" cy="10" r="2"/><circle cx="9.3" cy="5.8" r="1.9"/><circle cx="14.7" cy="5.8" r="1.9"/><path d="M12 12c-3.1 0-6.2 2.1-6.2 5.1a3 3 0 0 0 3 3c1.3 0 1.9-.6 3.2-.6s1.9.6 3.2.6a3 3 0 0 0 3-3c0-3-3.1-5.1-6.2-5.1Z"/>',
+ gear   :'<circle cx="12" cy="12" r="3.2"/><path d="M19.4 13a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6V19a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.6-1H4a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H10a1.7 1.7 0 0 0 1-1.6V4a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V10a1.7 1.7 0 0 0 1.6 1H20a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.6 1Z"/>',
+ close  :'<path d="M6 6l12 12M18 6 6 18"/>',
+};
+function ic(name,size){
+ const s=size||18;
+ return `<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-${Math.round(s*0.16)}px;flex:0 0 auto">${ICON[name]||''}</svg>`;
+}
+
 /* 아이돌 AI 보이스팩 — 모드별로 선택지가 다르다.
    ※ 표기된 인물·캐릭터는 적용 예시이며, 실제 서비스에는 음성권·저작권 계약이 선행되어야 한다.
       데모의 소리는 시스템 TTS 합성음이고 실제 인물의 목소리를 복제한 것이 아니다. */
 const VOICE={
  /* A — 1인 가구 (남성) */
- iu      :{name:'아이유',       tone:'감성적이고 따뜻한 톤', c:'#d06b86',emoji:'🎤',shift:1.02,tts:{rate:.98,pitch:1.25},
+ iu      :{name:'아이유',       tone:'감성적이고 따뜻한 톤', c:'#d06b86',av:'아',shift:1.02,tts:{rate:.98,pitch:1.25},
            pv:'안녕하세요, 아이유예요. 오늘 청소, 저랑 같이 시작해요!'},
- hanni   :{name:'뉴진스 하니',   tone:'밝고 경쾌한 톤',      c:'#e08a3a',emoji:'🐰',shift:1.14,tts:{rate:1.12,pitch:1.30},
+ hanni   :{name:'뉴진스 하니',   tone:'밝고 경쾌한 톤',      c:'#e08a3a',av:'하',shift:1.14,tts:{rate:1.12,pitch:1.30},
            pv:'하니예요! 우리 같이 반짝반짝하게 만들어요!'},
- karina  :{name:'카리나',       tone:'시크하고 세련된 톤',   c:'#6aa7d0',emoji:'❄️',shift:1.06,tts:{rate:1.02,pitch:1.10},
+ karina  :{name:'카리나',       tone:'시크하고 세련된 톤',   c:'#6aa7d0',av:'카',shift:1.06,tts:{rate:1.02,pitch:1.10},
            pv:'카리나예요. 오늘도 깔끔하게 끝내볼까요?'},
  /* B — 1인 가구 (여성) */
- jk      :{name:'BTS 정국',     tone:'부드럽고 감미로운 톤', c:'#6a63c9',emoji:'🎧',shift:0.90,tts:{rate:.95,pitch:.90},
+ jk      :{name:'BTS 정국',     tone:'부드럽고 감미로운 톤', c:'#6a63c9',av:'정',shift:0.90,tts:{rate:.95,pitch:.90},
            pv:'정국이에요. 오늘도 깔끔하게 정리해볼까요?'},
- san     :{name:'에이티즈 최산', tone:'시원하고 활기찬 톤',   c:'#3f9e8c',emoji:'🌊',shift:0.88,tts:{rate:1.00,pitch:.88},
+ san     :{name:'에이티즈 최산', tone:'시원하고 활기찬 톤',   c:'#3f9e8c',av:'산',shift:0.88,tts:{rate:1.00,pitch:.88},
            pv:'에이티즈 산이에요. 오늘 청소 같이 해요!'},
- bogum   :{name:'박보검',       tone:'차분하고 다정한 톤',   c:'#a8875f',emoji:'🌿',shift:0.84,tts:{rate:.92,pitch:.82},
+ bogum   :{name:'박보검',       tone:'차분하고 다정한 톤',   c:'#a8875f',av:'박',shift:0.84,tts:{rate:.92,pitch:.82},
            pv:'박보검입니다. 오늘도 기분 좋게 시작해요.'},
  /* C — 영유아 가정 */
- tiniping:{name:'티니핑',       tone:'사랑스럽고 발랄한 톤', c:'#ef8fb8',emoji:'💗',shift:1.28,tts:{rate:1.15,pitch:1.60},
+ tiniping:{name:'티니핑',       tone:'사랑스럽고 발랄한 톤', c:'#ef8fb8',av:'티',shift:1.28,tts:{rate:1.15,pitch:1.60},
            pv:'반가워핑! 오늘도 깨끗하게 만들어핑!'},
- pororo  :{name:'뽀로로',       tone:'친근하고 씩씩한 톤',   c:'#4a86b0',emoji:'🐧',shift:1.20,tts:{rate:1.10,pitch:1.45},
+ pororo  :{name:'뽀로로',       tone:'친근하고 씩씩한 톤',   c:'#4a86b0',av:'뽀',shift:1.20,tts:{rate:1.10,pitch:1.45},
            pv:'안녕! 나는 뽀로로야. 같이 청소하러 가자!'},
- jjanggu :{name:'짱구',         tone:'장난스럽고 유쾌한 톤', c:'#e0b13a',emoji:'✏️',shift:1.16,tts:{rate:1.08,pitch:1.40},
+ jjanggu :{name:'짱구',         tone:'장난스럽고 유쾌한 톤', c:'#e0b13a',av:'짱',shift:1.16,tts:{rate:1.08,pitch:1.40},
            pv:'나는 짱구예요! 청소 시작해볼까요?'},
  /* D — 반려동물 가정 */
- dog     :{name:'강아지',       tone:'반갑고 활기찬 톤',     c:'#c08a4b',emoji:'🐶',shift:1.18,tts:{rate:1.10,pitch:1.35},
+ dog     :{name:'강아지',       tone:'반갑고 활기찬 톤',     c:'#c08a4b',av:'icon:dogface',shift:1.18,tts:{rate:1.10,pitch:1.35},
            pv:'멍멍! 산책 대신 청소부터 같이 가요!'},
- cat     :{name:'고양이',       tone:'나른하고 도도한 톤',   c:'#8d8f96',emoji:'🐱',shift:1.24,tts:{rate:.95,pitch:1.50},
+ cat     :{name:'고양이',       tone:'나른하고 도도한 톤',   c:'#8d8f96',av:'icon:catface',shift:1.24,tts:{rate:.95,pitch:1.50},
            pv:'야옹. 털 날리기 전에 얼른 치워요.'},
- petetc  :{name:'그 외 동물',   tone:'차분하고 다정한 톤',   c:'#7bb3a0',emoji:'🐾',shift:1.00,tts:{rate:1.00,pitch:1.15},
+ petetc  :{name:'그 외 동물',   tone:'차분하고 다정한 톤',   c:'#7bb3a0',av:'icon:paw',shift:1.00,tts:{rate:1.00,pitch:1.15},
            pv:'우리 아이 털, 제가 책임질게요!'},
  /* E — 일반 가정 */
- lyw     :{name:'임영웅',       tone:'편안하고 든든한 톤',   c:'#4a86b0',emoji:'🎙️',shift:0.86,tts:{rate:.92,pitch:.75},
+ lyw     :{name:'임영웅',       tone:'편안하고 든든한 톤',   c:'#4a86b0',av:'임',shift:0.86,tts:{rate:.92,pitch:.75},
            pv:'임영웅입니다. 오늘도 든든하게 함께하겠습니다.'},
- hyunbin :{name:'현빈',         tone:'낮고 부드러운 톤',     c:'#5f6b78',emoji:'🎬',shift:0.82,tts:{rate:.90,pitch:.72},
+ hyunbin :{name:'현빈',         tone:'낮고 부드러운 톤',     c:'#5f6b78',av:'현',shift:0.82,tts:{rate:.90,pitch:.72},
            pv:'현빈입니다. 오늘 집 정리, 같이 해볼까요?'},
- sks     :{name:'성시경',       tone:'따뜻하고 차분한 톤',   c:'#a0785c',emoji:'☕',shift:0.88,tts:{rate:.94,pitch:.80},
+ sks     :{name:'성시경',       tone:'따뜻하고 차분한 톤',   c:'#a0785c',av:'성',shift:0.88,tts:{rate:.94,pitch:.80},
            pv:'성시경이에요. 편안하게 한 바퀴 돌아볼게요.'},
 };
 /* 모드별 선택 가능한 보이스팩 */
@@ -753,7 +788,7 @@ const VOICE_OF={
 
 const LOADS={'카펫':0.15,'반려동물':0.10,'장모':0.08};
 function kOf(loads){let s=0;loads.forEach(l=>s+=LOADS[l]||0);return Math.min(1.40,1+s)}
-const ROOMS=[{n:'거실',i:'🛋️'},{n:'주방',i:'🍽️'},{n:'침실',i:'🛏️'},{n:'복도',i:'🚪'},{n:'현관',i:'🧹'}];
+const ROOMS=[{n:'거실',i:'sofa'},{n:'주방',i:'dish'},{n:'침실',i:'bed'},{n:'복도',i:'door'},{n:'현관',i:'home'}];
 
 /* ── 3차 최종 보정식 (결과보고 슬라이드 9) ── */
 const RES=5,C0=2.14,BETA=0.237,AC=0.0056,AH=0.0012,TEMP=22;
@@ -903,17 +938,17 @@ function speak(text,force,clip){
 }
 
 /* ══════════ 위저드 ══════════ */
-const YN=(k,yes,no)=>[{v:true,i:'⭕',t:'네',d:yes},{v:false,i:'✖️',t:'아니요',d:no}];
+const YN=(k,yes,no)=>[{v:true,i:'yes',t:'네',d:yes},{v:false,i:'no',t:'아니요',d:no}];
 const OPTS={
  carpet :YN('carpet','카펫·러그가 있어요','전부 맨바닥이에요'),
  pet    :YN('pet','강아지나 고양이를 키워요','키우지 않아요'),
  hair   :YN('hair','머리카락이 자주 보여요','거의 없어요'),
- time   :[{v:'아침',i:'🌅',t:'아침',d:'출근 전'},{v:'오후',i:'☀️',t:'오후',d:'한낮'},
-          {v:'저녁',i:'🌆',t:'저녁',d:'퇴근 후'},{v:'심야',i:'🌙',t:'심야',d:'밤늦게'}],
- session:[{v:'batch',i:'🧹',t:'한 번에 몰아서',d:'시작하면 집 전체를 끝내요'},
-          {v:'split',i:'🔁',t:'나눠서 여러 번',d:'생각날 때 조금씩 해요'}],
- dock   :[{v:'always',i:'🔌',t:'항상 꽂아둬요',d:'거치대에 늘 올려둡니다'},
-          {v:'ondemand',i:'📦',t:'쓸 때만 꺼내요',d:'평소엔 따로 보관합니다'}],
+ time   :[{v:'아침',i:'sunrise',t:'아침',d:'출근 전'},{v:'오후',i:'sun',t:'오후',d:'한낮'},
+          {v:'저녁',i:'sunset',t:'저녁',d:'퇴근 후'},{v:'심야',i:'moon',t:'심야',d:'밤늦게'}],
+ session:[{v:'batch',i:'batch',t:'한 번에 몰아서',d:'시작하면 집 전체를 끝내요'},
+          {v:'split',i:'split',t:'나눠서 여러 번',d:'생각날 때 조금씩 해요'}],
+ dock   :[{v:'always',i:'plug',t:'항상 꽂아둬요',d:'거치대에 늘 올려둡니다'},
+          {v:'ondemand',i:'box',t:'쓸 때만 꺼내요',d:'평소엔 따로 보관합니다'}],
 };
 
 /* 선택지 클릭 — 현재 질문 키를 단계에서 되찾아 값을 적용한다 */
@@ -989,11 +1024,11 @@ function renderWiz(){
    /* 값에 한글·따옴표가 들어가도 안전하도록 인덱스만 넘기고 위임으로 처리한다 */
    body=head+`<div class="opts ${two?'two':''}">${OPTS[Q.k].map((o,i)=>`
      <div class="opt ${cur===o.v?'on':''}" data-oi="${i}">
-       <div class="oi">${o.i}</div>
+       <div class="oi">${ic(o.i,22)}</div>
        <div class="ob"><div class="ot">${o.t}</div><div class="od">${o.d}</div></div>
      </div>`).join('')}</div>`;
    if(Q.k==='time'&&(W.time==='심야'||(W.model==='C'&&W.time==='오후')))
-     body+=`<div class="vnote" style="margin-top:12px">🔇 이 시간대엔 음성을 끄고 화면으로만 안내해요.</div>`;
+     body+=`<div class="vnote" style="margin-top:12px">${ic('mute',14)} 이 시간대엔 음성을 끄고 화면으로만 안내해요.</div>`;
   }
  }
  /* ── 9. 보이스팩 (모드별 목록) ── */
@@ -1004,7 +1039,7 @@ function renderWiz(){
    <div class="qs">판정은 그대로, 문장을 읽어주는 목소리만 달라져요.</div>
    ${list.map(id=>{const v=VOICE[id];return `
      <div class="vcard ${W.voice===id?'on':''}" onclick="pickVoice('${id}')">
-       <div class="av" style="background:${v.c}">${v.emoji}</div>
+       <div class="av" style="background:${v.c}">${v.av.startsWith('icon:')?ic(v.av.slice(5),22):v.av}</div>
        <div class="vt"><div class="a">${v.name}</div><div class="b">${v.tone}</div></div>
        <div class="play" onclick="event.stopPropagation();preview('${id}')">▶</div></div>`}).join('')}
 `;
@@ -1040,7 +1075,7 @@ function renderWiz(){
      <div class="rw"><b>주의할 점</b> — ${M[sid].risk}</div>
    </div>
    ${W.voice?`<div class="rsum"><div class="rt">보이스팩</div>
-     <div class="rv">${VOICE[W.voice].emoji} ${VOICE[W.voice].name}</div></div>`:''}
+     <div class="rv"><span style="display:inline-block;width:10px;height:10px;border-radius:99px;background:${VOICE[W.voice].c};margin-right:7px;vertical-align:2px"></span>${VOICE[W.voice].name}</div></div>`:''}
    <button class="savebtn" data-savepreset="1">＋ 이 설정을 프리셋으로 저장</button>`;
  }
 
@@ -1132,7 +1167,7 @@ function draw(){
   const onTrack=availNow>=remain;
   voiceLine=SES.line;eqOn=true;
   heroHTML=`<div class="hero" style="background:${onTrack?GRAD[0]:GRAD[2]}">
-   <div class="htop"><span>🧹 청소 중 · ${SES.eco?'저소음':'표준'} · ${SES.zones.length}구역</span><span class="badge">${(cov*100).toFixed(0)}%</span></div>
+   <div class="htop"><span>${ic('broom',16)} 청소 중 · ${SES.eco?'저소음':'표준'} · ${SES.zones.length}구역</span><span class="badge">${(cov*100).toFixed(0)}%</span></div>
    <div class="ringrow">
      <div class="ring">${ringSVG(SOC)}<div class="pc"><b>${SOC.toFixed(0)}</b><span>배터리</span></div></div>
      <div class="hmsg"><div class="vd">${onTrack?'예정대로 완주 중':'방전 임박'}</div>
@@ -1155,7 +1190,7 @@ function draw(){
  }else if(phase==='stranded'){
   const cov=SES?Math.min(1,elapsed/SES.req):0;
   heroHTML=`<div class="hero" style="background:${GRAD[2]}">
-   <div class="htop"><span>⚠ 도중 방전</span><span class="badge">${(cov*100).toFixed(0)}% 지점</span></div>
+   <div class="htop"><span>${ic('warn',14)} 도중 방전</span><span class="badge">${(cov*100).toFixed(0)}% 지점</span></div>
    <div class="ringrow">
      <div class="ring">${ringSVG(SOC)}<div class="pc"><b>${SOC.toFixed(0)}</b><span>충전 필요</span></div></div>
      <div class="hmsg"><div class="vd">충전 필요</div><div class="ln">${p.msg[2].replace('{n}',josa(p.name)).replace(/^,\s*/,'')}</div></div>
@@ -1163,7 +1198,7 @@ function draw(){
   voiceLine=p.voice[2];
  }else if(phase==='charge'){
   heroHTML=`<div class="hero" style="background:${GRAD[1]}">
-   <div class="htop"><span>⚡ 거치대 충전 중</span><span class="badge">${SOC.toFixed(0)}%</span></div>
+   <div class="htop"><span>${ic('bolt',14)} 거치대 충전 중</span><span class="badge">${SOC.toFixed(0)}%</span></div>
    <div class="ringrow">
      <div class="ring">${ringSVG(SOC)}<div class="pc"><b>${SOC.toFixed(0)}</b><span>충전 중</span></div></div>
      <div class="hmsg"><div class="vd">충전 중</div><div class="ln">${SPLIT.active&&SPLIT.stage===1?'충전이 끝나면 남은 '+SPLIT.second.length+'구역을 이어서 청소해요.':'충전이 끝나면 알려드릴게요.'}</div></div>
@@ -1198,37 +1233,37 @@ function draw(){
 
  /* ── 무음 배너 — 무음 시간대에만 노출 (평상시엔 화면을 비워 둔다) ── */
  setH('op-voice',muted
-  ? `<div class="mutebar">🔇 무음 시간대 — 음성 대신 화면으로 안내합니다</div>` : '');
+  ? `<div class="mutebar">${ic('mute',14)} 무음 시간대 — 음성 대신 화면으로 안내합니다</div>` : '');
 
  /* ── CTA ── */
  let cta='';
  if(phase==='clean')cta=`<button class="big rd" data-act="stop">■ 청소 중단</button>`;
  else if(phase==='charge')cta=`<button class="sub" data-act="stopChg">충전 중단</button>`;
  else if(phase==='done'&&SPLIT.active&&SPLIT.stage===1)
-   cta=`<button class="big am" data-act="charge">⚡ 충전 후 2차 진행 (남은 ${SPLIT.second.length}구역)</button>`;
+   cta=`<button class="big am" data-act="charge">${ic('bolt',15)} 충전 후 2차 진행 (남은 ${SPLIT.second.length}구역)</button>`;
  else if(phase==='done')
-   cta=`<button class="big gr" data-act="charge">⚡ 거치대 충전 · 다음 청소 준비</button>
+   cta=`<button class="big gr" data-act="charge">${ic('bolt',15)} 거치대 충전 · 다음 청소 준비</button>
         <button class="sub" data-act="again">구역 다시 선택하기</button>`;
  else if(phase==='idle'&&SPLIT.active&&SPLIT.stage===1&&SOC>=99)
    cta=`<button class="big gr" data-act="start2">2차 청소 시작 · 남은 ${SPLIT.second.length}구역</button>
         <button class="sub" data-act="splitOff">분할 계획 종료</button>`;
- else if(phase==='stranded')cta=`<button class="big rd" data-act="charge">⚡ 거치대에 올려 충전</button>`;
+ else if(phase==='stranded')cta=`<button class="big rd" data-act="charge">${ic('bolt',15)} 거치대에 올려 충전</button>`;
  else{
   if(c.state==='none')cta=`<button class="big gr" disabled>청소할 구역을 선택하세요</button>`;
   else if(c.state==='ok')cta=`<button class="big gr" data-act="start">청소 시작 · ${c.n}구역 (약 ${c.reqSel.toFixed(0)}분)</button>`;
   else if(c.state==='tight')cta=`<button class="big am" data-act="startEco">저소음으로 ${c.n}구역 청소 (여유 확보)</button>
      <button class="sub" data-act="start">그대로 시작 (완주 빠듯)</button>`;
-  else if(c.state==='charge')cta=`<button class="big rd" data-act="charge">⚡ 충전 후 시작 (지금은 부족)</button>
+  else if(c.state==='charge')cta=`<button class="big rd" data-act="charge">${ic('bolt',15)} 충전 후 시작 (지금은 부족)</button>
      <button class="sub" data-act="fewer">구역 줄여서 지금 시작</button>`;
   else cta=`<button class="big am" data-act="split1">1차 청소 먼저 · 지금 가능한 구역 (분할)</button>
-     <button class="sub" data-act="charge">⚡ 먼저 충전하기</button>`;
+     <button class="sub" data-act="charge">${ic('bolt',15)} 먼저 충전하기</button>`;
  }
  setH('op-cta',`<div class="cta">${cta}</div>`);
 
  /* ── 수명 코칭 (핵심 주제 — CTA 바로 아래) ── */
- setH('op-coach',`<div class="coach"><div class="ch">💡 ${mid()} 맞춤 수명 코칭</div>
+ setH('op-coach',`<div class="coach"><div class="ch">${ic('bulb',14)} ${mid()} 맞춤 수명 코칭</div>
    <div class="cb">${M[mid()].coach}. <b>핵심 리스크</b> — ${M[mid()].risk}</div>
-   ${SOH<80?`<div class="cb sohwarn">🔋 배터리 건강도 ${SOH}% — 통상 80% 미만은 수명 종료 구간이에요. <b>교체를 검토할 시점</b>입니다.</div>`:''}</div>`);
+   ${SOH<80?`<div class="cb sohwarn">${ic('battery',14)} 배터리 건강도 ${SOH}% — 통상 80% 미만은 수명 종료 구간이에요. <b>교체를 검토할 시점</b>입니다.</div>`:''}</div>`);
 
  /* ── 구역 선택/진행 ── */
  const lock=phase!=='idle'&&phase!=='done';
@@ -1240,12 +1275,12 @@ function draw(){
     const inSes=SES.zones.includes(i);
     const wasDone=SPLIT.active&&SPLIT.stage>=1&&SPLIT.first.includes(i)&&!SES.zones.includes(i);
     const cls=wasDone?'done lock':inSes?(SES.zones.indexOf(i)<doneN?'done lock':'sel lock'):'lock';
-    return `<div class="z ${cls}" style="${!inSes&&!wasDone?'opacity:.4':''}"><div class="zi">${z.i}</div><div class="zn">${z.n}</div><div class="zt">${zTime.toFixed(1)}분</div></div>`}).join('');
+    return `<div class="z ${cls}" style="${!inSes&&!wasDone?'opacity:.4':''}"><div class="zi">${ic(z.i,22)}</div><div class="zn">${z.n}</div><div class="zt">${zTime.toFixed(1)}분</div></div>`}).join('');
  }else{
   zHTML=ROOMS.map((z,i)=>{
     const wasDone=SPLIT.active&&SPLIT.stage>=1&&SPLIT.first.includes(i);
     const cls=wasDone?'done lock':sel.has(i)?'sel':'';
-    return `<div class="z ${cls}" data-zi="${i}"><div class="zi">${z.i}</div><div class="zn">${z.n}</div><div class="zt">${zTime.toFixed(1)}분</div></div>`}).join('');
+    return `<div class="z ${cls}" data-zi="${i}"><div class="zi">${ic(z.i,22)}</div><div class="zn">${z.n}</div><div class="zt">${zTime.toFixed(1)}분</div></div>`}).join('');
  }
  const zNote={none:'구역을 눌러 청소 범위를 정하세요.',
   ok:`선택한 ${c.n}구역(${c.reqSel.toFixed(0)}분)을 한 번에 끝낼 수 있어요.`,
@@ -1322,11 +1357,11 @@ function startClean(eco,zones){
   elapsed=Math.min(SES.req,(performance.now()-t0)/1000*SPEED);
   SOC=Math.max(RES,soc0-SES.rbar*elapsed);$('soc').value=SOC.toFixed(0);
   if(SOC<=RES&&elapsed<SES.req-1e-9){phase='stranded';clearInterval(timer);timer=null;
-   toast('⚠ 청소 도중 배터리 부족 — 거치대 충전');speak('배터리가 부족해요. 충전 후 이어서 청소할게요.',false,'sys-stranded');clearOpCache();draw();return}
+   toast('청소 도중 배터리 부족 — 거치대 충전');speak('배터리가 부족해요. 충전 후 이어서 청소할게요.',false,'sys-stranded');clearOpCache();draw();return}
   if(elapsed>=SES.req){phase='done';clearInterval(timer);timer=null;
-   if(SPLIT.active&&SPLIT.stage===0){SPLIT.stage=1;toast('✓ 1차 청소 완료 — 충전 후 2차');speak('1차 청소를 끝냈어요. 충전하고 이어서 할게요.',false,'sys-split1')}
-   else if(SPLIT.active&&SPLIT.stage===1){SPLIT.stage=2;toast('✓ 분할 완주 완료 — 5구역 모두 청소');speak('나머지 구역까지 모두 끝냈어요!',false,'sys-split2')}
-   else{toast('✓ 청소 완주 완료');speak('청소를 모두 끝냈어요!',false,'sys-done')}
+   if(SPLIT.active&&SPLIT.stage===0){SPLIT.stage=1;toast('1차 청소 완료 — 충전 후 2차');speak('1차 청소를 끝냈어요. 충전하고 이어서 할게요.',false,'sys-split1')}
+   else if(SPLIT.active&&SPLIT.stage===1){SPLIT.stage=2;toast('분할 완주 완료 — 5구역 모두 청소');speak('나머지 구역까지 모두 끝냈어요!',false,'sys-split2')}
+   else{toast('청소 완주 완료');speak('청소를 모두 끝냈어요!',false,'sys-done')}
    clearOpCache();draw();return}
   draw();
  },80);
@@ -1350,8 +1385,8 @@ function startCharge(){phase='charge';if(timer)clearInterval(timer);
  timer=setInterval(()=>{
   SOC=Math.min(100,soc0+(performance.now()-t0)/1000*CHG);$('soc').value=SOC.toFixed(0);
   if(SOC>=100){SOC=100;clearInterval(timer);timer=null;phase='idle';
-   if(SPLIT.active&&SPLIT.stage===1){toast('✓ 충전 완료 — 2차 청소를 시작할 수 있어요');speak('충전 끝! 남은 구역 이어서 청소할까요?',false,'sys-charged')}
-   else toast('✓ 충전 완료');clearOpCache()}
+   if(SPLIT.active&&SPLIT.stage===1){toast('충전 완료 — 2차 청소를 시작할 수 있어요');speak('충전 끝! 남은 구역 이어서 청소할까요?',false,'sys-charged')}
+   else toast('충전 완료');clearOpCache()}
   draw()},60)}
 function stopCharge(){if(timer)clearInterval(timer);timer=null;phase='idle';clearOpCache();draw()}
 function stopTimers(){if(timer)clearInterval(timer);timer=null;
@@ -1471,9 +1506,10 @@ function sheet(open){
  $('demo').classList.toggle('open',open);
  $('scrim').classList.toggle('on',open);
  $('fab').classList.toggle('on',open);
- $('fab').textContent=open?'✕':'⚙';
+ $('fab').innerHTML=ic(open?'close':'gear',22);
  $('fab').setAttribute('aria-label',open?'데모 제어 닫기':'데모 제어 열기');
 }
+sheet(false);   /* 초기 아이콘(⚙) 세팅 */
 $('fab').onclick=()=>{const open=!$('demo').classList.contains('open');if(open)sohNote();sheet(open)};
 $('scrim').onclick=()=>sheet(false);
 $('sheet-x').onclick=()=>sheet(false);
