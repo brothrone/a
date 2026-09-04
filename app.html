@@ -879,6 +879,7 @@ function presetSwitch(name){
  stopTimers(); presetApply(p);
  phase='idle'; SES=null; SPLIT={active:false,first:[],second:[],stage:0};
  sel=new Set(ROOMS.map((_,i)=>i));
+ SOC=defaultSOC();$('soc').value=SOC;
  clearOpCache(); draw(); renderDevice();
  toast(`“${p.name}” 설정으로 바꿨어요`);
 }
@@ -1105,6 +1106,14 @@ function answer(k,v){W[k]=v;renderWiz()}   /* 답만 반영하고 진행은 '다
 function pickVoice(id){W.voice=id;renderWiz()}
 function preview(id){const v=VOICE[id];W.voice=id;renderWiz();
  speak(v.pv||'',true,'preview');toast(`▶ ${v.name} — 보이스 샘플 재생`)}
+/* 보관 습관별 시작 잔량 — 항상 거치대에 있는 게 아니면 만충을 가정하지 않는다.
+   '쓸 때만 꺼내요'는 마지막 사용 후 잔량 그대로 보관되므로, 만충 상태에서
+   전 구역을 한 번 청소했을 때 남는 잔량(이 앱의 예측식 그대로)을 시작값으로 쓴다. */
+function defaultSOC(){
+ if(!W.model||W.dock==='always')return 100;   // 상시 거치 — 항상 충전 중이라 만충으로 시작
+ const base=baseOf(),k=kOf(loadsOf()),reqAll=reqFromArea(W.area);
+ return Math.round(Math.max(RES,100-C0-rbarAt(100,base,k)*reqAll));
+}
 function wizPrev(){if(W.step>1){W.step--;renderWiz()}}
 function wizNext(){
  if(W.step<STEP_RESULT){
@@ -1116,7 +1125,7 @@ function wizNext(){
  const first=!started;
  started=true;phase='idle';SES=null;SPLIT={active:false,first:[],second:[],stage:0};
  sel=new Set(ROOMS.map((_,i)=>i));
- if(first){SOC=100;$('soc').value=100}
+ if(first){SOC=defaultSOC();$('soc').value=SOC}
  $('wiz').style.display='none';$('op').classList.add('on');
  clearOpCache();draw();
  toast('설정 완료 — 기기·스피커가 연결됐어요');
@@ -1393,7 +1402,7 @@ function stopCharge(){if(timer)clearInterval(timer);timer=null;phase='idle';clea
 function stopTimers(){if(timer)clearInterval(timer);timer=null;
  if(phase==='clean'||phase==='charge')phase='idle';}
 function softReset(){stopTimers();phase='idle';SES=null;elapsed=0;SPLIT={active:false,first:[],second:[],stage:0};
- SOC=100;$('soc').value=100;sel=new Set(ROOMS.map((_,i)=>i));clearOpCache();draw();renderDevice()}
+ SOC=defaultSOC();$('soc').value=SOC;sel=new Set(ROOMS.map((_,i)=>i));clearOpCache();draw();renderDevice()}
 
 /* 이벤트 위임 — CTA/구역/푸터 (innerHTML 재생성과 무관하게 클릭 보장) */
 $('op').addEventListener('click',e=>{
