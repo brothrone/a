@@ -729,6 +729,7 @@ const ICON={
  dogface:'<path d="M4.5 9c0-1.3 1-4 2.8-4s1.7 2.6 1.7 3.4"/><path d="M19.5 9c0-1.3-1-4-2.8-4s-1.7 2.6-1.7 3.4"/><circle cx="12" cy="13" r="7"/><circle cx="9.3" cy="12.2" r=".9" fill="currentColor" stroke="none"/><circle cx="14.7" cy="12.2" r=".9" fill="currentColor" stroke="none"/><path d="M10.3 15.8c.6.5 2.8.5 3.4 0"/>',
  catface:'<path d="M5 3.5 7 8M19 3.5 17 8"/><circle cx="12" cy="13" r="7"/><circle cx="9.5" cy="12" r=".8" fill="currentColor" stroke="none"/><circle cx="14.5" cy="12" r=".8" fill="currentColor" stroke="none"/><path d="M12 14v1M9.2 16.3c.9.6 3.7.6 4.6 0"/>',
  paw    :'<circle cx="6.5" cy="10" r="2"/><circle cx="17.5" cy="10" r="2"/><circle cx="9.3" cy="5.8" r="1.9"/><circle cx="14.7" cy="5.8" r="1.9"/><path d="M12 12c-3.1 0-6.2 2.1-6.2 5.1a3 3 0 0 0 3 3c1.3 0 1.9-.6 3.2-.6s1.9.6 3.2.6a3 3 0 0 0 3-3c0-3-3.1-5.1-6.2-5.1Z"/>',
+ wave   :'<path d="M4 10v4"/><path d="M8.5 7v10"/><path d="M13 4v16"/><path d="M17.5 7.5v9"/><path d="M21 10.5v3"/>',
  gear   :'<circle cx="12" cy="12" r="3.2"/><path d="M19.4 13a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6V19a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.6-1H4a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H10a1.7 1.7 0 0 0 1-1.6V4a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V10a1.7 1.7 0 0 0 1.6 1H20a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.6 1Z"/>',
  close  :'<path d="M6 6l12 12M18 6 6 18"/>',
 };
@@ -742,25 +743,25 @@ function ic(name,size){
       데모의 소리는 시스템 TTS 합성음이고 실제 인물의 목소리를 복제한 것이 아니다. */
 const VOICE={
  /* A — 1인 가구 (남성) */
- iu      :{name:'아이유',       tone:'감성적이고 따뜻한 톤', c:'#d06b86',av:'아',shift:1.02,tts:{rate:.98,pitch:1.25},
+ iu      :{name:'아이유',       tone:'감성적이고 따뜻한 톤', c:'#d06b86',av:'icon:wave',shift:1.02,tts:{rate:.98,pitch:1.25},
            pv:'안녕하세요, 아이유예요. 오늘 청소, 저랑 같이 시작해요!'},
- hanni   :{name:'뉴진스 하니',   tone:'밝고 경쾌한 톤',      c:'#e08a3a',av:'하',shift:1.14,tts:{rate:1.12,pitch:1.30},
+ hanni   :{name:'뉴진스 하니',   tone:'밝고 경쾌한 톤',      c:'#e08a3a',av:'icon:wave',shift:1.14,tts:{rate:1.12,pitch:1.30},
            pv:'하니예요! 우리 같이 반짝반짝하게 만들어요!'},
- karina  :{name:'카리나',       tone:'시크하고 세련된 톤',   c:'#6aa7d0',av:'카',shift:1.06,tts:{rate:1.02,pitch:1.10},
+ karina  :{name:'카리나',       tone:'시크하고 세련된 톤',   c:'#6aa7d0',av:'icon:wave',shift:1.06,tts:{rate:1.02,pitch:1.10},
            pv:'카리나예요. 오늘도 깔끔하게 끝내볼까요?'},
  /* B — 1인 가구 (여성) */
- jk      :{name:'BTS 정국',     tone:'부드럽고 감미로운 톤', c:'#6a63c9',av:'정',shift:0.90,tts:{rate:.95,pitch:.90},
+ jk      :{name:'BTS 정국',     tone:'부드럽고 감미로운 톤', c:'#6a63c9',av:'icon:wave',shift:0.90,tts:{rate:.95,pitch:.90},
            pv:'정국이에요. 오늘도 깔끔하게 정리해볼까요?'},
- san     :{name:'에이티즈 최산', tone:'시원하고 활기찬 톤',   c:'#3f9e8c',av:'산',shift:0.88,tts:{rate:1.00,pitch:.88},
+ san     :{name:'에이티즈 최산', tone:'시원하고 활기찬 톤',   c:'#3f9e8c',av:'icon:wave',shift:0.88,tts:{rate:1.00,pitch:.88},
            pv:'에이티즈 산이에요. 오늘 청소 같이 해요!'},
- bogum   :{name:'박보검',       tone:'차분하고 다정한 톤',   c:'#a8875f',av:'박',shift:0.84,tts:{rate:.92,pitch:.82},
+ bogum   :{name:'박보검',       tone:'차분하고 다정한 톤',   c:'#a8875f',av:'icon:wave',shift:0.84,tts:{rate:.92,pitch:.82},
            pv:'박보검입니다. 오늘도 기분 좋게 시작해요.'},
  /* C — 영유아 가정 */
- tiniping:{name:'티니핑',       tone:'사랑스럽고 발랄한 톤', c:'#ef8fb8',av:'티',shift:1.28,tts:{rate:1.15,pitch:1.60},
+ tiniping:{name:'티니핑',       tone:'사랑스럽고 발랄한 톤', c:'#ef8fb8',av:'icon:wave',shift:1.28,tts:{rate:1.15,pitch:1.60},
            pv:'반가워핑! 오늘도 깨끗하게 만들어핑!'},
- pororo  :{name:'뽀로로',       tone:'친근하고 씩씩한 톤',   c:'#4a86b0',av:'뽀',shift:1.20,tts:{rate:1.10,pitch:1.45},
+ pororo  :{name:'뽀로로',       tone:'친근하고 씩씩한 톤',   c:'#4a86b0',av:'icon:wave',shift:1.20,tts:{rate:1.10,pitch:1.45},
            pv:'안녕! 나는 뽀로로야. 같이 청소하러 가자!'},
- jjanggu :{name:'짱구',         tone:'장난스럽고 유쾌한 톤', c:'#e0b13a',av:'짱',shift:1.16,tts:{rate:1.08,pitch:1.40},
+ jjanggu :{name:'짱구',         tone:'장난스럽고 유쾌한 톤', c:'#e0b13a',av:'icon:wave',shift:1.16,tts:{rate:1.08,pitch:1.40},
            pv:'나는 짱구예요! 청소 시작해볼까요?'},
  /* D — 반려동물 가정 */
  dog     :{name:'강아지',       tone:'반갑고 활기찬 톤',     c:'#c08a4b',av:'icon:dogface',shift:1.18,tts:{rate:1.10,pitch:1.35},
@@ -770,11 +771,11 @@ const VOICE={
  petetc  :{name:'그 외 동물',   tone:'차분하고 다정한 톤',   c:'#7bb3a0',av:'icon:paw',shift:1.00,tts:{rate:1.00,pitch:1.15},
            pv:'우리 아이 털, 제가 책임질게요!'},
  /* E — 일반 가정 */
- lyw     :{name:'임영웅',       tone:'편안하고 든든한 톤',   c:'#4a86b0',av:'임',shift:0.86,tts:{rate:.92,pitch:.75},
+ lyw     :{name:'임영웅',       tone:'편안하고 든든한 톤',   c:'#4a86b0',av:'icon:wave',shift:0.86,tts:{rate:.92,pitch:.75},
            pv:'임영웅입니다. 오늘도 든든하게 함께하겠습니다.'},
- hyunbin :{name:'현빈',         tone:'낮고 부드러운 톤',     c:'#5f6b78',av:'현',shift:0.82,tts:{rate:.90,pitch:.72},
+ hyunbin :{name:'현빈',         tone:'낮고 부드러운 톤',     c:'#5f6b78',av:'icon:wave',shift:0.82,tts:{rate:.90,pitch:.72},
            pv:'현빈입니다. 오늘 집 정리, 같이 해볼까요?'},
- sks     :{name:'성시경',       tone:'따뜻하고 차분한 톤',   c:'#a0785c',av:'성',shift:0.88,tts:{rate:.94,pitch:.80},
+ sks     :{name:'성시경',       tone:'따뜻하고 차분한 톤',   c:'#a0785c',av:'icon:wave',shift:0.88,tts:{rate:.94,pitch:.80},
            pv:'성시경이에요. 편안하게 한 바퀴 돌아볼게요.'},
 };
 /* 모드별 선택 가능한 보이스팩 */
